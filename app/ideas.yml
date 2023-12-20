@@ -1,0 +1,12 @@
+animations:
+  - "result is shown as number increasing / decreasing as animation, when input changes"
+  - "cursor is smooth in input field, characters are inserted with animation"
+  - "when input is invalid, error message is shown with animation and issue is highlighted"
+
+history:
+  - "history is saved in local storage"
+  - "history is displayed above the editor"
+  - "history can be cleared and individual items can be removed / recalled"
+
+buttons:
+  - "clear button clears the input field"
