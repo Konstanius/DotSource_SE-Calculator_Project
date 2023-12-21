@@ -11,7 +11,9 @@ history:
 buttons:
   - "clear button clears the input field"
 
+text field:
+  - "closing parentheses are automatically added when opening parentheses are typed"
+
 general:
   - "more consistent rounding / formatting of decimals and check displayed values"
   - "reduce ~down my throat~ errors?"
-  - "allow 3*(-4)"
