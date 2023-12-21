@@ -13,24 +13,25 @@ export default function Home() {
     const [currentPrompt, setCurrentPrompt] = useState('')
     const [screenWidth, setScreenWidth] = useState(0)
 
-    if (currentPrompt === '') {
-        setCurrentPrompt(germanPrompts[Math.floor(Math.random() * germanPrompts.length)])
-    }
     useEffect(() => {
+        if (currentPrompt === '') {
+            setCurrentPrompt(germanPrompts[Math.floor(Math.random() * germanPrompts.length)])
+
+            // set the screen width
+            setScreenWidth(window.innerWidth)
+            // add event listener to update the screen width
+            window.addEventListener('resize', () => {
+                setScreenWidth(window.innerWidth)
+            })
+        }
+
         try {
             // focus input
             document.getElementById('input').focus()
         } catch (error) {
             // ignore
         }
-
-        // set the screen width
-        setScreenWidth(window.innerWidth)
-        // add event listener to update the screen width
-        window.addEventListener('resize', () => {
-            setScreenWidth(window.innerWidth)
-        })
-    }, []);
+    }, [currentPrompt]);
 
     const onChangedTextField = (newValue) => {
         setInput(newValue)
