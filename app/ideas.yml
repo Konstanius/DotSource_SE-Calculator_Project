@@ -10,3 +10,8 @@ history:
 
 buttons:
   - "clear button clears the input field"
+
+general:
+  - "more consistent rounding / formatting of decimals and check displayed values"
+  - "reduce ~down my throat~ errors?"
+  - "allow 3*(-4)"

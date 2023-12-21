@@ -1,24 +1,23 @@
 'use client'
 
 import {useState} from "react"
-import {parse, ParserError} from "@/app/parser.mjs"
-import AnimatedNumber from "@/app/animated_number";
+import {ParserError, parseWithParentheses} from "@/app/parser.mjs"
 
 export default function Home() {
     const [valid, setValidity] = useState(true)
     const [input, setInput] = useState('')
-    const [output, setOutput] = useState('')
+    const [output, setOutput] = useState('0')
 
     const onChangedTextField = (input) => {
         setInput(input)
 
         try {
-            let data = parse(input, true)
+            let data = parseWithParentheses(input, true)
             setValidity(true)
             setOutput(data)
         } catch (error) {
             setValidity(false)
-            setOutput(error.message + ': ' + error.position)
+            setOutput(error.message)
             if (error.type !== ParserError) {
                 console.log(error)
             }
@@ -36,7 +35,7 @@ export default function Home() {
             {/*show AnimatedNumber if valid, else show output raw*/}
             {valid ? (
                 <div className="flex flex-row items-center justify-center">
-                    <AnimatedNumber value={output}/>
+                    <p className="text-2xl">{output}</p>
                 </div>
             ) : (
                 <p className="text-2xl">{output}</p>

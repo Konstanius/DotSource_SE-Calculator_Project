@@ -39,28 +39,162 @@ const allowedOperations = ["+", "-", "*", "/", "!", "%"]
 
 export class ParserError {
     message
-    position
 
-    constructor(message, position) {
+    constructor(message) {
         this.message = message
-        this.position = position
     }
 }
 
-// TODO allow for parentheses, use a function AROUND parse, which is recursive, and calls itself for each parentheses group
 /**
  * Parses a string as a mathematical expression and returns the result as a string, formatted by locale as non-scientific notation
  *
- * Time efficiency: ~ O(3n) -> has to iterate over the string 3 times, shortens to ~ O(n) [excludes replaceAll operation for spaces]
+ * First recursively splits the string into parentheses groups, then calls solveParenthesesGroups() on the array entire array
+ *
  * Optimized to specifications:
  * - allow positive / negative number in beginning and as result
  * - allow decimal numbers
  * - allow ! and %
- * - allow default operations +, -, *, /
+ * - allow default operations +, -, *, /, (, )
  * - allow spaces
- * - does take into account mathematical order of operations ([P]EMDAS) [parentheses are excluded, since out of spec]
+ * - does take into account mathematical order of operations (PEMDAS)
+ *
+ * @param input
+ * @param shouldLog
+ * @returns {string}
+ * @throws ParserError
  **/
-export function parse(input, shouldLog) {
+export function parseWithParentheses(input, shouldLog) {
+    // Split into parentheses groups, and use parse() on each group
+    let currentParenthesesLevel = 0
+    let currentParenthesesString = ""
+
+    // Example: 1+(2+(3+4))+5
+    // List will be: ["1+", ["2+", ["3+4"]], "+5"]
+    let parenthesesGroups = []
+
+    for (let i = 0; i < input.length; i++) {
+        const char = input[i]
+
+        if (char === "(") {
+            if (currentParenthesesString !== "") {
+                pushOntoGroupList(parenthesesGroups, currentParenthesesString, currentParenthesesLevel)
+            }
+
+            currentParenthesesLevel++
+            currentParenthesesString = ""
+        } else if (char === ")") {
+            if (currentParenthesesString !== "") {
+                pushOntoGroupList(parenthesesGroups, currentParenthesesString, currentParenthesesLevel)
+            }
+
+            currentParenthesesLevel--
+            if (currentParenthesesLevel < 0) {
+                throw new ParserError("Mehr Klammern geschlossen als geöffnet")
+            }
+            currentParenthesesString = ""
+        } else {
+            currentParenthesesString += char
+        }
+    }
+    if (currentParenthesesString !== "") {
+        pushOntoGroupList(parenthesesGroups, currentParenthesesString, currentParenthesesLevel)
+    }
+
+    if (currentParenthesesLevel !== 0) {
+        throw new ParserError("Mehr Klammern geöffnet als geschlossen")
+    }
+
+    return solveParenthesesGroups(parenthesesGroups, shouldLog)
+}
+
+/**
+ * Recursively solves parentheses groups
+ *
+ * Iterates through the array, recursing on each array
+ * Once the iteration is done, concatenates the array into a string and calls parseSingleGroupString() on it
+ * @param parenthesesGroups
+ * @param shouldLog
+ * @returns {string}
+ */
+function solveParenthesesGroups(parenthesesGroups, shouldLog) {
+    // iterate and solve parentheses groups, if array
+    for (let i = 0; i < parenthesesGroups.length; i++) {
+        const group = parenthesesGroups[i]
+        if (Array.isArray(group)) {
+            parenthesesGroups[i] = solveParenthesesGroups(group, shouldLog)
+        }
+    }
+
+    let string = "";
+    for (let i = 0; i < parenthesesGroups.length; i++) {
+        const group = parenthesesGroups[i]
+        string += group
+
+        // if it is not the last element, and it does not end with any operator, add a *
+        // This will ensure that e.g. 1+2(3+4) will be parsed as 1+2*(3+4)
+        if (i !== parenthesesGroups.length - 1 && !allowedOperations.includes(group[group.length - 1])) {
+            string += "*"
+        }
+    }
+
+    return parseSingleGroupString(string, shouldLog)
+}
+
+/**
+ * Utility method used by parseWithParentheses()
+ *
+ * Pushes a value onto a list, which is an array of strings or arrays, at a certain depth, recursively
+ * @param list
+ * @param value
+ * @param depth
+ */
+function pushOntoGroupList(list, value, depth) {
+    // it is an array of strings or arrays (recursive)
+
+    // if it is empty and depth is 0, push the value
+    if (list.length === 0 && depth === 0) {
+        list.push(value)
+        return
+    }
+
+    // if it is empty and depth is not 0, push an empty array and call this function again
+    if (list.length === 0 && depth !== 0) {
+        list.push([])
+        pushOntoGroupList(list[0], value, depth - 1)
+        return
+    }
+
+    let last = list[list.length - 1]
+    if (depth === 0) {
+        // if the last element is a string, turn it into an array and call this function again
+        list.push(value)
+    } else if (typeof last === "string" && depth > 0) {
+        // if the last element is a string, turn it into an array and call this function again
+        list.push([])
+        pushOntoGroupList(list[list.length - 1], value, depth - 1)
+    } else if (depth > 0) {
+        // if the last element is an array, call this function again
+        pushOntoGroupList(last, value, depth - 1)
+    } else {
+        // if the depth is 0, push the value
+        list.push(value)
+    }
+}
+
+/**
+ * Parses a string as a mathematical expression and returns the result as a string, formatted by locale as non-scientific notation
+ *
+ * Optimized to specifications:
+ * - include positive / negative number in beginning and as result
+ * - use decimal numbers
+ * - allow default operations +, -, *, /, additionally ! and %
+ * - ignore spaces
+ * - does take into account mathematical order of operations ([P]EMDAS) [Parentheses are handled by parseWithParentheses()]
+ * @param input
+ * @param shouldLog
+ * @returns {string}
+ */
+export function parseSingleGroupString(input, shouldLog) {
     input = input.replaceAll(" ", "")
 
     let rebuiltString = ""
@@ -74,12 +208,13 @@ export function parse(input, shouldLog) {
         } else if (allowedOperations.includes(char)) {
             // Do not allow * or / at the beginning of the string
             if (rebuiltString === "" && currentNumber === "" && (char === "*" || char === "/" || char === "!" || char === "%")) {
-                throw new ParserError("Es muss eine Zahl vor einem Operator am Anfang stehen", i)
+                throw new ParserError("Es muss eine Zahl vor einem Operator am Anfang stehen")
             }
 
             // Do not allow two operations in a row
             if (rebuiltString !== "" && allowedOperations.includes(rebuiltString[rebuiltString.length - 1]) && currentNumber === "") {
-                throw new ParserError("Zwei oder mehr Operatoren dürfen nicht direkt hintereinander stehen", i)
+                // TODO allow + or - annotations in front of numbers,. even if there is another operation before
+                throw new ParserError("Zwei oder mehr Operatoren dürfen nicht direkt hintereinander stehen")
             }
 
             // Handle ! and %
@@ -97,10 +232,10 @@ export function parse(input, shouldLog) {
                 rebuiltString += char
             }
         } else {
-            throw new ParserError("Ungültiges Zeichen", i)
+            throw new ParserError("Ungültiges Zeichen")
         }
     }
-    rebuiltString = "0+" + rebuiltString // to ensure that the first number is added to the result // TODO this is a hack, find a better solution
+    rebuiltString = "0+" + rebuiltString // to ensure that the first number is added to the result // TODO this is a hack, find a better solution (This needs to go anyways for allowing +/- annotations in front of numbers)
     rebuiltString += currentNumber + "+0" // to ensure that the last number is added to the result // TODO this is a hack, find a better solution
 
     // Step 2: Parse string for * and /, no need to check for errors, since they are already checked in step 1
@@ -172,7 +307,7 @@ function evaluate(currentResult, currentNumberString, currentMode) {
 
     let number = parseFloat(currentNumberString)
 
-    let result;
+    let result
     if (currentMode === MODE_ADDITION) {
         result = currentResult + number
     } else if (currentMode === MODE_SUBTRACTION) {
@@ -188,7 +323,11 @@ function evaluate(currentResult, currentNumberString, currentMode) {
 }
 
 function factorial(num) {
-    // TODO this does not yet allow for decimal numbers
+    // TODO this does not yet allow for fractions
+    if (num % 1 !== 0) {
+        throw new ParserError("Fakultät von Kommazahlen ist (noch) nicht definiert")
+    }
+
     let value = 1
     for (let i = 2; i <= num; i++) {
         value = value * i
@@ -200,8 +339,8 @@ function factorial(num) {
 function outOfBoundsChecker(num) {
     let invalid = (num < 0) ? num < -MAX_NUM : num > (MAX_NUM - 1)
     if (invalid && num > 0) {
-        throw new ParserError("Zahl ist zu groß", -1)
+        throw new ParserError("Zahl ist zu groß")
     } else if (invalid && num < 0) {
-        throw new ParserError("Zahl ist zu klein", -1)
+        throw new ParserError("Zahl ist zu klein")
     }
 }

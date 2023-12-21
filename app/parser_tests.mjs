@@ -1,4 +1,4 @@
-import {parse} from './parser.mjs';
+import {parseWithParentheses} from './parser.mjs'
 
 // TODO make this more precise, dont use ChatGPT generated tests
 const testMap = {
@@ -30,11 +30,19 @@ const testMap = {
     '9+8*7/6-5*4': '-1.667',
     '3*5%+2*7-4/2': '12.15',
     '7-6/2+5%*4': '4.2',
-};
+}
 
+let fails = 0
 for (const [input, expected] of Object.entries(testMap)) {
-    let result = parse(input, false);
+    let result = parseWithParentheses(input, false)
     if (result !== expected) {
-        console.log(`Test failed: ${input} should be ${expected} but was ${result}`);
+        console.log(`Test failed: ${input} should be ${expected} but was ${result}`)
+        fails++
     }
+}
+
+if (fails === 0) {
+    console.log("All tests passed!")
+} else {
+    console.log(`${fails} tests failed!`)
 }
