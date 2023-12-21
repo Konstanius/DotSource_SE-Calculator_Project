@@ -140,8 +140,6 @@ function solveParenthesesGroups(parenthesesGroups, shouldLog) {
     return parseSingleGroupString(string, shouldLog)
 }
 
-parseSingleGroupString("1*---3", true)
-
 /**
  * Utility method used by parseWithParentheses()
  *
