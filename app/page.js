@@ -11,6 +11,7 @@ export default function Home() {
     const [toolTipX, setToolTipX] = useState(0)
     const [toolTipY, setToolTipY] = useState(0)
     const [currentPrompt, setCurrentPrompt] = useState('')
+    const [screenWidth, setScreenWidth] = useState(0)
 
     if (currentPrompt === '') {
         setCurrentPrompt(germanPrompts[Math.floor(Math.random() * germanPrompts.length)])
@@ -22,6 +23,13 @@ export default function Home() {
         } catch (error) {
             // ignore
         }
+
+        // set the screen width
+        setScreenWidth(window.innerWidth)
+        // add event listener to update the screen width
+        window.addEventListener('resize', () => {
+            setScreenWidth(window.innerWidth)
+        })
     }, []);
 
     const onChangedTextField = (newValue) => {
@@ -49,6 +57,7 @@ export default function Home() {
                     setToolTipX(x)
                     setToolTipY(y)
                 }}
+                screenWidth={screenWidth}
                 currentPrompt={currentPrompt}
             />
             {/*    the tooltip that moves with the mouse, if tooltip is empty, don't show it*/}
@@ -95,7 +104,7 @@ const germanPrompts = [
     "Ich könnte es auch nicht besser...",
 ];
 
-function TextField({input, onChanged, onTooltipChanged, currentPrompt}) {
+function TextField({input, onChanged, onTooltipChanged, currentPrompt, screenWidth}) {
     return (
         <div className="flex flex-col items-center justify-center">
             <input
@@ -104,7 +113,7 @@ function TextField({input, onChanged, onTooltipChanged, currentPrompt}) {
                 // no outline, no box shape etc., only shows the text
                 className="bg-transparent text-white text-6xl p-4 m-4 text-center outline-none caret-red-500"
                 type="text"
-                style={{width: window.innerWidth * 0.8}}
+                style={{width: screenWidth * 0.8}}
                 value={input}
                 placeholder={currentPrompt}
                 onChange={(e) => {
