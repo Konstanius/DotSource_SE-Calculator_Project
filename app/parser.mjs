@@ -60,7 +60,7 @@ export class ParserError {
  *
  * @param input
  * @param shouldLog
- * @returns {string}
+ * @returns {number}
  * @throws ParserError
  **/
 export function parseWithParentheses(input, shouldLog) {
@@ -114,7 +114,7 @@ export function parseWithParentheses(input, shouldLog) {
  * Once the iteration is done, concatenates the array into a string and calls parseSingleGroupString() on it
  * @param parenthesesGroups
  * @param shouldLog
- * @returns {string}
+ * @returns {number}
  */
 function solveParenthesesGroups(parenthesesGroups, shouldLog) {
     // iterate and solve parentheses groups, if array
@@ -139,6 +139,8 @@ function solveParenthesesGroups(parenthesesGroups, shouldLog) {
 
     return parseSingleGroupString(string, shouldLog)
 }
+
+parseSingleGroupString("1*---3", true)
 
 /**
  * Utility method used by parseWithParentheses()
@@ -192,17 +194,25 @@ function pushOntoGroupList(list, value, depth) {
  * - does take into account mathematical order of operations ([P]EMDAS) [Parentheses are handled by parseWithParentheses()]
  * @param input
  * @param shouldLog
- * @returns {string}
+ * @returns {number}
  */
 export function parseSingleGroupString(input, shouldLog) {
-    input = input.replaceAll(" ", "")
-
     let rebuiltString = ""
     let currentNumber = ""
 
     // Step 1: Validate input, parse "!" and "%"
     for (let i = 0; i < input.length; i++) {
-        const char = input[i]
+        let char = input[i]
+
+        // skip whitespace
+        if (char === " ") continue
+
+        // replace comma with dot
+        if (char === ",") {
+            char = "."
+        }
+
+
         if (allowedInNumber.includes(char)) {
             currentNumber += char
         } else if (allowedOperations.includes(char)) {
@@ -213,16 +223,21 @@ export function parseSingleGroupString(input, shouldLog) {
 
             // Do not allow two operations in a row
             if (rebuiltString !== "" && allowedOperations.includes(rebuiltString[rebuiltString.length - 1]) && currentNumber === "") {
-                // TODO allow + or - annotations in front of numbers,. even if there is another operation before
+                if (char === "+" || char === "-") {
+                    // This allows for prefixes of numbers (+ or -)
+                    currentNumber += char
+                    continue
+                }
+
                 throw new ParserError("Zwei oder mehr Operatoren dürfen nicht direkt hintereinander stehen")
             }
 
             // Handle ! and %
             if (char === "!") {
-                let number = parseFloat(currentNumber) // decimal symbol depends on locale, "." for en-US, "," for de-DE
+                let number = parseFloat(removeLeadingMinus(currentNumber)) // decimal symbol depends on locale, "." for en-US, "," for de-DE
                 currentNumber = factorial(number).toLocaleString('fullwide', {useGrouping: false}) // prevent scientific notation of e.g. 1e+100
             } else if (char === "%") {
-                let number = parseFloat(currentNumber)
+                let number = parseFloat(removeLeadingMinus(currentNumber))
                 currentNumber = (number / 100).toLocaleString('fullwide', {useGrouping: false}) // prevent scientific notation of e.g. 1e+100
             } else if (currentNumber !== "") {
                 rebuiltString += currentNumber
@@ -249,8 +264,16 @@ export function parseSingleGroupString(input, shouldLog) {
             inNumberRight = true
             currentNumberRight += char
         } else {
+            if (!inNumberRight && (char === "+" || char === "-")) {
+                // This allows for prefixes of numbers (+ or -)
+                currentNumberRight += char
+                continue
+            }
+
+            inNumberRight = false
+
             if (currentMode === MODE_DIVISION || currentMode === MODE_MULTIPLICATION) {
-                let result = evaluate(parseFloat(currentNumberLeft), currentNumberRight, currentMode)
+                let result = evaluate(parseFloat(removeLeadingMinus(currentNumberLeft)), currentNumberRight, currentMode)
                 currentNumberLeft = result.toLocaleString('fullwide', {useGrouping: false}) // prevent scientific notation of e.g. 1e+100
                 currentNumberRight = ""
                 currentMode = modeFromChar(char)
@@ -264,7 +287,7 @@ export function parseSingleGroupString(input, shouldLog) {
         }
     }
     if (currentMode === MODE_DIVISION || currentMode === MODE_MULTIPLICATION) {
-        let result = evaluate(parseFloat(currentNumberLeft), currentNumberRight, currentMode)
+        let result = evaluate(parseFloat(removeLeadingMinus(currentNumberLeft)), currentNumberRight, currentMode)
         currentNumberLeft = result.toLocaleString('fullwide', {useGrouping: false}) // prevent scientific notation of e.g. 1e+100
     } else {
         rebuiltString2 += currentNumberLeft
@@ -278,13 +301,23 @@ export function parseSingleGroupString(input, shouldLog) {
     let currentResult = 0
     currentNumber = ""
     currentMode = MODE_NONE
+    let inNumber = false
     for (let i = 0; i < rebuiltString2.length; i++) {
         const char = rebuiltString2[i]
         if (allowedInNumber.includes(char)) {
+            inNumber = true
             currentNumber += char
         } else {
+            if (!inNumber && (char === "+" || char === "-")) {
+                // This allows for prefixes of numbers (+ or -)
+                currentNumber += char
+                continue
+            }
+
+            inNumber = false
+
             if (currentMode === MODE_NONE) {
-                currentResult = parseFloat(currentNumber)
+                currentResult = parseFloat(removeLeadingMinus(currentNumber))
                 currentNumber = ""
                 currentMode = modeFromChar(char)
             } else {
@@ -296,17 +329,39 @@ export function parseSingleGroupString(input, shouldLog) {
     }
     currentResult = evaluate(currentResult, currentNumber, currentMode)
 
-    if (shouldLog)
-        console.log(input + " -> " + rebuiltString + " -> " + rebuiltString2 + " -> " + currentResult)
+    if (shouldLog) console.log(input + " -> " + rebuiltString + " -> " + rebuiltString2 + " -> " + currentResult)
 
-    return currentResult.toLocaleString('fullwide', {useGrouping: false}) // prevent scientific notation of e.g. 1e+100
+    return currentResult
 }
+
+/**
+ * Shortens out any multiple leading minuses
+ * @param string
+ * @returns string
+ */
+function removeLeadingMinus(string) {
+    // Remove any 2x or more leading minuses
+    while (string[0] === "-" && string[1] === "-") {
+        string = string.substring(2)
+    }
+
+    return string
+}
+
+/**
+ * Evaluates a number string with a given mode and current result
+ * @param currentResult
+ * @param currentNumberString
+ * @param currentMode
+ * @returns number
+ */
 
 function evaluate(currentResult, currentNumberString, currentMode) {
     if (currentNumberString === "") {
         return currentResult
     }
 
+    currentNumberString = removeLeadingMinus(currentNumberString)
     let number = parseFloat(currentNumberString)
 
     let result

@@ -1,42 +1,41 @@
 import {parseWithParentheses} from './parser.mjs'
 
-// TODO make this more precise, dont use ChatGPT generated tests
+// Basic principles taken from https://mozilla.github.io/calculator/test/
 const testMap = {
-    '1+2+3+4+5': '15',
-    '1+2*3+4*5': '27',
-    '1+2*3+4*5+6': '33',
-    '2*3*4/2': '12',
-    '5-3+8': '10',
-    '7*2-5/2': '11.5',
-    '9/3*2': '6',
-    '3*5%': '0.15',
-    '4+8%': '4.08',
-    '6*2-1%': '11.99',
-    '9+7-3*2%': '15.94',
-    '5*3!': '30',
-    '8-4!': '-16',
-    '2*3*5!': '720',
-    '6/2!': '3',
-    '7+2%*4': '7.08',
-    '9%*3*2': '0.54',
-    '5/2%': '250',
-    '6*3+8%*2': '18.16',
-    '4*5-6*2%': '19.88',
-    '7/2+9%': '3.59',
-    '8*2-4%': '15.96',
-    '1+2+3+4+5+6+7+8+9': '45',
-    '9-8-7-6-5-4-3-2-1': '-27',
-    '5*4/2*3/1': '30',
-    '9+8*7/6-5*4': '-1.667',
-    '3*5%+2*7-4/2': '12.15',
-    '7-6/2+5%*4': '4.2',
+    // Addition
+    "1500+2000": "3500",
+    "-1+1,00": "0",
+    "10,1+2": "12,1",
+    "10 + 9,999": "19,999",
+    "34,999 + 1,0": "35,999",
+    "-5 + 0": "-5",
+    "0 + 5": "5",
+    "300000000 + 900000000": "1200000000",
+    "-1987,50 + 1987": "-0,5",
+    "-500 + 500": "0",
+    "6 * 2 + 8": "20",
+    "-500 + 0,25": "-499,75",
+    "-500 + 1,23456789": "-498,765432",
+    "-500 + 123456789": "123456289",
+
+    // Subtraction
+    "1500 - 2000": "-500",
+    "-3 - 0": "-3",
+    "3 - 0": "3",
+    "-1 - 2,25": "-3,25",
+    "-500 - 500": "-1000"
 }
 
 let fails = 0
 for (const [input, expected] of Object.entries(testMap)) {
     try {
-        let result = parseWithParentheses(input, false)
+        let result = parseWithParentheses(input, true).toLocaleString('de-DE', {
+            maximumFractionDigits: 6,
+            minimumFractionDigits: 0,
+            useGrouping: false
+        })
         if (result !== expected) {
+            let result2 = parseWithParentheses(input, true)
             console.log(`Test failed: ${input} should be ${expected} but was ${result}`)
             fails++
         } else {
