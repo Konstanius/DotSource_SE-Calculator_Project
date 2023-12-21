@@ -235,42 +235,44 @@ export function parseSingleGroupString(input, shouldLog) {
             throw new ParserError("Ungültiges Zeichen")
         }
     }
-    rebuiltString = "0+" + rebuiltString // to ensure that the first number is added to the result // TODO this is a hack, find a better solution (This needs to go anyways for allowing +/- annotations in front of numbers)
-    rebuiltString += currentNumber + "+0" // to ensure that the last number is added to the result // TODO this is a hack, find a better solution
+    rebuiltString += currentNumber
 
     // Step 2: Parse string for * and /, no need to check for errors, since they are already checked in step 1
     let rebuiltString2 = ""
     let currentNumberLeft = ""
+    let inNumberRight = false
     let currentNumberRight = ""
     let currentMode = MODE_NONE
     for (let i = 0; i < rebuiltString.length; i++) {
         const char = rebuiltString[i]
         if (allowedInNumber.includes(char)) {
+            inNumberRight = true
             currentNumberRight += char
         } else {
-            if (currentMode === MODE_NONE) {
+            if (currentMode === MODE_DIVISION || currentMode === MODE_MULTIPLICATION) {
+                let result = evaluate(parseFloat(currentNumberLeft), currentNumberRight, currentMode)
+                currentNumberLeft = result.toLocaleString('fullwide', {useGrouping: false}) // prevent scientific notation of e.g. 1e+100
+                currentNumberRight = ""
                 currentMode = modeFromChar(char)
-                if (currentMode !== MODE_MULTIPLICATION && currentMode !== MODE_DIVISION) {
-                    rebuiltString2 += currentNumberRight
-                    currentNumberRight = ""
-                }
             } else {
-                if (currentMode === MODE_DIVISION || currentMode === MODE_MULTIPLICATION) {
-                    let result = evaluate(parseFloat(currentNumberLeft), currentNumberRight, currentMode)
-                    currentNumberLeft = result.toLocaleString('fullwide', {useGrouping: false}) // prevent scientific notation of e.g. 1e+100
-                    currentNumberRight = ""
-                    currentMode = modeFromChar(char)
-                } else {
-                    rebuiltString2 += currentNumberLeft
-                    rebuiltString2 += charFromMode(currentMode)
-                    currentNumberLeft = currentNumberRight
-                    currentNumberRight = ""
-                    currentMode = modeFromChar(char)
-                }
+                rebuiltString2 += currentNumberLeft
+                rebuiltString2 += charFromMode(currentMode)
+                currentNumberLeft = currentNumberRight
+                currentNumberRight = ""
+                currentMode = modeFromChar(char)
             }
         }
     }
+    if (currentMode === MODE_DIVISION || currentMode === MODE_MULTIPLICATION) {
+        let result = evaluate(parseFloat(currentNumberLeft), currentNumberRight, currentMode)
+        currentNumberLeft = result.toLocaleString('fullwide', {useGrouping: false}) // prevent scientific notation of e.g. 1e+100
+    } else {
+        rebuiltString2 += currentNumberLeft
+        rebuiltString2 += charFromMode(currentMode)
+        currentNumberLeft = currentNumberRight
+    }
     rebuiltString2 += currentNumberLeft
+
 
     // Step 3: Parse string for + and -, no need to check for errors, since they are already checked in step 1
     let currentResult = 0
@@ -316,6 +318,8 @@ function evaluate(currentResult, currentNumberString, currentMode) {
         result = currentResult * number
     } else if (currentMode === MODE_DIVISION) {
         result = currentResult / number
+    } else {
+        result = number // If currentMode is MODE_NONE, just return the number
     }
 
     outOfBoundsChecker(result)

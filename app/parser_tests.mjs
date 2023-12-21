@@ -34,9 +34,16 @@ const testMap = {
 
 let fails = 0
 for (const [input, expected] of Object.entries(testMap)) {
-    let result = parseWithParentheses(input, false)
-    if (result !== expected) {
-        console.log(`Test failed: ${input} should be ${expected} but was ${result}`)
+    try {
+        let result = parseWithParentheses(input, false)
+        if (result !== expected) {
+            console.log(`Test failed: ${input} should be ${expected} but was ${result}`)
+            fails++
+        } else {
+            console.log(`Test passed: ${input} = ${result}`)
+        }
+    } catch (error) {
+        console.log(`Test failed: ${input} should be ${expected} but threw ${error}`)
         fails++
     }
 }
