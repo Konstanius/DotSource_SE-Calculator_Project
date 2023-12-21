@@ -13,6 +13,7 @@ export default function Home() {
     const [currentPrompt, setCurrentPrompt] = useState('')
     const [screenWidth, setScreenWidth] = useState(0)
     const [resetCursorPos, setResetCursorPos] = useState(-1)
+    const [copyClicked, setCopyClicked] = useState(false)
 
     useEffect(() => {
         if (currentPrompt === '') {
@@ -32,7 +33,7 @@ export default function Home() {
         } catch (error) {
             // ignore
         }
-    }, [currentPrompt]);
+    }, [currentPrompt])
 
     useEffect(() => {
         if (resetCursorPos !== -1) {
@@ -41,12 +42,20 @@ export default function Home() {
         }
     }, [resetCursorPos])
 
+    useEffect(() => {
+        if (copyClicked) {
+            setTimeout(() => {
+                setCopyClicked(false)
+            }, 750)
+        }
+    }, [copyClicked]);
+
     const onChangedTextField = (newValue) => {
         let cursorPosition = document.getElementById('input').selectionStart
         if (newValue.length === input.length + 1) {
             let inputChar = newValue.charAt(cursorPosition - 1)
             if (inputChar === '(') {
-                // insert a closing bracket
+                // insert a closing bracket after the opening bracket
                 newValue = newValue.substring(0, cursorPosition) + ')' + newValue.substring(cursorPosition)
                 setResetCursorPos(cursorPosition)
             } else if (inputChar === ')') {
@@ -59,6 +68,7 @@ export default function Home() {
         } else if (newValue.length === input.length - 1) {
             let removedChar = input.charAt(cursorPosition)
             if (removedChar === '(') {
+                // Check if the next character is a closing bracket, if yes, remove it
                 let nextChar = newValue.charAt(cursorPosition)
                 if (nextChar === ')') {
                     newValue = newValue.substring(0, cursorPosition) + newValue.substring(cursorPosition + 1)
@@ -72,7 +82,7 @@ export default function Home() {
         try {
             let data = parseWithParentheses(newValue, true)
             setValidity(true)
-            setOutput(data.toLocaleString(navigator.language, {useGrouping: false}))
+            setOutput(data.toLocaleString(navigator.language, {useGrouping: false, maximumFractionDigits: 10}))
         } catch (error) {
             setValidity(false)
             setOutput(error.message)
@@ -99,19 +109,19 @@ export default function Home() {
                         onChangedTextField(e.target.value)
                     }}
                     onAbort={(_) => {
-                        setTooltip('')
                         setToolTipX(0)
                         setToolTipY(0)
+                        setTooltip('')
                     }}
                     onInput={(_) => {
-                        setTooltip('')
                         setToolTipX(0)
                         setToolTipY(0)
+                        setTooltip('')
                     }}
                     onBlur={(_) => {
-                        setTooltip('')
                         setToolTipX(0)
                         setToolTipY(0)
+                        setTooltip('')
                         document.getElementById('input').focus()
                     }}
                     onSelect={(e) => {
@@ -131,13 +141,17 @@ export default function Home() {
                         let posY = e.nativeEvent.target.y
 
                         // show the tooltip
-                        setTooltip(result.toLocaleString(navigator.language, {useGrouping: false}))
                         setToolTipX(posX)
                         setToolTipY(posY)
+                        setTooltip(result.toLocaleString(navigator.language, {
+                            useGrouping: false,
+                            maximumFractionDigits: 10
+                        }))
                     }}
                 />
             </div>
             {/*    the tooltip that moves with the mouse, if tooltip is empty, don't show it*/}
+            {/* TODO animate smooth transition */}
             {tooltip === '' ? '' :
                 <div className="absolute bg-gray-900 text-white p-2 rounded-md"
                      style={{left: toolTipX, top: toolTipY}}>
@@ -146,15 +160,19 @@ export default function Home() {
             }
             {/*    Button showing the result, click to copy if valid*/}
             <button
-                className={valid ? "bg-gray-900 text-white p-2 rounded-md" : "bg-red-900 text-white p-2 rounded-md"}
+                className={!copyClicked ?
+                    (valid ? "bg-gray-900 text-white p-2 rounded-md" : "bg-red-900 text-white p-2 rounded-md")
+                    : "bg-green-900 text-white p-2 rounded-md"}
                 onClick={() => {
                     if (valid) {
-                        navigator.clipboard.writeText(output).then(_ => {
-                        })
+                        navigator.clipboard.writeText(output).then(/*ignored*/)
+                        setCopyClicked(true)
                     }
                 }}
             >
-                {output}
+                {copyClicked ? "Ergebnis kopiert!" : output}
+                {/* TODO animate smooth transition between valid / invalid and button clicked */}
+                {/* TODO animate the individual numbers to increase / decrease */}
             </button>
         </main>
     )
@@ -179,4 +197,5 @@ const inputHints = [
     "Immer so große Zahlen...",
     "Mathe war auch nie mein Lieblingsfach.",
     "Ich könnte es auch nicht besser...",
+    "2 x 3 macht 4 Widewidewitt und 3 macht Neune!",
 ];
