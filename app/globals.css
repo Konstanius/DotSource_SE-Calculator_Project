@@ -3,25 +3,96 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 214, 219, 220;
+    --background-end-rgb: 255, 255, 255;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+    :root {
+        --foreground-rgb: 255, 255, 255;
+        --background-start-rgb: 0, 0, 0;
+        --background-end-rgb: 0, 0, 0;
+    }
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+    color: rgb(var(--foreground-rgb));
+    background: linear-gradient(
+            to bottom,
+            transparent,
+            rgb(var(--background-end-rgb))
+    ) rgb(var(--background-start-rgb));
+    overflow: hidden;
+}
+
+.smooth-transition {
+    transition: all 0.3s ease-in-out;
+}
+
+@keyframes fadeOutRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(50%);
+    }
+}
+
+.fade-out-right {
+    animation: fadeOutRight 0.7s forwards;
+}
+
+.shake-horizontal {
+    animation: horizontal-shaking 0.2s 2 ease-in-out;
+}
+
+@keyframes horizontal-shaking {
+    0% {
+        transform: translateX(0)
+    }
+    25% {
+        transform: translateX(5px)
+    }
+    50% {
+        transform: translateX(-5px)
+    }
+    75% {
+        transform: translateX(5px)
+    }
+    100% {
+        transform: translateX(0)
+    }
+}
+
+/*Style used for overlaying the output over an input field*/
+#container {
+    margin: 0 auto;
+    position: relative;
+}
+
+.lcd-font {
+    font-family: ui-monospace;
+}
+
+.plus-char {
+    color: red;
+    font-weight: bold;
+}
+
+.minus-char {
+    color: blue;
+    font-weight: bold;
+}
+
+.multiply-char {
+    color: green;
+    font-weight: bold;
+}
+
+.divide-char {
+    color: purple;
+    font-weight: bold;
 }

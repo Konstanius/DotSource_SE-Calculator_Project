@@ -20,7 +20,7 @@ function modeFromChar(char) {
     }
 }
 
-function charFromMode(mode) {
+export function charFromMode(mode) {
     if (mode === MODE_ADDITION) {
         return "+"
     } else if (mode === MODE_SUBTRACTION) {
@@ -34,8 +34,8 @@ function charFromMode(mode) {
     }
 }
 
-const allowedInNumber = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", ".", ","]
-const allowedOperations = ["+", "-", "*", "/", "!", "%"]
+export const allowedInNumber = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", ".", ","]
+export const allowedOperations = ["+", "-", "*", "/", "!", "%"]
 
 export class ParserError {
     message
