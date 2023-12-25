@@ -15,13 +15,11 @@ export default function Home() {
     const [resetCursorPos, setResetCursorPos] = useState(-1)
     const [copyClicked, setCopyClicked] = useState(false)
 
-    /**
-     * Animation "controller" controlling the animation of:
-     * - the submit button
-     * - the input field
-     * - the history field
-     * - the input overlay (to fade the new value into the input field)
-     */
+    // Animation "controller", controlling the animation of:
+    // - the submit button
+    // - the input field
+    // - the history field
+    // - the input overlay (to fade the new value into the input field)
     const [submitAnimation, setSubmitAnimation] = useState("")
 
     function setSelectionArea() {
@@ -52,7 +50,8 @@ export default function Home() {
         e.preventDefault();
 
         // If the result is the same as the input, do nothing
-        if (output === input) {
+        // Same thing if an animation is already playing
+        if (output === input || submitAnimation !== "") {
             return
         }
 
@@ -130,10 +129,9 @@ export default function Home() {
     }
 
     useEffect(() => {
-        if (resetCursorPos !== -1) {
-            document.getElementById('input').setSelectionRange(resetCursorPos, resetCursorPos)
-            setResetCursorPos(-1)
-        }
+        if (resetCursorPos === -1) return
+        document.getElementById('input').setSelectionRange(resetCursorPos, resetCursorPos)
+        setResetCursorPos(-1)
     }, [resetCursorPos])
 
     useEffect(() => {
@@ -184,7 +182,7 @@ export default function Home() {
         } catch (error) {
             setValidity(false)
             setOutput(error.message)
-            if (error.type !== ParserError) {
+                if (error.type !== ParserError) {
                 console.log(error)
             }
         }
@@ -196,7 +194,6 @@ export default function Home() {
      * - input buttons (0-9, ., +, -, *, /, !, %, (, ), =, backspace, clear)
      * - somehow implement Pi, e, etc.
      * - slide input to right on enter, slide history down by one, fade output up into input field
-     * - when clicked outside, remember cursor position
      */
 
     return (
@@ -222,6 +219,7 @@ export default function Home() {
                         style={{
                             left: 0,
                             top: 0,
+                            zIndex: -5,
                             opacity: submitAnimation === "fade-out-right" ? 1 : 0,
                             width: screenWidth * 0.8
                         }}

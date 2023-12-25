@@ -45,6 +45,8 @@ export class ParserError {
     }
 }
 
+// TODO parsing (number)<operator><number> does not work, * operator is added after closing )
+// TODO 3*(1/3) should == 1 but it == 0.999
 /**
  * Parses a string as a mathematical expression and returns the result as a string, formatted by locale as non-scientific notation
  *
@@ -133,6 +135,7 @@ function solveParenthesesGroups(parenthesesGroups, shouldLog) {
         // if it is not the last element, and it does not end with any operator, add a *
         // This will ensure that e.g. 1+2(3+4) will be parsed as 1+2*(3+4)
         if (i !== parenthesesGroups.length - 1 && !allowedOperations.includes(group[group.length - 1])) {
+            // TODO parsing (number)<operator><number> does not work, * operator is added after closing )
             string += "*"
         }
     }
