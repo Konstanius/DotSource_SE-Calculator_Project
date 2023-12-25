@@ -1,4 +1,4 @@
-import {parseWithParentheses} from './parser.mjs'
+import {parseWithParentheses} from './parser_rev2.mjs'
 
 // Basic principles taken from https://mozilla.github.io/calculator/test/
 const testMap = {
@@ -29,13 +29,13 @@ const testMap = {
 let fails = 0
 for (const [input, expected] of Object.entries(testMap)) {
     try {
-        let result = parseWithParentheses(input, true).toLocaleString('de-DE', {
+        let result = parseWithParentheses(input, true, 0)[0].toNumber().toLocaleString('de-DE', {
             maximumFractionDigits: 6,
             minimumFractionDigits: 0,
             useGrouping: false
         })
         if (result !== expected) {
-            let result2 = parseWithParentheses(input, true)
+            let result2 = parseWithParentheses(input, true, 0)[0].toNumber()
             console.log(`Test failed: ${input} should be ${expected} but was ${result}`)
             fails++
         } else {

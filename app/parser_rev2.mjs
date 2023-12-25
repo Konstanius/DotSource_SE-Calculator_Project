@@ -48,6 +48,7 @@ export class ParserError {
 export class AccNum {
     upperNumber
     lowerNumber
+    trailingOperator
 
     constructor(number) {
         // TODO make this algorithm better
@@ -58,6 +59,13 @@ export class AccNum {
         }
         this.upperNumber = number
         this.lowerNumber = lowerNum
+        this.trailingOperator = MODE_NONE
+    }
+
+    shorten() {
+        let g = gcd(this.upperNumber, this.lowerNumber)
+        this.upperNumber /= g
+        this.lowerNumber /= g
     }
 
     /**
@@ -69,14 +77,16 @@ export class AccNum {
     }
 
     add(otherNumber) {
-        this.lowerNumber = this.lowerNumber * otherNumber.lowerNumber
+        let commonLower = this.lowerNumber * otherNumber.lowerNumber
         this.upperNumber = this.upperNumber * otherNumber.lowerNumber + this.lowerNumber * otherNumber.upperNumber
+        this.lowerNumber = commonLower
         outOfBoundsChecker(this.toNumber())
     }
 
     subtract(otherNumber) {
-        this.lowerNumber = this.lowerNumber * otherNumber.lowerNumber
+        let commonLower = this.lowerNumber * otherNumber.lowerNumber
         this.upperNumber = this.upperNumber * otherNumber.lowerNumber - this.lowerNumber * otherNumber.upperNumber
+        this.lowerNumber = commonLower
         outOfBoundsChecker(this.toNumber())
     }
 
@@ -94,7 +104,7 @@ export class AccNum {
     }
 
     factorise() {
-        if (this.lowerNumber % this.upperNumber !== 0) throw new ParserError("Fakultät von Kommazahlen ist (noch) nicht definiert")
+        if (this.upperNumber % this.lowerNumber !== 0) throw new ParserError("Fakultät von Kommazahlen ist (noch) nicht definiert")
         let num = this.toNumber()
         this.lowerNumber = 1
 
@@ -104,6 +114,20 @@ export class AccNum {
             outOfBoundsChecker(value)
         }
         this.upperNumber = value
+    }
+}
+
+function gcd(a, b) {
+    if (b > a) {
+        const temp = a
+        a = b
+        b = temp
+    }
+    while (true) {
+        if (b === 0) return a
+        a %= b
+        if (a === 0) return b
+        b %= a
     }
 }
 
@@ -117,8 +141,6 @@ function outOfBoundsChecker(num) {
 }
 
 /**
- * Parses a string as a mathematical expression and returns the result as a string, formatted by locale as non-scientific notation
- *
  * First recursively splits the string into parentheses groups, then calls solveParenthesesGroups() on the array entire array
  *
  * Optimized to specifications:
@@ -131,53 +153,192 @@ function outOfBoundsChecker(num) {
  *
  * @param input
  * @param shouldLog
- * @returns {AccNum}
+ * @param depth
+ * @returns {[AccNum, number]}
  * @throws ParserError
  **/
-export function parseWithParentheses(input, shouldLog) {
+export function parseWithParentheses(input, shouldLog, depth) {
     // Split into parentheses groups, and use parse() on each group
-    let currentParenthesesLevel = 0
-    let currentParenthesesString = ""
+    let currentNumber = new AccNum(0)
+    let negateCurrentNumber = false
+    let numberWasAssigned = false
+    let numberWasFinished = false
+    let operatorWasAssigned = false
+    let decimalPointWasAssigned = false
 
-    // Example: 1+(2+(-3+4))+-5
-    // List will be: [AnyNum(1), "+", [AnyNum(2), "+", [AnyNum(-3), "+", AnyNum(4)]], "+", AnyNum(-5)]
+    // Example: 1+(2(-3+4))*-5
+    // List will be: [AnyNum(1)..+, [AnyNum(2)..*, [AnyNum(-3)..+, AnyNum(4)]]..*, AnyNum(-5)]
     let parenthesesGroups = []
 
-    for (let i = 0; i < input.length; i++) {
+    let index = 0
+    for (; index < input.length; index++) {
         // TODO split into tokens here
-        const char = input[i]
+        const char = input[index]
 
         if (char === "(") {
-            if (currentParenthesesString !== "") {
-                pushOntoGroupList(parenthesesGroups, currentParenthesesString, currentParenthesesLevel)
+            if (numberWasAssigned) {
+                if (currentNumber.trailingOperator === MODE_NONE) {
+                    currentNumber.trailingOperator = MODE_MULTIPLICATION
+                }
+
+                if (negateCurrentNumber) {
+                    currentNumber.upperNumber *= -1
+                    negateCurrentNumber = false
+                }
+                pushOntoGroupList(parenthesesGroups, currentNumber, depth)
+                currentNumber = new AccNum(0)
+                decimalPointWasAssigned = false
+                numberWasAssigned = false
             }
 
-            currentParenthesesLevel++
-            currentParenthesesString = ""
+            let [group, finishedIndex] = parseWithParentheses(input.substring(index + 1), shouldLog, depth + 1)
+            index += finishedIndex + 1
+            currentNumber = group
+            numberWasAssigned = true
+            numberWasFinished = true
         } else if (char === ")") {
-            if (currentParenthesesString !== "") {
-                pushOntoGroupList(parenthesesGroups, currentParenthesesString, currentParenthesesLevel)
+            if (currentNumber.trailingOperator !== MODE_NONE) {
+                throw new ParserError("Unerwarteter Operator am Ende des Ausdrucks")
+            }
+            numberWasFinished = true
+
+            if (depth === 0) {
+                throw new ParserError("Zu viele schließende Klammern")
             }
 
-            currentParenthesesLevel--
-            if (currentParenthesesLevel < 0) {
-                throw new ParserError("Mehr Klammern geschlossen als geöffnet")
+            if (parenthesesGroups.length === 0 && !numberWasAssigned) {
+                throw new ParserError("Leere Klammer")
             }
-            currentParenthesesString = ""
+
+            break
         } else {
-            currentParenthesesString += char
+            // Rules:
+            // number:
+            // - !numberWasAssigned: set currentNumber to the number
+            // - numberWasAssigned: multiply currentNumber by 10 and add the number
+            // operator:
+            // - !numberWasAssigned, op is -: set negateCurrentNumber to !negateCurrentNumber
+            // - !numberWasAssigned, op is +: do nothing
+            // - numberWasAssigned: push currentNumber onto the list, set operator to op, set currentNumber to 0
+
+            if (allowedInNumber.includes(char)) {
+                if (operatorWasAssigned && numberWasAssigned) {
+                    if (negateCurrentNumber) {
+                        currentNumber.upperNumber *= -1
+                        negateCurrentNumber = false
+                    }
+                    pushOntoGroupList(parenthesesGroups, currentNumber, depth)
+                    currentNumber = new AccNum(0)
+                    decimalPointWasAssigned = false
+                    numberWasAssigned = false
+                    operatorWasAssigned = false
+                    numberWasFinished = false
+                }
+
+                if (numberWasAssigned && !numberWasFinished) {
+                    if (char === "." || char === ",") {
+                        if (!decimalPointWasAssigned) {
+                            decimalPointWasAssigned = true
+                        } else {
+                            throw new ParserError("Zahl hat zu viele Dezimaltrennzeichen")
+                        }
+                    } else {
+                        currentNumber.upperNumber = currentNumber.upperNumber * 10 + parseInt(char)
+                        if (decimalPointWasAssigned) {
+                            currentNumber.lowerNumber *= 10
+                        }
+                    }
+                } else {
+                    if (numberWasFinished) {
+                        if (negateCurrentNumber) {
+                            currentNumber.upperNumber *= -1
+                            negateCurrentNumber = false
+                        }
+
+                        if (currentNumber.trailingOperator === MODE_NONE) {
+                            currentNumber.trailingOperator = MODE_MULTIPLICATION
+                        }
+
+                        pushOntoGroupList(parenthesesGroups, currentNumber, depth)
+                    }
+
+                    currentNumber = new AccNum(parseInt(char))
+                    decimalPointWasAssigned = false
+                    numberWasAssigned = true
+                    operatorWasAssigned = false
+                    numberWasFinished = false
+                }
+            } else if (allowedOperations.includes(char)) {
+                if (!numberWasAssigned || operatorWasAssigned) {
+                    if (char === "-") {
+                        if (numberWasAssigned) {
+                            if (negateCurrentNumber) {
+                                currentNumber.upperNumber *= -1
+                                negateCurrentNumber = false
+                            }
+                            pushOntoGroupList(parenthesesGroups, currentNumber, depth)
+                            currentNumber = new AccNum(0)
+                            decimalPointWasAssigned = false
+                            numberWasAssigned = false
+                            operatorWasAssigned = false
+                        }
+
+                        negateCurrentNumber = !negateCurrentNumber
+                    } else if (char === "+") {
+                        // do nothing
+                    } else {
+                        throw new ParserError("Unerwarteter Operator am Anfang des Ausdrucks")
+                    }
+                } else {
+                    if (operatorWasAssigned) {
+                        if (char === "!" || char === "%" || currentNumber.trailingOperator !== MODE_NONE) {
+                            throw new ParserError("Unerwarteter Operator " + char + " nach " + charFromMode(currentNumber.trailingOperator))
+                        }
+
+                        currentNumber.trailingOperator = modeFromChar(char)
+                    } else {
+                        if (char === "!") {
+                            currentNumber.factorise()
+                            numberWasFinished = true
+                        } else if (char === "%") {
+                            currentNumber.lowerNumber *= 100
+                            numberWasFinished = true
+                        } else {
+                            if (currentNumber.trailingOperator !== MODE_NONE) {
+                                throw new ParserError("Unerwarteter Operator " + char + " nach " + charFromMode(currentNumber.trailingOperator))
+                            }
+                            currentNumber.trailingOperator = modeFromChar(char)
+                            operatorWasAssigned = true
+                            numberWasFinished = true
+                        }
+                    }
+                }
+            } else if (char === " ") {
+                // do nothing
+            } else {
+                throw new ParserError("Unerwartetes Zeichen " + char)
+            }
         }
     }
-    if (currentParenthesesString !== "") {
-        pushOntoGroupList(parenthesesGroups, currentParenthesesString, currentParenthesesLevel)
+    if (numberWasAssigned) {
+        if (negateCurrentNumber) {
+            currentNumber.upperNumber *= -1
+        }
+        pushOntoGroupList(parenthesesGroups, currentNumber, depth)
     }
 
-    if (currentParenthesesLevel !== 0) {
-        throw new ParserError("Mehr Klammern geöffnet als geschlossen")
+    if (currentNumber.trailingOperator !== MODE_NONE) {
+        throw new ParserError("Unerwarteter Operator am Ende des Ausdrucks")
     }
 
-    return solveParenthesesGroups(parenthesesGroups, shouldLog)
+    if (parenthesesGroups.length === 0) {
+        return [currentNumber, index]
+    }
+
+    return [solveParenthesesGroups(parenthesesGroups, shouldLog), index]
 }
+
+// TODO empty num in parentheses ("3(-)")
 
 /**
  * Recursively solves parentheses groups
@@ -197,10 +358,39 @@ function solveParenthesesGroups(parenthesesGroups, shouldLog) {
         }
     }
 
-    // This will contain both the AccNums and the string operators
-    let contents = []
+    // This will calculate the result of the parentheses group
+    // At this point, only multiplication and division, then addition and subtraction are left to do
 
-    return parseSingleGroup(contents, shouldLog)
+    // calculate multiplication and division
+    for (let i = 0; i < parenthesesGroups.length - 1; i++) {
+        const group = parenthesesGroups[i]
+        if (group.trailingOperator === MODE_MULTIPLICATION || group.trailingOperator === MODE_DIVISION) {
+            if (group.trailingOperator === MODE_DIVISION) {
+                group.divide(parenthesesGroups[i + 1])
+            } else {
+                group.multiply(parenthesesGroups[i + 1])
+            }
+            group.trailingOperator = parenthesesGroups[i + 1].trailingOperator
+            parenthesesGroups.splice(i + 1, 1)
+            i--
+        }
+    }
+
+    // calculate addition and subtraction
+    let result = parenthesesGroups[0]
+    for (let i = 0; i < parenthesesGroups.length - 1; i++) {
+        const group = parenthesesGroups[i]
+        if (group.trailingOperator === MODE_SUBTRACTION) {
+            group.subtract(parenthesesGroups[i + 1])
+        } else {
+            group.add(parenthesesGroups[i + 1])
+        }
+        group.trailingOperator = parenthesesGroups[i + 1].trailingOperator
+        parenthesesGroups.splice(i + 1, 1)
+        i--
+    }
+
+    return result
 }
 
 /**
@@ -212,7 +402,7 @@ function solveParenthesesGroups(parenthesesGroups, shouldLog) {
  * @param depth
  */
 function pushOntoGroupList(list, value, depth) {
-    // it is an array of AccNum or a string (operators only) or arrays (recursive)
+    // it is an array of AccNum or arrays (recursive)
 
     // if it is empty and depth is 0, push the value
     if (list.length === 0 && depth === 0) {
@@ -229,10 +419,10 @@ function pushOntoGroupList(list, value, depth) {
 
     let last = list[list.length - 1]
     if (depth === 0) {
-        // if the last element is a string, turn it into an array and call this function again
+        // if the last element is not an array, turn it into an array and call this function again
         list.push(value)
-    } else if ((typeof last === "string" || typeof last === "object") && depth > 0) {
-        // if the last element is a string, turn it into an array and call this function again
+    } else if (!Array.isArray(last)) {
+        // if the last element is not an array, turn it into an array and call this function again
         list.push([])
         pushOntoGroupList(list[list.length - 1], value, depth - 1)
     } else if (depth > 0) {

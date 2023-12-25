@@ -1,7 +1,7 @@
 'use client'
 
 import {useEffect, useState} from "react"
-import {charFromMode, ParserError, parseWithParentheses} from "@/app/parser.mjs"
+import {charFromMode, ParserError, parseWithParentheses} from "@/app/parser_rev2.mjs"
 
 export default function Home() {
     const [valid, setValidity] = useState(true)
@@ -32,7 +32,7 @@ export default function Home() {
             return
         }
         let text = document.getElementById('input').value.substring(start, end)
-        let result = parseWithParentheses(text, false)
+        let result = parseWithParentheses(text, false, 0)
 
         let posX = document.getElementById('input').x
         let posY = document.getElementById('input').y
@@ -40,7 +40,7 @@ export default function Home() {
         // show the tooltip
         setToolTipX(posX)
         setToolTipY(posY)
-        setTooltip(result.toLocaleString(navigator.language, {
+        setTooltip(result[0].toNumber().toLocaleString(navigator.language, {
             useGrouping: false,
             maximumFractionDigits: 10
         }))
@@ -176,9 +176,12 @@ export default function Home() {
         }
 
         try {
-            let data = parseWithParentheses(newValue, true)
+            let data = parseWithParentheses(newValue, true, 0)
             setValidity(true)
-            setOutput(data.toLocaleString(navigator.language, {useGrouping: false, maximumFractionDigits: 10}))
+            setOutput(data[0].toNumber().toLocaleString(navigator.language, {
+                useGrouping: false,
+                maximumFractionDigits: 10
+            }))
         } catch (error) {
             setValidity(false)
             setOutput(error.message)
