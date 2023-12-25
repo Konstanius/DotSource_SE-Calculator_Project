@@ -46,8 +46,8 @@ export class ParserError {
 }
 
 export class AccNum {
-    upperNumber
-    lowerNumber
+    numerator
+    denominator
     trailingOperator
 
     constructor(number) {
@@ -57,15 +57,15 @@ export class AccNum {
             lowerNum *= 10
             number *= 10
         }
-        this.upperNumber = number
-        this.lowerNumber = lowerNum
+        this.numerator = number
+        this.denominator = lowerNum
         this.trailingOperator = MODE_NONE
     }
 
     shorten() {
-        let g = gcd(this.upperNumber, this.lowerNumber)
-        this.upperNumber /= g
-        this.lowerNumber /= g
+        let g = gcd(this.numerator, this.denominator)
+        this.numerator /= g
+        this.denominator /= g
     }
 
     /**
@@ -73,47 +73,47 @@ export class AccNum {
      * @returns {number}
      */
     toNumber() {
-        return this.upperNumber / this.lowerNumber
+        return this.numerator / this.denominator
     }
 
     add(otherNumber) {
-        let commonLower = this.lowerNumber * otherNumber.lowerNumber
-        this.upperNumber = this.upperNumber * otherNumber.lowerNumber + this.lowerNumber * otherNumber.upperNumber
-        this.lowerNumber = commonLower
+        let commonLower = this.denominator * otherNumber.denominator
+        this.numerator = this.numerator * otherNumber.denominator + this.denominator * otherNumber.numerator
+        this.denominator = commonLower
         outOfBoundsChecker(this.toNumber())
     }
 
     subtract(otherNumber) {
-        let commonLower = this.lowerNumber * otherNumber.lowerNumber
-        this.upperNumber = this.upperNumber * otherNumber.lowerNumber - this.lowerNumber * otherNumber.upperNumber
-        this.lowerNumber = commonLower
+        let commonLower = this.denominator * otherNumber.denominator
+        this.numerator = this.numerator * otherNumber.denominator - this.denominator * otherNumber.numerator
+        this.denominator = commonLower
         outOfBoundsChecker(this.toNumber())
     }
 
     multiply(otherNumber) {
-        this.lowerNumber *= otherNumber.lowerNumber
-        this.upperNumber *= otherNumber.upperNumber
+        this.denominator *= otherNumber.denominator
+        this.numerator *= otherNumber.numerator
         outOfBoundsChecker(this.toNumber())
     }
 
     divide(otherNumber) {
-        let reciprocate = new AccNum(otherNumber.lowerNumber)
-        reciprocate.lowerNumber = otherNumber.upperNumber
+        let reciprocate = new AccNum(otherNumber.denominator)
+        reciprocate.denominator = otherNumber.numerator
         this.multiply(reciprocate)
         outOfBoundsChecker(this.toNumber())
     }
 
     factorise() {
-        if (this.upperNumber % this.lowerNumber !== 0) throw new ParserError("Fakultät von Kommazahlen ist (noch) nicht definiert")
+        if (this.numerator % this.denominator !== 0) throw new ParserError("Fakultät von Kommazahlen ist (noch) nicht definiert")
         let num = this.toNumber()
-        this.lowerNumber = 1
+        this.denominator = 1
 
         let value = 1
         for (let i = 2; i <= num; i++) {
             value = value * i
             outOfBoundsChecker(value)
         }
-        this.upperNumber = value
+        this.numerator = value
     }
 }
 
@@ -172,173 +172,191 @@ export function parseWithParentheses(input, shouldLog, depth) {
 
     let index = 0
     for (; index < input.length; index++) {
-        // TODO split into tokens here
         const char = input[index]
 
+        // Function to re-use code for pushing the current number onto the list and resetting the state
+        function pushNumber() {
+            if (negateCurrentNumber) {
+                // If the number is negative, negate it
+                currentNumber.numerator *= -1
+                negateCurrentNumber = false
+            }
+            pushOntoGroupList(parenthesesGroups, currentNumber, depth)
+            currentNumber = new AccNum(0)
+            decimalPointWasAssigned = false
+            numberWasAssigned = false
+            operatorWasAssigned = false
+            numberWasFinished = false
+        }
+
         if (char === "(") {
+            // New group
             if (numberWasAssigned) {
+                // Has to save the number
                 if (currentNumber.trailingOperator === MODE_NONE) {
+                    // If there is no trailing operator, assume multiplication
                     currentNumber.trailingOperator = MODE_MULTIPLICATION
                 }
 
-                if (negateCurrentNumber) {
-                    currentNumber.upperNumber *= -1
-                    negateCurrentNumber = false
-                }
-                pushOntoGroupList(parenthesesGroups, currentNumber, depth)
-                currentNumber = new AccNum(0)
-                decimalPointWasAssigned = false
-                numberWasAssigned = false
+                pushNumber()
             }
 
+            // Recursively parse the group by calling the function again on the substring
+            // This returns the group and the index of the closing parenthesis
             let [group, finishedIndex] = parseWithParentheses(input.substring(index + 1), shouldLog, depth + 1)
+            // Continue after the closing parenthesis
             index += finishedIndex + 1
+            // Set the current number to the value returned by the recursive call (the group)
             currentNumber = group
             numberWasAssigned = true
             numberWasFinished = true
+
+            if (index > input.length - 1 && depth === 0) {
+                // If the end of the string is surpassed and the depth is 0, throw an error, since the end was reached without closing all parentheses
+                throw new ParserError("Es wurden nicht alle Klammern geschlossen")
+            }
         } else if (char === ")") {
+            // End of group
             if (currentNumber.trailingOperator !== MODE_NONE) {
+                // If there is a trailing operator on the last number of the group, throw an error
                 throw new ParserError("Unerwarteter Operator am Ende des Ausdrucks")
             }
             numberWasFinished = true
 
             if (depth === 0) {
-                throw new ParserError("Zu viele schließende Klammern")
+                // If the depth is 0, the closing parenthesis is unexpected and should throw an error
+                throw new ParserError("Es wurden mehr Klammern geschlossen als geöffnet")
             }
 
             if (parenthesesGroups.length === 0 && !numberWasAssigned) {
-                throw new ParserError("Leere Klammer")
+                // If the parentheses group is empty and no number was assigned, throw an error
+                throw new ParserError("Klammern können nicht leer sein")
             }
 
+            // We break out of the loop, because we are done with this group (it was closed)
             break
-        } else {
-            // Rules:
-            // number:
-            // - !numberWasAssigned: set currentNumber to the number
-            // - numberWasAssigned: multiply currentNumber by 10 and add the number
-            // operator:
-            // - !numberWasAssigned, op is -: set negateCurrentNumber to !negateCurrentNumber
-            // - !numberWasAssigned, op is +: do nothing
-            // - numberWasAssigned: push currentNumber onto the list, set operator to op, set currentNumber to 0
+        } else if (allowedInNumber.includes(char)) {
+            if (operatorWasAssigned && numberWasAssigned) {
+                // A new number is going to be started, since the operator was assigned and a number was assigned previously
+                pushNumber()
+            }
 
-            if (allowedInNumber.includes(char)) {
-                if (operatorWasAssigned && numberWasAssigned) {
+            if (numberWasAssigned && !numberWasFinished) {
+                // If a number was assigned and not finished, add the character to the number
+                if (char === "." || char === ",") {
+                    // Decimal marker is allowed only once, throw an error if it is already assigned
+                    if (!decimalPointWasAssigned) {
+                        decimalPointWasAssigned = true
+                    } else {
+                        throw new ParserError("Zahl hat zu viele Dezimaltrennzeichen")
+                    }
+                } else {
+                    // The number is added by multiplying the numerator by 10 and adding the new digit
+                    currentNumber.numerator = currentNumber.numerator * 10 + parseInt(char)
+                    if (decimalPointWasAssigned) {
+                        // If the decimal point was assigned, multiply the denominator by 10 as well
+                        currentNumber.denominator *= 10
+                    }
+                }
+            } else {
+                if (numberWasFinished) {
+                    // Number was finished, push it onto the list
                     if (negateCurrentNumber) {
-                        currentNumber.upperNumber *= -1
+                        // Negate if necessary
+                        currentNumber.numerator *= -1
                         negateCurrentNumber = false
                     }
+
+                    if (currentNumber.trailingOperator === MODE_NONE) {
+                        // If there is no trailing operator, assume multiplication
+                        currentNumber.trailingOperator = MODE_MULTIPLICATION
+                    }
+
                     pushOntoGroupList(parenthesesGroups, currentNumber, depth)
-                    currentNumber = new AccNum(0)
-                    decimalPointWasAssigned = false
-                    numberWasAssigned = false
-                    operatorWasAssigned = false
-                    numberWasFinished = false
                 }
 
-                if (numberWasAssigned && !numberWasFinished) {
-                    if (char === "." || char === ",") {
-                        if (!decimalPointWasAssigned) {
-                            decimalPointWasAssigned = true
-                        } else {
-                            throw new ParserError("Zahl hat zu viele Dezimaltrennzeichen")
-                        }
-                    } else {
-                        currentNumber.upperNumber = currentNumber.upperNumber * 10 + parseInt(char)
-                        if (decimalPointWasAssigned) {
-                            currentNumber.lowerNumber *= 10
-                        }
-                    }
+                // Reset the state and start a new number
+                currentNumber = new AccNum(parseInt(char))
+                decimalPointWasAssigned = false
+                numberWasAssigned = true
+                operatorWasAssigned = false
+                numberWasFinished = false
+            }
+        } else if (allowedOperations.includes(char)) {
+            if (!numberWasAssigned || operatorWasAssigned) {
+                // If a number was not assigned or an operator was assigned for the next number, check for special cases before throwing an error
+                if (char === "-") {
+                    // If the operator is -, invert the current negative state
+                    // if (numberWasAssigned) { // TODO check if this was necessary
+                    //     pushNumber()
+                    // }
+                    negateCurrentNumber = !negateCurrentNumber
+                } else if (char === "+") {
+                    // do nothing
                 } else {
-                    if (numberWasFinished) {
-                        if (negateCurrentNumber) {
-                            currentNumber.upperNumber *= -1
-                            negateCurrentNumber = false
-                        }
-
-                        if (currentNumber.trailingOperator === MODE_NONE) {
-                            currentNumber.trailingOperator = MODE_MULTIPLICATION
-                        }
-
-                        pushOntoGroupList(parenthesesGroups, currentNumber, depth)
-                    }
-
-                    currentNumber = new AccNum(parseInt(char))
-                    decimalPointWasAssigned = false
-                    numberWasAssigned = true
-                    operatorWasAssigned = false
-                    numberWasFinished = false
+                    // If the operator is not - or +, throw an error
+                    throw new ParserError("Unerwarteter Operator " + char + " nach " + charFromMode(currentNumber.trailingOperator))
                 }
-            } else if (allowedOperations.includes(char)) {
-                if (!numberWasAssigned || operatorWasAssigned) {
-                    if (char === "-") {
-                        if (numberWasAssigned) {
-                            if (negateCurrentNumber) {
-                                currentNumber.upperNumber *= -1
-                                negateCurrentNumber = false
-                            }
-                            pushOntoGroupList(parenthesesGroups, currentNumber, depth)
-                            currentNumber = new AccNum(0)
-                            decimalPointWasAssigned = false
-                            numberWasAssigned = false
-                            operatorWasAssigned = false
-                        }
-
-                        negateCurrentNumber = !negateCurrentNumber
-                    } else if (char === "+") {
-                        // do nothing
-                    } else {
-                        throw new ParserError("Unerwarteter Operator am Anfang des Ausdrucks")
+            } else {
+                if (operatorWasAssigned) {
+                    if (char === "!" || char === "%" || currentNumber.trailingOperator !== MODE_NONE) {
+                        // If an operator was assigned and a new operator appears, throw an error
+                        throw new ParserError("Unerwarteter Operator " + char + " nach " + charFromMode(currentNumber.trailingOperator))
                     }
+
+                    currentNumber.trailingOperator = modeFromChar(char)
                 } else {
-                    if (operatorWasAssigned) {
-                        if (char === "!" || char === "%" || currentNumber.trailingOperator !== MODE_NONE) {
+                    if (char === "!") {
+                        // If the operator is !, factorise the number
+                        currentNumber.factorise()
+                        numberWasFinished = true
+                    } else if (char === "%") {
+                        // If the operator is %, multiply the number by 100
+                        currentNumber.denominator *= 100
+                        numberWasFinished = true
+                    } else {
+                        // If the operator is not ! or %, assign it to the number
+                        if (currentNumber.trailingOperator !== MODE_NONE) {
+                            // If there is a trailing operator, throw an error
                             throw new ParserError("Unerwarteter Operator " + char + " nach " + charFromMode(currentNumber.trailingOperator))
                         }
 
+                        // Assign the operator to the number
                         currentNumber.trailingOperator = modeFromChar(char)
-                    } else {
-                        if (char === "!") {
-                            currentNumber.factorise()
-                            numberWasFinished = true
-                        } else if (char === "%") {
-                            currentNumber.lowerNumber *= 100
-                            numberWasFinished = true
-                        } else {
-                            if (currentNumber.trailingOperator !== MODE_NONE) {
-                                throw new ParserError("Unerwarteter Operator " + char + " nach " + charFromMode(currentNumber.trailingOperator))
-                            }
-                            currentNumber.trailingOperator = modeFromChar(char)
-                            operatorWasAssigned = true
-                            numberWasFinished = true
-                        }
+                        operatorWasAssigned = true
+                        numberWasFinished = true
                     }
                 }
-            } else if (char === " ") {
-                // do nothing
-            } else {
-                throw new ParserError("Unerwartetes Zeichen " + char)
             }
+        } else if (char === " ") {
+            // do nothing
+        } else {
+            // If the character is not recognized, throw an error
+            throw new ParserError("Unerwartetes Zeichen " + char)
         }
     }
+
     if (numberWasAssigned) {
+        // If a number was assigned, push it onto the list
         if (negateCurrentNumber) {
-            currentNumber.upperNumber *= -1
+            // Negate if necessary
+            currentNumber.numerator *= -1
         }
         pushOntoGroupList(parenthesesGroups, currentNumber, depth)
     }
 
     if (currentNumber.trailingOperator !== MODE_NONE) {
+        // If there is a trailing operator, throw an error
         throw new ParserError("Unerwarteter Operator am Ende des Ausdrucks")
     }
 
     if (parenthesesGroups.length === 0) {
+        // If the parentheses group is empty, simply return the current number
         return [currentNumber, index]
     }
 
     return [solveParenthesesGroups(parenthesesGroups, shouldLog), index]
 }
-
-// TODO empty num in parentheses ("3(-)")
 
 /**
  * Recursively solves parentheses groups

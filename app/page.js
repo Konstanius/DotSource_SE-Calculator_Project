@@ -197,6 +197,7 @@ export default function Home() {
      * - input buttons (0-9, ., +, -, *, /, !, %, (, ), =, backspace, clear)
      * - somehow implement Pi, e, etc.
      * - slide input to right on enter, slide history down by one, fade output up into input field
+     * - toggle between decimal and fraction representation of the result
      */
 
     return (
@@ -306,8 +307,9 @@ export default function Home() {
                     {tooltip}
                 </div>
             }
-            {/*    Button showing the result, click to copy if valid*/}
+            {/*    Button showing the result, click to copy if valid and animation isn't playing currently*/}
             <button
+                disabled={!valid || copyClicked}
                 className={!copyClicked ?
                     (valid ? "bg-gray-900 text-white p-2 rounded-md smooth-transition" : "bg-red-900 text-white p-2 rounded-md smooth-transition")
                     : "bg-green-900 text-white p-2 rounded-md smooth-transition"}
