@@ -39,9 +39,11 @@ export const allowedOperations = ["+", "-", "*", "/", "!", "%"]
 
 export class ParserError {
     message
+    index
 
-    constructor(message) {
+    constructor(message, index) {
         this.message = message
+        this.index = index
     }
 }
 
@@ -104,7 +106,7 @@ export class AccNum {
     }
 
     factorise() {
-        if (this.numerator % this.denominator !== 0) throw new ParserError("Fakultät von Kommazahlen ist (noch) nicht definiert")
+        if (this.numerator % this.denominator !== 0) throw new ParserError("Fakultät von Kommazahlen ist (noch) nicht definiert", -1)
         let num = this.toNumber()
         this.denominator = 1
 
@@ -134,9 +136,9 @@ function gcd(a, b) {
 function outOfBoundsChecker(num) {
     let invalid = (num < 0) ? num < -MAX_NUM : num > (MAX_NUM - 1)
     if (invalid && num > 0) {
-        throw new ParserError("Zahl ist zu groß")
+        throw new ParserError("Zahl ist zu groß", -1)
     } else if (invalid && num < 0) {
-        throw new ParserError("Zahl ist zu klein")
+        throw new ParserError("Zahl ist zu klein", -1)
     }
 }
 
@@ -154,10 +156,11 @@ function outOfBoundsChecker(num) {
  * @param input
  * @param shouldLog
  * @param depth
+ * @param indexOffset
  * @returns {[AccNum, number]}
  * @throws ParserError
  **/
-export function parseWithParentheses(input, shouldLog, depth) {
+export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
     // Split into parentheses groups, and use parse() on each group
     let currentNumber = new AccNum(0)
     let negateCurrentNumber = false
@@ -203,7 +206,7 @@ export function parseWithParentheses(input, shouldLog, depth) {
 
             // Recursively parse the group by calling the function again on the substring
             // This returns the group and the index of the closing parenthesis
-            let [group, finishedIndex] = parseWithParentheses(input.substring(index + 1), shouldLog, depth + 1)
+            let [group, finishedIndex] = parseWithParentheses(input.substring(index + 1), shouldLog, depth + 1, index + 1)
             // Continue after the closing parenthesis
             index += finishedIndex + 1
             // Set the current number to the value returned by the recursive call (the group)
@@ -213,24 +216,24 @@ export function parseWithParentheses(input, shouldLog, depth) {
 
             if (index > input.length - 1 && depth === 0) {
                 // If the end of the string is surpassed and the depth is 0, throw an error, since the end was reached without closing all parentheses
-                throw new ParserError("Es wurden nicht alle Klammern geschlossen")
+                throw new ParserError("Es wurden nicht alle Klammern geschlossen", index + indexOffset)
             }
         } else if (char === ")") {
             // End of group
             if (currentNumber.trailingOperator !== MODE_NONE) {
                 // If there is a trailing operator on the last number of the group, throw an error
-                throw new ParserError("Unerwarteter Operator am Ende des Ausdrucks")
+                throw new ParserError("Unerwarteter Operator (Ende des Ausdrucks): " + charFromMode(currentNumber.trailingOperator), index + indexOffset)
             }
             numberWasFinished = true
 
             if (depth === 0) {
                 // If the depth is 0, the closing parenthesis is unexpected and should throw an error
-                throw new ParserError("Es wurden mehr Klammern geschlossen als geöffnet")
+                throw new ParserError("Es wurden mehr Klammern geschlossen als geöffnet", index + indexOffset)
             }
 
             if (parenthesesGroups.length === 0 && !numberWasAssigned) {
                 // If the parentheses group is empty and no number was assigned, throw an error
-                throw new ParserError("Klammern können nicht leer sein")
+                throw new ParserError("Klammern können nicht leer sein", index + indexOffset)
             }
 
             // We break out of the loop, because we are done with this group (it was closed)
@@ -248,7 +251,7 @@ export function parseWithParentheses(input, shouldLog, depth) {
                     if (!decimalPointWasAssigned) {
                         decimalPointWasAssigned = true
                     } else {
-                        throw new ParserError("Zahl hat zu viele Dezimaltrennzeichen")
+                        throw new ParserError("Zahl hat zu viele Dezimaltrennzeichen", index + indexOffset)
                     }
                 } else {
                     // The number is added by multiplying the numerator by 10 and adding the new digit
@@ -287,21 +290,21 @@ export function parseWithParentheses(input, shouldLog, depth) {
                 // If a number was not assigned or an operator was assigned for the next number, check for special cases before throwing an error
                 if (char === "-") {
                     // If the operator is -, invert the current negative state
-                    // if (numberWasAssigned) { // TODO check if this was necessary
-                    //     pushNumber()
-                    // }
                     negateCurrentNumber = !negateCurrentNumber
                 } else if (char === "+") {
                     // do nothing
+                }
+                // If the operator is not - or +, throw an error
+                else if (!numberWasAssigned) {
+                    throw new ParserError("Unerwarteter Operator (Anfang des Ausdrucks): " + char, index + indexOffset)
                 } else {
-                    // If the operator is not - or +, throw an error
-                    throw new ParserError("Unerwarteter Operator " + char + " nach " + charFromMode(currentNumber.trailingOperator))
+                    throw new ParserError("Unerwarteter Operator (Mehrere hintereinander): " + char, index + indexOffset)
                 }
             } else {
                 if (operatorWasAssigned) {
                     if (char === "!" || char === "%" || currentNumber.trailingOperator !== MODE_NONE) {
                         // If an operator was assigned and a new operator appears, throw an error
-                        throw new ParserError("Unerwarteter Operator " + char + " nach " + charFromMode(currentNumber.trailingOperator))
+                        throw new ParserError("Unerwarteter Operator (Mehrere hintereinander): " + char, index + indexOffset)
                     }
 
                     currentNumber.trailingOperator = modeFromChar(char)
@@ -318,7 +321,7 @@ export function parseWithParentheses(input, shouldLog, depth) {
                         // If the operator is not ! or %, assign it to the number
                         if (currentNumber.trailingOperator !== MODE_NONE) {
                             // If there is a trailing operator, throw an error
-                            throw new ParserError("Unerwarteter Operator " + char + " nach " + charFromMode(currentNumber.trailingOperator))
+                            throw new ParserError("Unerwarteter Operator (Mehrere hintereinander): ", index + indexOffset)
                         }
 
                         // Assign the operator to the number
@@ -332,7 +335,7 @@ export function parseWithParentheses(input, shouldLog, depth) {
             // do nothing
         } else {
             // If the character is not recognized, throw an error
-            throw new ParserError("Unerwartetes Zeichen " + char)
+            throw new ParserError("Unerwartetes Zeichen: " + char, index + indexOffset)
         }
     }
 
@@ -347,7 +350,7 @@ export function parseWithParentheses(input, shouldLog, depth) {
 
     if (currentNumber.trailingOperator !== MODE_NONE) {
         // If there is a trailing operator, throw an error
-        throw new ParserError("Unerwarteter Operator am Ende des Ausdrucks")
+        throw new ParserError("Unerwarteter Operator (Ende des Ausdrucks): " + charFromMode(currentNumber.trailingOperator), index + indexOffset)
     }
 
     if (parenthesesGroups.length === 0) {
@@ -368,6 +371,8 @@ export function parseWithParentheses(input, shouldLog, depth) {
  * @returns {AccNum}
  */
 function solveParenthesesGroups(parenthesesGroups, shouldLog) {
+    if (shouldLog) console.log(parenthesesGroups)
+
     // iterate and solve parentheses groups, if array
     for (let i = 0; i < parenthesesGroups.length; i++) {
         const group = parenthesesGroups[i]

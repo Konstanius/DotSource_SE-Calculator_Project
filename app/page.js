@@ -31,19 +31,24 @@ export default function Home() {
             setToolTipY(0)
             return
         }
-        let text = document.getElementById('input').value.substring(start, end)
-        let result = parseWithParentheses(text, false, 0)
 
         let posX = document.getElementById('input').x
         let posY = document.getElementById('input').y
-
-        // show the tooltip
         setToolTipX(posX)
         setToolTipY(posY)
-        setTooltip(result[0].toNumber().toLocaleString(navigator.language, {
-            useGrouping: false,
-            maximumFractionDigits: 10
-        }))
+
+        try {
+            let text = document.getElementById('input').value.substring(start, end)
+            let result = parseWithParentheses(text, false, 0, 0)
+
+            // show the tooltip
+            setTooltip(result[0].toNumber().toLocaleString(navigator.language, {
+                useGrouping: false,
+                maximumFractionDigits: 10
+            }))
+        } catch (error) {
+            setTooltip("Ungültiger Ausdruck")
+        }
     }
 
     const onSubmit = (e) => {
@@ -176,7 +181,7 @@ export default function Home() {
         }
 
         try {
-            let data = parseWithParentheses(newValue, true, 0)
+            let data = parseWithParentheses(newValue, true, 0, 0)
             setValidity(true)
             setOutput(data[0].toNumber().toLocaleString(navigator.language, {
                 useGrouping: false,
@@ -184,9 +189,11 @@ export default function Home() {
             }))
         } catch (error) {
             setValidity(false)
-            setOutput(error.message)
-                if (error.type !== ParserError) {
+            if (error.constructor !== ParserError) {
+                setOutput(error.message)
                 console.log(error)
+            } else {
+                setOutput(error.message + " " + error.index)
             }
         }
     }
@@ -203,7 +210,10 @@ export default function Home() {
     return (
         <main
             className="flex min-h-screen flex-col items-center p-24"
-            onMouseMove={(_) => setSelectionArea()}
+            onMouseMove={(_) => {
+                if (!_.buttons) return // only if mouse is pressed, since only then selection is possible
+                setSelectionArea()
+            }}
         >
 
             {/**Input row*/}
