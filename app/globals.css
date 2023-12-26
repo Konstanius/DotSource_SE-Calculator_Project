@@ -6,6 +6,9 @@
     --foreground-rgb: 0, 0, 0;
     --background-start-rgb: 214, 219, 220;
     --background-end-rgb: 255, 255, 255;
+    --header-height: 3rem;
+    --footer-height: 3rem;
+    --input-height: 3rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,17 +22,21 @@
 body {
     color: rgb(var(--foreground-rgb));
     background: linear-gradient(
-            to bottom,
-            transparent,
-            rgb(var(--background-end-rgb))
-    ) rgb(var(--background-start-rgb));
+            180deg,
+            rgba(var(--background-start-rgb), 1) 0%,
+            rgba(var(--background-end-rgb), 1) 100%
+    );
+    height: 100vh;
     overflow: hidden;
 }
 
 .smooth-transition {
-    transition: all 0.3s ease-in-out;
+    transition: all 0.3s linear;
 }
 
+.fade-out-right {
+    animation: fadeOutRight 0.5s forwards;
+}
 @keyframes fadeOutRight {
     from {
         opacity: 1;
@@ -41,14 +48,22 @@ body {
     }
 }
 
-.fade-out-right {
-    animation: fadeOutRight 0.7s forwards;
+.fade-out {
+    animation: fadeOut 0.5s forwards;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
 }
 
 .shake-horizontal {
     animation: horizontal-shaking 0.2s 2 ease-in-out;
 }
-
 @keyframes horizontal-shaking {
     0% {
         transform: translateX(0)
@@ -73,26 +88,152 @@ body {
     position: relative;
 }
 
-.lcd-font {
-    font-family: ui-monospace;
+.history-entry-time {
+    font-size: 0.8rem;
+    color: rgba(var(--foreground-rgb), 0.5);
+    width: 10%;
+    overflow: hidden;
+    padding-right: 0.5rem;
 }
 
-.plus-char {
-    color: red;
-    font-weight: bold;
+.history-entry-input {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: rgba(var(--foreground-rgb), 0.8);
+    width: 55%;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
-.minus-char {
-    color: blue;
-    font-weight: bold;
+.history-entry-output {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: rgba(var(--foreground-rgb), 0.8);
+    width: 30%;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
-.multiply-char {
-    color: green;
-    font-weight: bold;
+.history-entry-equals {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: rgba(var(--foreground-rgb), 0.8);
+    width: 5%;
+    overflow: hidden;
 }
 
-.divide-char {
-    color: purple;
-    font-weight: bold;
+.history-entry-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 98%;
+    padding: 0.5rem 1.5rem;
+    border-radius: 0.5rem;
+    background-color: rgba(var(--foreground-rgb), 0.1);
+    margin-bottom: 0.5rem;
+}
+
+.history-entry-button:hover {
+    background-color: rgba(var(--foreground-rgb), 0.2);
+}
+
+.history-entry-delete {
+    width: 5%;
+    background-color: rgba(var(--foreground-rgb), 0.1);
+    border-radius: 0.5rem;
+    margin-left: 0.5rem;
+    cursor: pointer;
+}
+
+.history-entry-delete:hover {
+    background-color: rgba(187, 71, 71, 0.5);
+}
+
+.history::-webkit-scrollbar {
+    width: 10px;
+}
+
+.history::-webkit-scrollbar-track {
+    background: #262626;
+    border-radius: 10px;
+}
+
+.history::-webkit-scrollbar-thumb {
+    background: #bb4747;
+    border-radius: 10px;
+}
+
+.history::-webkit-scrollbar-thumb:hover {
+    background: #d53131;
+}
+
+.smallScroll::-webkit-scrollbar {
+    height: 4px;
+}
+
+.smallScroll::-webkit-scrollbar-track {
+    background: #262626;
+    border-radius: 3px;
+}
+
+.smallScroll::-webkit-scrollbar-track {
+    background: #262626;
+    border-radius: 3px;
+}
+
+.smallScroll::-webkit-scrollbar-thumb {
+    background: #bb4747;
+    border-radius: 10px;
+}
+
+.smallScroll::-webkit-scrollbar-thumb:hover {
+    background: #d53131;
+}
+
+.calc-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    font-size: 1.5rem;
+    font-weight: 500;
+    background-color: rgb(52, 52, 52);
+    border-radius: 0.5rem;
+    margin-top: 0.5rem;
+    margin-right: 0.5rem;
+    cursor: pointer;
+}
+
+.calc-button:hover {
+    background-color: rgb(73, 73, 73);
+}
+
+.calc-button:active {
+    background-color: rgb(73, 73, 73);
+}
+
+.calc-number {
+    background-color: rgb(89, 89, 89);
+}
+
+.calc-number:hover {
+    background-color: rgb(134, 134, 134);
+}
+
+.calc-number:active {
+    background-color: rgb(134, 134, 134);
+}
+
+.calc-special {
+    background-color: rgba(222, 95, 91, 1);
+}
+
+.calc-special:hover {
+    background-color: rgb(159, 52, 52);
+}
+
+.calc-special:active {
+    background-color: rgb(159, 52, 52);
 }

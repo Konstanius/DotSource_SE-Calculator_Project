@@ -53,14 +53,8 @@ export class AccNum {
     trailingOperator
 
     constructor(number) {
-        // TODO make this algorithm better
-        let lowerNum = 1
-        while (number % 1 !== 0) {
-            lowerNum *= 10
-            number *= 10
-        }
         this.numerator = number
-        this.denominator = lowerNum
+        this.denominator = 1
         this.trailingOperator = MODE_NONE
     }
 

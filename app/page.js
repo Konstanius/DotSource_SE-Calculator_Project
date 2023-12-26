@@ -2,6 +2,7 @@
 
 import {useEffect, useState} from "react"
 import {charFromMode, ParserError, parseWithParentheses} from "@/app/parser_rev2.mjs"
+import {HistoryDisplay, HistoryEntry} from "@/app/history";
 
 export default function Home() {
     const [valid, setValidity] = useState(true)
@@ -12,8 +13,11 @@ export default function Home() {
     const [toolTipY, setToolTipY] = useState(0)
     const [currentPrompt, setCurrentPrompt] = useState('')
     const [screenWidth, setScreenWidth] = useState(0)
+    const [screenHeight, setScreenHeight] = useState(0)
     const [resetCursorPos, setResetCursorPos] = useState(-1)
     const [copyClicked, setCopyClicked] = useState(false)
+    const [history, setHistory] = useState([])
+    const [buttonsHeight, setButtonsHeight] = useState(640)
 
     // Animation "controller", controlling the animation of:
     // - the submit button
@@ -56,7 +60,7 @@ export default function Home() {
 
         // If the result is the same as the input, do nothing
         // Same thing if an animation is already playing
-        if (output === input || submitAnimation !== "") {
+        if (output === input || submitAnimation !== "" || input.replaceAll(" ", "") === "") {
             return
         }
 
@@ -65,17 +69,27 @@ export default function Home() {
             setSubmitAnimation("shake-horizontal");
             setTimeout(() => {
                 setSubmitAnimation("");
-            }, 700);
+            }, 500);
             return
         }
 
-        setSubmitAnimation("fade-out-right");
+        // Save to history, if the input is different from the last entry
+        let lastEntry = HistoryEntry.getLast()
+        if (lastEntry === null || lastEntry.input !== input) {
+            let historyEntry = new HistoryEntry(HistoryEntry.getNextId(), Date.now(), input, output)
+            historyEntry.save()
+            setHistory([...HistoryEntry.getAll()])
+            setSubmitAnimation("fade-out-right");
+        } else {
+            setSubmitAnimation("fade-out");
+        }
+
         setTimeout(() => {
-            setInput(output);
+            onChangedTextField(output)
             setSubmitAnimation("");
             // set the cursor to the end of the new input
             document.getElementById('input').setSelectionRange(output.length, output.length)
-        }, 700);
+        }, 500);
     }
 
     useEffect(() => {
@@ -84,10 +98,18 @@ export default function Home() {
 
             // set the screen width
             setScreenWidth(window.innerWidth)
+            setScreenHeight(window.innerHeight)
+            setButtonsHeight(window.innerHeight - document.getElementById('input').clientHeight - document.getElementById('result').clientHeight - 24 * 4)
+
             // add event listener to update the screen width
             window.addEventListener('resize', () => {
                 setScreenWidth(window.innerWidth)
+                setScreenHeight(window.innerHeight)
+                setButtonsHeight(window.innerHeight - document.getElementById('input').clientHeight - document.getElementById('result').clientHeight - 24 * 4)
             })
+
+            setHistory([...HistoryEntry.getAll()] || [])
+            onChangedTextField(localStorage.getItem("input") || '')
         }
 
         try {
@@ -148,6 +170,8 @@ export default function Home() {
     }, [copyClicked]);
 
     const onChangedTextField = (newValue) => {
+        if (newValue === input) return
+
         let cursorPosition = document.getElementById('input').selectionStart
         if (newValue.length === input.length + 1) {
             let inputChar = newValue.charAt(cursorPosition - 1)
@@ -175,6 +199,7 @@ export default function Home() {
         }
 
         setInput(newValue)
+        localStorage.setItem("input", newValue)
 
         if (newValue === '') {
             randomizePrompt()
@@ -200,29 +225,95 @@ export default function Home() {
 
     /**
      * TODO: UI Elements
-     * - history to right side
-     * - input buttons (0-9, ., +, -, *, /, !, %, (, ), =, backspace, clear)
      * - somehow implement Pi, e, etc.
-     * - slide input to right on enter, slide history down by one, fade output up into input field
      * - toggle between decimal and fraction representation of the result
      */
 
+    let rows = [[], [], [], [], [], []]
+
+    function addButton(row, title, isNumber, isSpecial, onClickAdd, onClick) {
+        let style = "calc-button"
+        if (isNumber) {
+            style += " calc-number"
+        }
+        if (isSpecial) {
+            style += " calc-special"
+        }
+
+        rows[row].push(
+            <button
+                key={"button_" + row + "_" + title}
+                className={style}
+                style={{height: 'calc(' + buttonsHeight / 6 + 'px - 1rem)'}}
+                onClick={() => {
+                    if (onClick !== undefined) {
+                        onClick()
+                        return
+                    }
+
+                    // if the selection is not empty, replace range, otherwise append / insert
+                    let inputElement = document.getElementById('input')
+                    let start = inputElement.selectionStart
+                    let end = inputElement.selectionEnd
+                    let newValue = input.substring(0, start) + onClickAdd + input.substring(end)
+                    onChangedTextField(newValue)
+                    setResetCursorPos(start + onClickAdd.length)
+                }}>{title}</button>)
+    }
+
+    addButton(0, "%", false, false, "%")
+    addButton(0, "", false, false, "")
+    addButton(0, "<--", false, true, "", () => {
+        if (input.length === 0) return
+        let inputElement = document.getElementById('input')
+        let cursorPosition = inputElement.selectionStart
+        let newValue = input.substring(0, cursorPosition - 1) + input.substring(cursorPosition)
+        onChangedTextField(newValue)
+        setResetCursorPos(cursorPosition - 1)
+    })
+    addButton(0, "C", false, true, "", () => onChangedTextField(""))
+    addButton(1, "(", false, false, "(")
+    addButton(1, ")", false, false, ")")
+    addButton(1, "n!", false, false, "!")
+    addButton(1, "/", false, false, "/")
+    addButton(2, "7", true, false, "7")
+    addButton(2, "8", true, false, "8")
+    addButton(2, "9", true, false, "9")
+    addButton(2, "*", false, false, "*")
+    addButton(3, "4", true, false, "4")
+    addButton(3, "5", true, false, "5")
+    addButton(3, "6", true, false, "6")
+    addButton(3, "-", false, false, "-")
+    addButton(4, "1", true, false, "1")
+    addButton(4, "2", true, false, "2")
+    addButton(4, "3", true, false, "3")
+    addButton(4, "+", false, false, "+")
+    addButton(5, "0", true, false, "0")
+    addButton(5, ".", true, false, ".")
+    addButton(5, "", false, false, "")
+    addButton(5, "=", false, true, "", () => onSubmit({
+        preventDefault: () => {
+        }
+    }))
+
     return (
         <main
+            id="main"
+            style={{width: screenWidth, height: screenHeight}}
             className="flex min-h-screen flex-col items-center p-24"
             onMouseMove={(_) => {
                 if (!_.buttons) return // only if mouse is pressed, since only then selection is possible
                 setSelectionArea()
-            }}
-        >
+            }}>
 
             {/**Input row*/}
-            <div className="flex flex-col items-center justify-center">
+            <div id="top-element" className="flex flex-col items-center justify-center">
                 <div id="container">
                     {/**Input overlay to fade the output in, up and over the input field*/}
-                    <input
-                        id="input-overlay"
-                        className="
+                    <div hidden={!valid}>
+                        <input
+                            id="input-overlay"
+                            className="
                             absolute bg-gray-900 rounded-md
                             smooth-transition
                             content-center
@@ -230,18 +321,18 @@ export default function Home() {
                             text-white text-6xl p-4 m-4 text-center
                             lcd-font
                             outline-none"
-                        style={{
-                            left: 0,
-                            top: 0,
-                            zIndex: -5,
-                            opacity: submitAnimation === "fade-out-right" ? 1 : 0,
-                            width: screenWidth * 0.8
-                        }}
-                        type="text"
-                        value={output}
-                        readOnly={true}
-                    >
-                    </input>
+                            style={{
+                                left: 0,
+                                top: 0,
+                                zIndex: -5,
+                                opacity: submitAnimation === "fade-out-right" ? 1 : 0,
+                                width: screenWidth * 0.8
+                            }}
+                            type="text"
+                            value={output}
+                            readOnly={true}
+                        />
+                    </div>
 
                     <form onSubmit={onSubmit}>
                         <input
@@ -317,23 +408,46 @@ export default function Home() {
                     {tooltip}
                 </div>
             }
-            {/*    Button showing the result, click to copy if valid and animation isn't playing currently*/}
-            <button
-                disabled={!valid || copyClicked}
-                className={!copyClicked ?
-                    (valid ? "bg-gray-900 text-white p-2 rounded-md smooth-transition" : "bg-red-900 text-white p-2 rounded-md smooth-transition")
-                    : "bg-green-900 text-white p-2 rounded-md smooth-transition"}
-                onClick={() => {
-                    if (valid) {
-                        navigator.clipboard.writeText(output).then(/*ignored*/)
-                        setCopyClicked(true)
-                    }
-                }}
-            >
-                {copyClicked ? "Ergebnis kopiert!" : output}
-                {/* TODO animate smooth transition between valid / invalid and button clicked */}
-                {/* TODO animate the individual numbers to increase / decrease */}
-            </button>
+
+            {/*    empty row with 2 elements, equally sized left to right, max width 0.8 screen*/}
+            <div className="flex flex-row justify-between">
+                <div style={{width: screenWidth * 0.55}}>
+                    {/*    Button showing the result, click to copy if valid and animation isn't playing currently*/}
+                    <button
+                        id="result"
+                        disabled={!valid || copyClicked}
+                        className={!copyClicked ?
+                            (valid ? "bg-gray-900 text-white p-2 rounded-md smooth-transition" : "bg-red-900 text-white p-2 rounded-md smooth-transition")
+                            : "bg-green-900 text-white p-2 rounded-md smooth-transition"}
+                        onClick={() => {
+                            if (valid) {
+                                navigator.clipboard.writeText(output).then(/*ignored*/)
+                                setCopyClicked(true)
+                            }
+                        }}
+                    >
+                        {copyClicked ? "Ergebnis kopiert!" : output}
+                        {/* TODO animate smooth transition between valid / invalid and button clicked */}
+                        {/* TODO animate the individual numbers to increase / decrease */}
+                    </button>
+
+                    {/*    Buttons*/}
+                    <div className="flex flex-col" style={{height: 'calc(' + buttonsHeight + 'px - 1rem)',}}>
+                        {rows.map((row, index) => {
+                            return (
+                                <div key={"row_" + index} className="flex flex-row">
+                                    {row.map((button) => {
+                                        return button
+                                    })}
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
+                <div style={{width: screenWidth * 0.35}}>
+                    <HistoryDisplay setInput={onChangedTextField} history={history} setHistory={setHistory}/>
+                </div>
+            </div>
         </main>
     )
 }
