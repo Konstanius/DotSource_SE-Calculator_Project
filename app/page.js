@@ -227,6 +227,9 @@ export default function Home() {
      * TODO: UI Elements
      * - somehow implement Pi, e, etc.
      * - toggle between decimal and fraction representation of the result
+     * - while the page is loading, buttons display weirdly
+     * - make the result look better
+     * - when entering via keyboard, make buttons also act as if they were pressed
      */
 
     let rows = [[], [], [], [], [], []]
@@ -313,6 +316,7 @@ export default function Home() {
                     <div hidden={!valid}>
                         <input
                             id="input-overlay"
+                            inputMode='none'
                             className="
                             absolute bg-gray-900 rounded-md
                             smooth-transition
@@ -337,6 +341,7 @@ export default function Home() {
                     <form onSubmit={onSubmit}>
                         <input
                             id="input"
+                            inputMode='none'
                             autoFocus={false}
                             // no outline, no box shape etc., only shows the text
                             className={`
