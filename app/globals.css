@@ -27,7 +27,6 @@ body {
             rgba(var(--background-end-rgb), 1) 100%
     );
     height: 100vh;
-    overflow: hidden;
 }
 
 .smooth-transition {

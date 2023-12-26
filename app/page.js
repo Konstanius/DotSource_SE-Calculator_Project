@@ -26,6 +26,11 @@ export default function Home() {
     // - the input overlay (to fade the new value into the input field)
     const [submitAnimation, setSubmitAnimation] = useState("")
 
+    let appIsMobile = false
+    if (typeof window !== 'undefined') {
+        appIsMobile = window.matchMedia('(max-width: 640px)').matches
+    }
+
     function setSelectionArea() {
         let start = document.getElementById('input').selectionStart
         let end = document.getElementById('input').selectionEnd
@@ -169,21 +174,22 @@ export default function Home() {
         }
     }, [copyClicked]);
 
-    const onChangedTextField = (newValue) => {
+    const onChangedTextField = (newValue, cursorPosition) => {
         if (newValue === input) return
 
-        let cursorPosition = document.getElementById('input').selectionStart
+        let inputElement = document.getElementById('input');
+        if (cursorPosition === undefined) {
+            cursorPosition = inputElement.selectionStart;
+        }
         if (newValue.length === input.length + 1) {
             let inputChar = newValue.charAt(cursorPosition - 1)
             if (inputChar === '(') {
                 // insert a closing bracket after the opening bracket
                 newValue = newValue.substring(0, cursorPosition) + ')' + newValue.substring(cursorPosition)
-                setResetCursorPos(cursorPosition)
             } else if (inputChar === ')') {
                 // Check if the next character is also a closing bracket, if yes, remove it
                 if (newValue.charAt(cursorPosition) === ')') {
                     newValue = newValue.substring(0, cursorPosition) + newValue.substring(cursorPosition + 1)
-                    setResetCursorPos(cursorPosition)
                 }
             }
         } else if (newValue.length === input.length - 1) {
@@ -193,13 +199,14 @@ export default function Home() {
                 let nextChar = newValue.charAt(cursorPosition)
                 if (nextChar === ')') {
                     newValue = newValue.substring(0, cursorPosition) + newValue.substring(cursorPosition + 1)
-                    setResetCursorPos(cursorPosition)
                 }
             }
         }
 
         setInput(newValue)
         localStorage.setItem("input", newValue)
+        inputElement.focus();
+        inputElement.setSelectionRange(cursorPosition, cursorPosition);
 
         if (newValue === '') {
             randomizePrompt()
@@ -230,6 +237,7 @@ export default function Home() {
      * - while the page is loading, buttons display weirdly
      * - make the result look better
      * - when entering via keyboard, make buttons also act as if they were pressed
+     * - when entering via buttons, the cursor sometimes is invisible for large numbers
      */
 
     let rows = [[], [], [], [], [], []]
@@ -259,7 +267,7 @@ export default function Home() {
                     let start = inputElement.selectionStart
                     let end = inputElement.selectionEnd
                     let newValue = input.substring(0, start) + onClickAdd + input.substring(end)
-                    onChangedTextField(newValue)
+                    onChangedTextField(newValue, start + onClickAdd.length)
                     setResetCursorPos(start + onClickAdd.length)
                 }}>{title}</button>)
     }
@@ -302,7 +310,12 @@ export default function Home() {
     return (
         <main
             id="main"
-            style={{width: screenWidth, height: screenHeight}}
+            style={{
+                width: screenWidth,
+                height: screenHeight,
+                overflowX: "hidden",
+                overflowY: appIsMobile ? "auto" : "hidden"
+            }}
             className="flex min-h-screen flex-col items-center p-24"
             onMouseMove={(_) => {
                 if (!_.buttons) return // only if mouse is pressed, since only then selection is possible
@@ -414,9 +427,9 @@ export default function Home() {
                 </div>
             }
 
-            {/*    empty row with 2 elements, equally sized left to right, max width 0.8 screen*/}
-            <div className="flex flex-row justify-between">
-                <div style={{width: screenWidth * 0.55}}>
+            {/*    empty row with 2 elements, equally sized left to right, max width 0.8 screen, if on mobile, then as column*/}
+            <div className={appIsMobile ? "flex flex-col" : "flex flex-row"}>
+                <div style={{width: appIsMobile ? screenWidth : screenWidth * 0.55}}>
                     {/*    Button showing the result, click to copy if valid and animation isn't playing currently*/}
                     <button
                         id="result"
@@ -449,8 +462,9 @@ export default function Home() {
                         })}
                     </div>
                 </div>
-                <div style={{width: screenWidth * 0.35}}>
-                    <HistoryDisplay setInput={onChangedTextField} history={history} setHistory={setHistory}/>
+                <div style={{width: appIsMobile ? screenWidth : screenWidth * 0.35}}>
+                    <HistoryDisplay setInput={onChangedTextField} history={history} setHistory={setHistory}
+                                    appIsMobile={appIsMobile}/>
                 </div>
             </div>
         </main>

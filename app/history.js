@@ -99,7 +99,7 @@ export class HistoryEntry {
     }
 }
 
-export function HistoryDisplay({setInput, history, setHistory}) {
+export function HistoryDisplay({setInput, history, setHistory, appIsMobile}) {
     const [widgetList, setWidgets] = useState([])
     const [height, setHeight] = useState(100)
 
@@ -202,7 +202,7 @@ export function HistoryDisplay({setInput, history, setHistory}) {
                  display: "flex",
                  flexDirection: "column",
                  overflowY: "auto",
-                 maxHeight: 'calc(' + height + 'px - 1rem)',
+                 maxHeight: appIsMobile ? 'calc(' + window.innerHeight + ' - 1rem)' : 'calc(' + height + 'px - 1rem)',
                  width: "100%",
              }}>
             {widgetList}
