@@ -22,7 +22,7 @@ export default function RootLayout({children}) {
     return (
         <html lang="de">
         <body style={{overflow: "hidden"}}>
-        <script src="https://kit.fontawesome.com/3c67b7e888.js" crossOrigin="anonymous"></script>
+        <script async={true} src="https://kit.fontawesome.com/3c67b7e888.js" crossOrigin="anonymous"></script>
         {children}
         </body>
         </html>

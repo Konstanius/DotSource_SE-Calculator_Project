@@ -3,7 +3,6 @@
 import {useEffect, useState} from "react"
 import {charFromMode, ParserError, parseWithParentheses} from "@/app/parser_rev2.mjs"
 import {HistoryDisplay, HistoryEntry} from "@/app/history";
-import {AccNum} from "@/app/parser_rev2.mjs";
 
 export default function Home() {
     const [valid, setValidity] = useState(true)
@@ -363,7 +362,7 @@ export default function Home() {
                             id="input-overlay"
                             inputMode='none'
                             className="
-                            absolute bg-gray-900 rounded-md
+                            absolute
                             smooth-transition
                             content-center
                             bg-transparent
@@ -388,15 +387,14 @@ export default function Home() {
                             id="input"
                             inputMode='none'
                             autoFocus={false}
-                            // no outline, no box shape etc., only shows the text
                             className={`
-                        bg-transparent
-                        text-white text-6xl p-4 m-4 text-center
-                        outline-none
-                        caret-red-500
-                        lcd-font
-                        ${submitAnimation}
-                        `}
+                                bg-transparent
+                                text-white text-6xl p-4 m-4 text-center
+                                outline-none
+                                caret-red-500
+                                lcd-font
+                                ${submitAnimation}
+                                `}
                             type="text"
                             style={{width: screenWidth * 0.8}}
                             value={input}
@@ -413,7 +411,6 @@ export default function Home() {
                                 setToolTipY(0)
                                 setTooltip('')
 
-                                // TODO this is not perfect to keep the cursor in position, but it is the best for now
                                 // pause for 10 ms and then clear the selection
                                 setTimeout(() => {
                                     const inputElement = document.getElementById('input');
@@ -445,7 +442,8 @@ export default function Home() {
                                 }
                             }}
                             onSelect={(_) => setSelectionArea()}
-                        />
+                        >
+                        </input>
                     </form>
                 </div>
             </div>
