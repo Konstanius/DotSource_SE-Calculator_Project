@@ -100,7 +100,7 @@ export class AccNum {
     }
 
     factorise() {
-        if (this.numerator % this.denominator !== 0) throw new ParserError("Fakultät von Kommazahlen ist (noch) nicht definiert", -1)
+        if (this.numerator % this.denominator !== 0) throw new ParserError("Fakultät von Kommazahlen ist nicht definiert", -1)
         let num = this.toNumber()
         this.denominator = 1
 
@@ -216,7 +216,7 @@ export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
             // End of group
             if (currentNumber.trailingOperator !== MODE_NONE) {
                 // If there is a trailing operator on the last number of the group, throw an error
-                throw new ParserError("Unerwarteter Operator (Ende des Ausdrucks): " + charFromMode(currentNumber.trailingOperator), index + indexOffset)
+                throw new ParserError("Unerwarteter Operator: " + charFromMode(currentNumber.trailingOperator), index + indexOffset)
             }
             numberWasFinished = true
 
@@ -290,15 +290,15 @@ export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
                 }
                 // If the operator is not - or +, throw an error
                 else if (!numberWasAssigned) {
-                    throw new ParserError("Unerwarteter Operator (Anfang des Ausdrucks): " + char, index + indexOffset)
+                    throw new ParserError("Unerwarteter Operator: " + char, index + indexOffset)
                 } else {
-                    throw new ParserError("Unerwarteter Operator (Mehrere hintereinander): " + char, index + indexOffset)
+                    throw new ParserError("Unerwarteter Operator: " + char, index + indexOffset)
                 }
             } else {
                 if (operatorWasAssigned) {
                     if (char === "!" || char === "%" || currentNumber.trailingOperator !== MODE_NONE) {
                         // If an operator was assigned and a new operator appears, throw an error
-                        throw new ParserError("Unerwarteter Operator (Mehrere hintereinander): " + char, index + indexOffset)
+                        throw new ParserError("Unerwarteter Operator: " + char, index + indexOffset)
                     }
 
                     currentNumber.trailingOperator = modeFromChar(char)
@@ -315,7 +315,7 @@ export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
                         // If the operator is not ! or %, assign it to the number
                         if (currentNumber.trailingOperator !== MODE_NONE) {
                             // If there is a trailing operator, throw an error
-                            throw new ParserError("Unerwarteter Operator (Mehrere hintereinander): ", index + indexOffset)
+                            throw new ParserError("Unerwarteter Operator: ", index + indexOffset)
                         }
 
                         // Assign the operator to the number
@@ -344,7 +344,7 @@ export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
 
     if (currentNumber.trailingOperator !== MODE_NONE) {
         // If there is a trailing operator, throw an error
-        throw new ParserError("Unerwarteter Operator (Ende des Ausdrucks): " + charFromMode(currentNumber.trailingOperator), index + indexOffset)
+        throw new ParserError("Unerwarteter Operator: " + charFromMode(currentNumber.trailingOperator), index + indexOffset)
     }
 
     if (parenthesesGroups.length === 0) {

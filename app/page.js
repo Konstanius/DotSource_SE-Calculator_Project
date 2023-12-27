@@ -20,18 +20,19 @@ export default function Home() {
     const [buttonsHeight, setButtonsHeight] = useState(0)
     let [roundResults, setRoundResults] = useState(false) // Not const, since an immediate change of roundResults is needed sometimes
 
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && currentPrompt === '') {
         roundResults = localStorage.getItem("roundResults") === "true"
     }
 
     function getResultWithProperDisplay(input) {
-        let result = ""
-        if (roundResults) {
-            result = input.toNumber().toLocaleString(navigator.language, {
-                useGrouping: false,
-                maximumFractionDigits: 10
-            })
-        } else {
+        let result = input.toNumber().toLocaleString(navigator.language, {
+            useGrouping: false,
+            maximumFractionDigits: 10
+        })
+
+        let decimalCount = result.split(".")[1]?.length || 0
+
+        if (!roundResults && decimalCount > 3) {
             input.shorten()
             if (input.denominator === 1) {
                 result = input.numerator
@@ -50,11 +51,6 @@ export default function Home() {
     // - the history field
     // - the input overlay (to fade the new value into the input field)
     const [submitAnimation, setSubmitAnimation] = useState("")
-
-    let appIsMobile = false
-    if (typeof window !== 'undefined') {
-        appIsMobile = window.isMobile
-    }
 
     function setSelectionArea() {
         let start = document.getElementById('input').selectionStart
@@ -317,7 +313,7 @@ export default function Home() {
     </div>
     addButton(5, content, false, false, "", () => {
         let newValue = !roundResults
-        localStorage.setItem("roundResults", newValue)
+        localStorage.setItem("roundResults", newValue.toString())
         roundResults = newValue
         setRoundResults(newValue)
 
@@ -334,8 +330,10 @@ export default function Home() {
      * - somehow implement Pi, e, etc.
      * - make the result look better
      * - when entering via keyboard, make buttons also act as if they were pressed
-     * - when entering via buttons, the cursor sometimes is invisible for large numbers
-     * - turn input into a contentEditable span to format the input better
+     * - when entering via buttons, the cursor is useless for large inputs
+     * - input buttons get stuck on mobile sometimes
+     * - optimize tooltip a bit
+     * - make individual result digits increase / decrease when the result changes
      */
 
     return (
@@ -345,11 +343,11 @@ export default function Home() {
                 width: screenWidth,
                 height: screenHeight,
                 overflowX: "hidden",
-                overflowY: appIsMobile ? "auto" : "hidden"
+                overflowY: (screenWidth < 768) ? "auto" : "hidden"
             }}
             className="flex min-h-screen flex-col items-center p-24"
             onMouseMove={(_) => {
-                if (!_.buttons) return // only if mouse is pressed, since only then selection is possible
+                if (!_.buttons) return // only if mouse is pressed, since only then the selection is possible
                 setSelectionArea()
             }}>
 
@@ -448,7 +446,6 @@ export default function Home() {
                 </div>
             </div>
 
-            {/* TODO animate smooth transition */}
             {/**Selection Tooltip*/}
             {tooltip === '' ? '' :
                 <div className="absolute bg-gray-900 text-white p-2 rounded-md smooth-transition"
@@ -457,19 +454,19 @@ export default function Home() {
                 </div>
             }
 
-            {/*    empty row with 2 elements, equally sized left to right, max width 0.8 screen, if on mobile, then as column*/}
-            <div className={appIsMobile ? "flex flex-col" : "flex flex-row"}>
+            {/**Result, buttons and history*/}
+            <div className={(screenWidth < 768) ? "flex flex-col" : "flex flex-row"}>
                 <div style={{
-                    width: appIsMobile ? screenWidth : screenWidth * 0.55,
+                    width: (screenWidth < 768) ? screenWidth * 0.95 : screenWidth * 0.55,
                     opacity: screenHeight !== 0 ? 1 : 0
                 }}>
-                    {/*    Button showing the result, click to copy if valid and animation isn't playing currently*/}
                     <button
                         id="result"
+                        style={{whiteSpace: "nowrap"}}
                         disabled={!valid || copyClicked}
-                        className={!copyClicked ?
-                            (valid ? "bg-gray-900 text-white p-2 rounded-md smooth-transition" : "bg-red-900 text-white p-2 rounded-md smooth-transition")
-                            : "bg-green-900 text-white p-2 rounded-md smooth-transition"}
+                        className={(!copyClicked ?
+                                (valid ? "bg-gray-900" : "bg-red-900") : "bg-green-900") +
+                            " text-white p-2 rounded-md smooth-transition nowrap"}
                         onClick={() => {
                             if (valid) {
                                 navigator.clipboard.writeText(output).then(/*ignored*/)
@@ -477,8 +474,6 @@ export default function Home() {
                             }
                         }}>
                         {copyClicked ? "Ergebnis kopiert!" : output}
-                        {/* TODO animate smooth transition between valid / invalid and button clicked */}
-                        {/* TODO animate the individual numbers to increase / decrease */}
                     </button>
 
                     {/*    Buttons*/}
@@ -497,9 +492,9 @@ export default function Home() {
                         })}
                     </div>
                 </div>
-                <div style={{width: appIsMobile ? screenWidth : screenWidth * 0.35}}>
+                <div style={{width: (screenWidth < 768) ? screenWidth * 0.95 : screenWidth * 0.35}}>
                     <HistoryDisplay setInput={onChangedTextField} history={history} setHistory={setHistory}
-                                    appIsMobile={appIsMobile}/>
+                                    useMobileLayout={(screenWidth < 768)}/>
                 </div>
             </div>
         </main>

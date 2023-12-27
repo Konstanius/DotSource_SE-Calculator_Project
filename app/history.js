@@ -93,13 +93,13 @@ export class HistoryEntry {
     }
 }
 
-export function HistoryDisplay({setInput, history, setHistory, appIsMobile}) {
+export function HistoryDisplay({setInput, history, setHistory, useMobileLayout}) {
     const [widgetList, setWidgets] = useState([])
     const [height, setHeight] = useState(100)
 
     useEffect(() => {
         let topElementHeight = document.getElementById("top-element")?.clientHeight || 0
-        setHeight(window.innerHeight - topElementHeight - 24 * 4) // Yes, this is precise
+        setHeight(window.innerHeight - topElementHeight - 24 * 4) // Yes, this is precise, stems from the padding of the body and root
 
         let widgets = []
 
@@ -201,8 +201,8 @@ export function HistoryDisplay({setInput, history, setHistory, appIsMobile}) {
              style={{
                  display: "flex",
                  flexDirection: "column",
-                 overflowY: "auto",
-                 maxHeight: appIsMobile ? 'calc(' + window.innerHeight + ' - 1rem)' : 'calc(' + height + 'px - 1rem)',
+                 overflowY: useMobileLayout ? null : "auto",
+                 maxHeight: useMobileLayout ? null : 'calc(' + height + 'px - 1rem)',
                  width: "100%",
              }}>
             {widgetList}
