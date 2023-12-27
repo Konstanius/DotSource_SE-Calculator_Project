@@ -13,7 +13,6 @@ export class HistoryEntry {
         this.output = output
     }
 
-    // Load the history from local storage
     static load(id) {
         if (typeof window === 'undefined') return null
 
@@ -25,7 +24,6 @@ export class HistoryEntry {
         }
     }
 
-    // Get the last history entry
     static getLast() {
         if (typeof window === 'undefined') return null
 
@@ -47,7 +45,6 @@ export class HistoryEntry {
         return HistoryEntry.load(max)
     }
 
-    // Get the history from local storage
     static getAll() {
         if (typeof window === 'undefined') return null
 
@@ -66,7 +63,6 @@ export class HistoryEntry {
         return history
     }
 
-    // Get the next id for a new history entry
     static getNextId() {
         if (typeof window === 'undefined') return null
 
@@ -84,14 +80,12 @@ export class HistoryEntry {
         return max + 1
     }
 
-    // Delete the history from local storage
     static delete(id) {
         if (typeof window === 'undefined') return
 
         localStorage.removeItem("history_" + id)
     }
 
-    // Save the history to local storage
     save() {
         if (typeof window === 'undefined') return
 
@@ -109,7 +103,6 @@ export function HistoryDisplay({setInput, history, setHistory, appIsMobile}) {
 
         let widgets = []
 
-        // date 1 day in the future
         let lastDate = new Date()
         lastDate.setDate(lastDate.getDate() + 1)
 
@@ -160,16 +153,23 @@ export function HistoryDisplay({setInput, history, setHistory, appIsMobile}) {
                     <div className="history-entry-input smallScroll" onScroll={(e) => {
                         e.stopPropagation()
                     }}>{entry.input}</div>
-                    <div className="history-entry-equals">=</div>
+                    <div className="history-entry-equals"><i className="fa-solid fa-equals"></i></div>
                     <div className="history-entry-output smallScroll" onScroll={(e) => {
                         e.stopPropagation()
                     }}>{entry.output}</div>
                     <div className="history-entry-delete"
+                         style={{
+                             width: "2rem",
+                             height: "2rem",
+                             display: "flex",
+                             justifyContent: "center",
+                             alignItems: "center",
+                         }}
                          onClick={(e) => {
                              e.stopPropagation()
                              HistoryEntry.delete(entry.id)
                              setHistory(HistoryEntry.getAll())
-                         }}>X
+                         }}><i className="fa-solid fa-trash"></i>
                     </div>
                 </button>
             )

@@ -3,6 +3,7 @@
 import {useEffect, useState} from "react"
 import {charFromMode, ParserError, parseWithParentheses} from "@/app/parser_rev2.mjs"
 import {HistoryDisplay, HistoryEntry} from "@/app/history";
+import {AccNum} from "@/app/parser_rev2.mjs";
 
 export default function Home() {
     const [valid, setValidity] = useState(true)
@@ -17,7 +18,32 @@ export default function Home() {
     const [resetCursorPos, setResetCursorPos] = useState(-1)
     const [copyClicked, setCopyClicked] = useState(false)
     const [history, setHistory] = useState([])
-    const [buttonsHeight, setButtonsHeight] = useState(640)
+    const [buttonsHeight, setButtonsHeight] = useState(0)
+    let [roundResults, setRoundResults] = useState(false) // Not const, since an immediate change of roundResults is needed sometimes
+
+    if (typeof window !== 'undefined') {
+        roundResults = localStorage.getItem("roundResults") === "true"
+    }
+
+    function getResultWithProperDisplay(input) {
+        let result = ""
+        if (roundResults) {
+            result = input.toNumber().toLocaleString(navigator.language, {
+                useGrouping: false,
+                maximumFractionDigits: 10
+            })
+        } else {
+            input.shorten()
+            if (input.denominator === 1) {
+                result = input.numerator
+            } else if (input.denominator === -1) {
+                result = -input.numerator
+            } else {
+                result = input.numerator + "/" + input.denominator
+            }
+        }
+        return result
+    }
 
     // Animation "controller", controlling the animation of:
     // - the submit button
@@ -28,7 +54,7 @@ export default function Home() {
 
     let appIsMobile = false
     if (typeof window !== 'undefined') {
-        appIsMobile = window.matchMedia('(max-width: 640px)').matches
+        appIsMobile = window.isMobile
     }
 
     function setSelectionArea() {
@@ -51,10 +77,7 @@ export default function Home() {
             let result = parseWithParentheses(text, false, 0, 0)
 
             // show the tooltip
-            setTooltip(result[0].toNumber().toLocaleString(navigator.language, {
-                useGrouping: false,
-                maximumFractionDigits: 10
-            }))
+            setTooltip(getResultWithProperDisplay(result[0]))
         } catch (error) {
             setTooltip("Ungültiger Ausdruck")
         }
@@ -175,7 +198,7 @@ export default function Home() {
     }, [copyClicked]);
 
     const onChangedTextField = (newValue, cursorPosition) => {
-        if (newValue === input) return
+        if (newValue === input && input === '') return // Prevent spam of clearing to get random prompts
 
         let inputElement = document.getElementById('input');
         if (cursorPosition === undefined) {
@@ -215,10 +238,7 @@ export default function Home() {
         try {
             let data = parseWithParentheses(newValue, true, 0, 0)
             setValidity(true)
-            setOutput(data[0].toNumber().toLocaleString(navigator.language, {
-                useGrouping: false,
-                maximumFractionDigits: 10
-            }))
+            setOutput(getResultWithProperDisplay(data[0]))
         } catch (error) {
             setValidity(false)
             if (error.constructor !== ParserError) {
@@ -229,16 +249,6 @@ export default function Home() {
             }
         }
     }
-
-    /**
-     * TODO: UI Elements
-     * - somehow implement Pi, e, etc.
-     * - toggle between decimal and fraction representation of the result
-     * - while the page is loading, buttons display weirdly
-     * - make the result look better
-     * - when entering via keyboard, make buttons also act as if they were pressed
-     * - when entering via buttons, the cursor sometimes is invisible for large numbers
-     */
 
     let rows = [[], [], [], [], [], []]
 
@@ -253,7 +263,7 @@ export default function Home() {
 
         rows[row].push(
             <button
-                key={"button_" + row + "_" + title}
+                key={"button_" + row + "_" + rows[row].length}
                 className={style}
                 style={{height: 'calc(' + buttonsHeight / 6 + 'px - 1rem)'}}
                 onClick={() => {
@@ -269,12 +279,12 @@ export default function Home() {
                     let newValue = input.substring(0, start) + onClickAdd + input.substring(end)
                     onChangedTextField(newValue, start + onClickAdd.length)
                     setResetCursorPos(start + onClickAdd.length)
-                }}>{title}</button>)
+                }}>{screenHeight !== 0 ? title : ""}</button>)
     }
 
-    addButton(0, "%", false, false, "%")
+    addButton(0, <i className="fa-solid fa-percent"></i>, false, false, "%")
     addButton(0, "", false, false, "")
-    addButton(0, "<--", false, true, "", () => {
+    addButton(0, <i className="fa-solid fa-delete-left"></i>, false, true, "", () => {
         if (input.length === 0) return
         let inputElement = document.getElementById('input')
         let cursorPosition = inputElement.selectionStart
@@ -282,30 +292,52 @@ export default function Home() {
         onChangedTextField(newValue)
         setResetCursorPos(cursorPosition - 1)
     })
-    addButton(0, "C", false, true, "", () => onChangedTextField(""))
+    addButton(0, <i className="fa-solid fa-c"></i>, false, true, "", () => onChangedTextField(""))
     addButton(1, "(", false, false, "(")
     addButton(1, ")", false, false, ")")
     addButton(1, "n!", false, false, "!")
-    addButton(1, "/", false, false, "/")
+    addButton(1, <i className="fa-solid fa-divide"></i>, false, false, "/")
     addButton(2, "7", true, false, "7")
     addButton(2, "8", true, false, "8")
     addButton(2, "9", true, false, "9")
-    addButton(2, "*", false, false, "*")
+    addButton(2, <i className="fa-solid fa-xmark"></i>, false, false, "*")
     addButton(3, "4", true, false, "4")
     addButton(3, "5", true, false, "5")
     addButton(3, "6", true, false, "6")
-    addButton(3, "-", false, false, "-")
+    addButton(3, <i className="fa-solid fa-minus"></i>, false, false, "-")
     addButton(4, "1", true, false, "1")
     addButton(4, "2", true, false, "2")
     addButton(4, "3", true, false, "3")
-    addButton(4, "+", false, false, "+")
+    addButton(4, <i className="fa-solid fa-plus"></i>, false, false, "+")
     addButton(5, "0", true, false, "0")
     addButton(5, ".", true, false, ".")
-    addButton(5, "", false, false, "")
-    addButton(5, "=", false, true, "", () => onSubmit({
+
+    let content = <div className="flex flex-col items-center">
+        <span className="ml-2">Ergebnisse runden</span>
+        {roundResults ? <i className="fa-solid fa-toggle-on"></i> : <i className="fa-solid fa-toggle-off"></i>}
+    </div>
+    addButton(5, content, false, false, "", () => {
+        let newValue = !roundResults
+        localStorage.setItem("roundResults", newValue)
+        roundResults = newValue
+        setRoundResults(newValue)
+
+        onChangedTextField(input)
+    })
+
+    addButton(5, <i className="fa-solid fa-equals"></i>, false, true, "", () => onSubmit({
         preventDefault: () => {
         }
     }))
+
+    /**
+     * TODO: UI Elements
+     * - somehow implement Pi, e, etc.
+     * - make the result look better
+     * - when entering via keyboard, make buttons also act as if they were pressed
+     * - when entering via buttons, the cursor sometimes is invisible for large numbers
+     * - turn input into a contentEditable span to format the input better
+     */
 
     return (
         <main
@@ -429,7 +461,10 @@ export default function Home() {
 
             {/*    empty row with 2 elements, equally sized left to right, max width 0.8 screen, if on mobile, then as column*/}
             <div className={appIsMobile ? "flex flex-col" : "flex flex-row"}>
-                <div style={{width: appIsMobile ? screenWidth : screenWidth * 0.55}}>
+                <div style={{
+                    width: appIsMobile ? screenWidth : screenWidth * 0.55,
+                    opacity: screenHeight !== 0 ? 1 : 0
+                }}>
                     {/*    Button showing the result, click to copy if valid and animation isn't playing currently*/}
                     <button
                         id="result"
@@ -442,15 +477,17 @@ export default function Home() {
                                 navigator.clipboard.writeText(output).then(/*ignored*/)
                                 setCopyClicked(true)
                             }
-                        }}
-                    >
+                        }}>
                         {copyClicked ? "Ergebnis kopiert!" : output}
                         {/* TODO animate smooth transition between valid / invalid and button clicked */}
                         {/* TODO animate the individual numbers to increase / decrease */}
                     </button>
 
                     {/*    Buttons*/}
-                    <div className="flex flex-col" style={{height: 'calc(' + buttonsHeight + 'px - 1rem)',}}>
+                    <div className="flex flex-col"
+                         style={{
+                             height: 'calc(' + buttonsHeight + 'px - 1rem)',
+                         }}>
                         {rows.map((row, index) => {
                             return (
                                 <div key={"row_" + index} className="flex flex-row">
