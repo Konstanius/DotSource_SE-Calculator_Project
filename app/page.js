@@ -308,7 +308,10 @@ export default function Home() {
     addButton(5, ".", true, false, ".")
 
     let content = <div className="flex flex-col items-center">
-        <span className="ml-2">Ergebnisse runden</span>
+        <span
+            className="ml-2"
+            style={{fontSize: screenWidth < 768 ? "0.8rem" : "1.4rem", fontWeight: "bold", color: "var(--color-text)"}}
+        >Ergebnisse runden</span>
         {roundResults ? <i className="fa-solid fa-toggle-on"></i> : <i className="fa-solid fa-toggle-off"></i>}
     </div>
     addButton(5, content, false, false, "", () => {

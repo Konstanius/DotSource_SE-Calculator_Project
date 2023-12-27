@@ -93,8 +93,8 @@ body {
 .history-entry-time {
     font-size: 0.8rem;
     color: rgba(var(--foreground-rgb), 0.5);
-    width: 10%;
-    overflow: hidden;
+    width: 5rem;
+    overflow: visible;
     padding-right: 0.5rem;
 }
 
@@ -206,6 +206,7 @@ body {
     margin-top: 0.5rem;
     margin-right: 0.5rem;
     cursor: pointer;
+    overflow: clip;
 }
 
 .calc-button:hover {
