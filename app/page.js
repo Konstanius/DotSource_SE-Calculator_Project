@@ -5,6 +5,7 @@ import {charFromMode, ParserError, parseWithParentheses} from "@/app/parser_rev2
 import {HistoryDisplay, HistoryEntry} from "@/app/history";
 
 export default function Home() {
+    // States
     const [valid, setValidity] = useState(true)
     const [input, setInput] = useState('')
     const [output, setOutput] = useState('0')
@@ -20,10 +21,19 @@ export default function Home() {
     const [buttonsHeight, setButtonsHeight] = useState(0)
     let [roundResults, setRoundResults] = useState(false) // Not const, since an immediate change of roundResults is needed sometimes
 
+    // Animation "controller", controlling the animation of:
+    // - the submit button
+    // - the input field
+    // - the history field
+    // - the input overlay (to fade the new value into the input field)
+    const [submitAnimation, setSubmitAnimation] = useState("")
+
+    // Once, on client side, set the roundResults variable immediately, to not cause any state problems
     if (typeof window !== 'undefined' && currentPrompt === '') {
         roundResults = localStorage.getItem("roundResults") === "true"
     }
 
+    // Turn an AccNum into a properly formatted string, taking into account the roundResults variable
     function getResultWithProperDisplay(input) {
         let result = input.toNumber().toLocaleString(navigator.language, {
             useGrouping: false,
@@ -45,13 +55,7 @@ export default function Home() {
         return result
     }
 
-    // Animation "controller", controlling the animation of:
-    // - the submit button
-    // - the input field
-    // - the history field
-    // - the input overlay (to fade the new value into the input field)
-    const [submitAnimation, setSubmitAnimation] = useState("")
-
+    // Set the tooltip to the selected text
     function setSelectionArea() {
         let start = document.getElementById('input').selectionStart
         let end = document.getElementById('input').selectionEnd
@@ -78,11 +82,11 @@ export default function Home() {
         }
     }
 
+    // Submit the input
     const onSubmit = (e) => {
         e.preventDefault();
 
-        // If the result is the same as the input, do nothing
-        // Same thing if an animation is already playing
+        // if input is same as output or input is empty or submit animation is running, do nothing
         if (output === input || submitAnimation !== "" || input.replaceAll(" ", "") === "") {
             return
         }
@@ -116,6 +120,7 @@ export default function Home() {
     }
 
     useEffect(() => {
+        // Once, on clientside, set up the page
         if (currentPrompt === '') {
             randomizePrompt()
 
@@ -136,23 +141,20 @@ export default function Home() {
         }
 
         try {
-            // focus input
+            // focus input  at all times
             const inputElement = document.getElementById('input');
             const cursorPosition = inputElement.selectionStart;
-
-            // focus input
             inputElement.focus();
-
-            // restore cursor position
             inputElement.setSelectionRange(cursorPosition, cursorPosition);
         } catch (error) {
             // ignore
         }
     }, [currentPrompt])
 
+    // Generate a random prompt of the format: a (operator) b (operator) (c (operator) d) (operator) e
     function randomizePrompt() {
-        // Generate a random prompt of the format: a (operator) b (c (operator) d(% or !)) e(% or !)
-        // Random numbers between 1 and 55
+        // numbers are between 1 and 55 and have a chance to include a ! or % after them
+        // operators are +, -, *, /
         function randomNum() {
             return Math.floor(Math.random() * 55) + 1
         }
@@ -178,12 +180,14 @@ export default function Home() {
         setCurrentPrompt(prompt)
     }
 
+    // When resetCursorPos is called, we set the cursor position to the given value
     useEffect(() => {
         if (resetCursorPos === -1) return
         document.getElementById('input').setSelectionRange(resetCursorPos, resetCursorPos)
         setResetCursorPos(-1)
     }, [resetCursorPos])
 
+    // Animation management for the result button onClick
     useEffect(() => {
         if (copyClicked) {
             setTimeout(() => {
@@ -192,6 +196,7 @@ export default function Home() {
         }
     }, [copyClicked]);
 
+    // Manages input in the text field
     const onChangedTextField = (newValue, cursorPosition) => {
         if (newValue === input && input === '') return // Prevent spam of clearing to get random prompts
 
@@ -224,7 +229,7 @@ export default function Home() {
         setInput(newValue)
         localStorage.setItem("input", newValue)
         inputElement.focus();
-        inputElement.setSelectionRange(cursorPosition, cursorPosition);
+        setResetCursorPos(cursorPosition)
 
         if (newValue === '') {
             randomizePrompt()
@@ -247,6 +252,7 @@ export default function Home() {
 
     let rows = [[], [], [], [], [], []]
 
+    // Method to populate button rows
     function addButton(row, title, isNumber, isSpecial, onClickAdd, onClick) {
         let style = "calc-button"
         if (isNumber) {
@@ -268,6 +274,7 @@ export default function Home() {
                     }
 
                     // if the selection is not empty, replace range, otherwise append / insert
+                    // TODO this does not yet work
                     let inputElement = document.getElementById('input')
                     let start = inputElement.selectionStart
                     let end = inputElement.selectionEnd
@@ -277,6 +284,7 @@ export default function Home() {
                 }}>{screenHeight !== 0 ? title : ""}</button>)
     }
 
+    // The actual buttons
     addButton(0, <i className="fa-solid fa-percent"></i>, false, false, "%")
     addButton(0, "", false, false, "")
     addButton(0, <i className="fa-solid fa-delete-left"></i>, false, true, "", () => {
