@@ -4,7 +4,8 @@ const MODE_SUBTRACTION = 2
 const MODE_MULTIPLICATION = 3
 const MODE_DIVISION = 4
 
-const MAX_NUM = Math.pow(2, 256)
+// Javascript web limitation, will be imprecise after ~16 digits
+const MAX_NUM = Math.pow(2, 53)
 
 function modeFromChar(char) {
     if (char === "+") {
@@ -76,27 +77,27 @@ export class AccNum {
         let commonLower = this.denominator * otherNumber.denominator
         this.numerator = this.numerator * otherNumber.denominator + this.denominator * otherNumber.numerator
         this.denominator = commonLower
-        outOfBoundsChecker(this.toNumber())
+        outOfBoundsChecker(this)
     }
 
     subtract(otherNumber) {
         let commonLower = this.denominator * otherNumber.denominator
         this.numerator = this.numerator * otherNumber.denominator - this.denominator * otherNumber.numerator
         this.denominator = commonLower
-        outOfBoundsChecker(this.toNumber())
+        outOfBoundsChecker(this)
     }
 
     multiply(otherNumber) {
         this.denominator *= otherNumber.denominator
         this.numerator *= otherNumber.numerator
-        outOfBoundsChecker(this.toNumber())
+        outOfBoundsChecker(this)
     }
 
     divide(otherNumber) {
         let reciprocate = new AccNum(otherNumber.denominator)
         reciprocate.denominator = otherNumber.numerator
         this.multiply(reciprocate)
-        outOfBoundsChecker(this.toNumber())
+        outOfBoundsChecker(this)
     }
 
     factorise() {
@@ -107,9 +108,9 @@ export class AccNum {
         let value = 1
         for (let i = 2; i <= num; i++) {
             value = value * i
-            outOfBoundsChecker(value)
         }
         this.numerator = value
+        outOfBoundsChecker(this)
     }
 }
 
@@ -127,12 +128,9 @@ function gcd(a, b) {
     }
 }
 
-function outOfBoundsChecker(num) {
-    let invalid = (num < 0) ? num < -MAX_NUM : num > (MAX_NUM - 1)
-    if (invalid && num > 0) {
-        throw new ParserError("Zahl ist zu groß", -1)
-    } else if (invalid && num < 0) {
-        throw new ParserError("Zahl ist zu klein", -1)
+function outOfBoundsChecker(toCheck) {
+    if (toCheck.denominator > MAX_NUM || toCheck.numerator > MAX_NUM) {
+        throw new ParserError("Zahl überschreitet Präzisionslimit (± 2⁵³)", -1)
     }
 }
 
@@ -254,6 +252,8 @@ export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
                         // If the decimal point was assigned, multiply the denominator by 10 as well
                         currentNumber.denominator *= 10
                     }
+
+                    outOfBoundsChecker(currentNumber)
                 }
             } else {
                 if (numberWasFinished) {

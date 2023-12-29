@@ -2,7 +2,7 @@
 
 import {useEffect, useState} from "react"
 import {charFromMode, ParserError, parseWithParentheses} from "@/app/parser_rev2.mjs"
-import {HistoryDisplay, HistoryEntry} from "@/app/history";
+import {HistoryDisplay, HistoryEntry} from "@/app/history"
 
 export default function Home() {
     // States
@@ -37,7 +37,7 @@ export default function Home() {
     function getResultWithProperDisplay(input) {
         let result = input.toNumber().toLocaleString(navigator.language, {
             useGrouping: false,
-            maximumFractionDigits: 10
+            maximumFractionDigits: 15
         })
 
         let decimalCount = result.split(".")[1]?.length || 0
@@ -45,9 +45,9 @@ export default function Home() {
         if (!roundResults && decimalCount > 3) {
             input.shorten()
             if (input.denominator === 1) {
-                result = input.numerator
+                result = input.numerator.toString()
             } else if (input.denominator === -1) {
-                result = -input.numerator
+                result = -input.numerator.toString()
             } else {
                 result = input.numerator + "/" + input.denominator
             }
@@ -84,7 +84,7 @@ export default function Home() {
 
     // Submit the input
     const onSubmit = (e) => {
-        e.preventDefault();
+        e.preventDefault()
 
         // if input is same as output or input is empty or submit animation is running, do nothing
         if (output === input || submitAnimation !== "" || input.replaceAll(" ", "") === "") {
@@ -93,10 +93,10 @@ export default function Home() {
 
         // If invalid, do shake animation
         if (!valid) {
-            setSubmitAnimation("shake-horizontal");
+            setSubmitAnimation("shake-horizontal")
             setTimeout(() => {
-                setSubmitAnimation("");
-            }, 500);
+                setSubmitAnimation("")
+            }, 500)
             return
         }
 
@@ -106,17 +106,17 @@ export default function Home() {
             let historyEntry = new HistoryEntry(HistoryEntry.getNextId(), Date.now(), input, output)
             historyEntry.save()
             setHistory([...HistoryEntry.getAll()])
-            setSubmitAnimation("fade-out-right");
+            setSubmitAnimation("fade-out-right")
         } else {
-            setSubmitAnimation("fade-out");
+            setSubmitAnimation("fade-out")
         }
 
         setTimeout(() => {
             onChangedTextField(output)
-            setSubmitAnimation("");
+            setSubmitAnimation("")
             // set the cursor to the end of the new input
             document.getElementById('input').setSelectionRange(output.length, output.length)
-        }, 500);
+        }, 500)
     }
 
     useEffect(() => {
@@ -142,10 +142,10 @@ export default function Home() {
 
         try {
             // focus input  at all times
-            const inputElement = document.getElementById('input');
-            const cursorPosition = inputElement.selectionStart;
-            inputElement.focus();
-            inputElement.setSelectionRange(cursorPosition, cursorPosition);
+            const inputElement = document.getElementById('input')
+            const cursorPosition = inputElement.selectionStart
+            inputElement.focus()
+            inputElement.setSelectionRange(cursorPosition, cursorPosition)
         } catch (error) {
             // ignore
         }
@@ -183,7 +183,8 @@ export default function Home() {
     // When resetCursorPos is called, we set the cursor position to the given value
     useEffect(() => {
         if (resetCursorPos === -1) return
-        document.getElementById('input').setSelectionRange(resetCursorPos, resetCursorPos)
+        let inputElement = document.getElementById('input')
+        inputElement.setSelectionRange(resetCursorPos, resetCursorPos)
         setResetCursorPos(-1)
     }, [resetCursorPos])
 
@@ -194,15 +195,17 @@ export default function Home() {
                 setCopyClicked(false)
             }, 750)
         }
-    }, [copyClicked]);
+    }, [copyClicked])
 
     // Manages input in the text field
     const onChangedTextField = (newValue, cursorPosition) => {
         if (newValue === input && input === '') return // Prevent spam of clearing to get random prompts
 
-        let inputElement = document.getElementById('input');
-        if (cursorPosition === undefined) {
-            cursorPosition = inputElement.selectionStart;
+        let inputElement = document.getElementById('input')
+        if (cursorPosition === undefined && inputElement.selectionStart === 0) {
+            cursorPosition = newValue.length
+        } else if (cursorPosition === undefined) {
+            cursorPosition = inputElement.selectionStart
         }
         if (newValue.length === input.length + 1) {
             let inputChar = newValue.charAt(cursorPosition - 1)
@@ -228,8 +231,10 @@ export default function Home() {
 
         setInput(newValue)
         localStorage.setItem("input", newValue)
-        inputElement.focus();
-        setResetCursorPos(cursorPosition)
+        setTimeout(() => {
+            inputElement.blur()
+            inputElement.focus()
+        }, 3) // Delay, since setInput is not immediate
 
         if (newValue === '') {
             randomizePrompt()
@@ -318,7 +323,7 @@ export default function Home() {
     let content = <div className="flex flex-col items-center">
         <span
             className="ml-2"
-            style={{fontSize: screenWidth < 768 ? "0.8rem" : "1.4rem", fontWeight: "bold", color: "var(--color-text)"}}
+            style={{fontSize: screenWidth < 1024 ? "0.8rem" : "1.4rem", fontWeight: "bold", color: "var(--color-text)"}}
         >Ergebnisse runden</span>
         {roundResults ? <i className="fa-solid fa-toggle-on"></i> : <i className="fa-solid fa-toggle-off"></i>}
     </div>
@@ -338,10 +343,8 @@ export default function Home() {
 
     /**
      * TODO: UI Elements
-     * - somehow implement Pi, e, etc.
      * - make the result look better
      * - when entering via keyboard, make buttons also act as if they were pressed
-     * - when entering via buttons, the cursor is useless for large inputs
      * - input buttons get stuck on mobile sometimes
      * - optimize tooltip a bit
      * - make individual result digits increase / decrease when the result changes
@@ -354,7 +357,7 @@ export default function Home() {
                 width: screenWidth,
                 height: screenHeight,
                 overflowX: "hidden",
-                overflowY: (screenWidth < 768) ? "auto" : "hidden"
+                overflowY: (screenWidth < 1024) ? "auto" : "hidden"
             }}
             className="flex min-h-screen flex-col items-center p-24"
             onMouseMove={(_) => {
@@ -376,14 +379,14 @@ export default function Home() {
                             content-center
                             bg-transparent
                             text-white text-6xl p-4 m-4 text-center
-                            lcd-font
                             outline-none"
                             style={{
                                 left: 0,
                                 top: 0,
                                 zIndex: -5,
                                 opacity: submitAnimation === "fade-out-right" ? 1 : 0,
-                                width: screenWidth * 0.8
+                                width: screenWidth * 0.8,
+                                fontFamily: "Space Mono",
                             }}
                             type="text"
                             value={output}
@@ -401,11 +404,13 @@ export default function Home() {
                                 text-white text-6xl p-4 m-4 text-center
                                 outline-none
                                 caret-red-500
-                                lcd-font
                                 ${submitAnimation}
                                 `}
                             type="text"
-                            style={{width: screenWidth * 0.8}}
+                            style={{
+                                width: screenWidth * 0.8,
+                                fontFamily: "Space Mono",
+                            }}
                             value={input}
                             readOnly={submitAnimation !== ""}
                             placeholder={currentPrompt}
@@ -422,14 +427,14 @@ export default function Home() {
 
                                 // pause for 10 ms and then clear the selection
                                 setTimeout(() => {
-                                    const inputElement = document.getElementById('input');
-                                    const cursorPosition = inputElement.selectionStart;
+                                    const inputElement = document.getElementById('input')
+                                    const cursorPosition = inputElement.selectionStart
 
                                     // focus input
-                                    inputElement.focus();
+                                    inputElement.focus()
 
                                     // restore cursor position
-                                    inputElement.setSelectionRange(cursorPosition, cursorPosition);
+                                    inputElement.setSelectionRange(cursorPosition, cursorPosition)
                                 }, 1)
                             }}
                             onInput={(_) => {
@@ -466,9 +471,9 @@ export default function Home() {
             }
 
             {/**Result, buttons and history*/}
-            <div className={(screenWidth < 768) ? "flex flex-col" : "flex flex-row"}>
+            <div className={(screenWidth < 1024) ? "flex flex-col" : "flex flex-row"}>
                 <div style={{
-                    width: (screenWidth < 768) ? screenWidth * 0.95 : screenWidth * 0.55,
+                    width: (screenWidth < 1024) ? screenWidth * 0.95 : screenWidth * 0.55,
                     opacity: screenHeight !== 0 ? 1 : 0
                 }}>
                     <button
@@ -503,9 +508,9 @@ export default function Home() {
                         })}
                     </div>
                 </div>
-                <div style={{width: (screenWidth < 768) ? screenWidth * 0.95 : screenWidth * 0.35}}>
+                <div style={{width: (screenWidth < 1024) ? screenWidth * 0.95 : screenWidth * 0.35}}>
                     <HistoryDisplay setInput={onChangedTextField} history={history} setHistory={setHistory}
-                                    useMobileLayout={(screenWidth < 768)}/>
+                                    useMobileLayout={(screenWidth < 1024)}/>
                 </div>
             </div>
         </main>
