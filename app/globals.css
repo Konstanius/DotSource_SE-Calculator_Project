@@ -240,3 +240,8 @@ body {
 .calc-special:active {
     background-color: rgb(159, 52, 52);
 }
+
+input::placeholder {
+    color: white;
+    opacity: 0.3;
+}

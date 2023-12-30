@@ -4,6 +4,7 @@ import {useEffect, useState} from "react"
 import {charFromMode, ParserError, parseWithParentheses} from "@/app/parser_rev2.mjs"
 import {HistoryDisplay, HistoryEntry} from "@/app/history"
 
+let selectionAreaData = [0, 0]
 export default function Home() {
     // States
     const [valid, setValidity] = useState(true)
@@ -15,7 +16,6 @@ export default function Home() {
     const [currentPrompt, setCurrentPrompt] = useState('')
     const [screenWidth, setScreenWidth] = useState(0)
     const [screenHeight, setScreenHeight] = useState(0)
-    const [resetCursorPos, setResetCursorPos] = useState(-1)
     const [copyClicked, setCopyClicked] = useState(false)
     const [history, setHistory] = useState([])
     const [buttonsHeight, setButtonsHeight] = useState(0)
@@ -56,9 +56,16 @@ export default function Home() {
     }
 
     // Set the tooltip to the selected text
-    function setSelectionArea() {
+    async function setSelectionArea() {
+        // For some reason, this is absolutely necessary, otherwise the selection is not updated
+        await new Promise(r => setTimeout(r, 5))
+
         let start = document.getElementById('input').selectionStart
         let end = document.getElementById('input').selectionEnd
+        if (start === selectionAreaData[0] && end === selectionAreaData[1]) return
+
+        // In a timeout so that visual buttons remember the state of the selection, since unfocus triggers reset of selection
+        selectionAreaData = [start, end]
         if (start === undefined || end === undefined || start === end) {
             setTooltip('')
             setToolTipX(0)
@@ -121,35 +128,26 @@ export default function Home() {
 
     useEffect(() => {
         // Once, on clientside, set up the page
-        if (currentPrompt === '') {
+        if (window.pageSetUp === undefined) {
+            window.pageSetUp = true
             randomizePrompt()
 
             // set the screen width
-            setScreenWidth(window.innerWidth)
-            setScreenHeight(window.innerHeight)
-            setButtonsHeight(window.innerHeight - document.getElementById('input').clientHeight - document.getElementById('result').clientHeight - 24 * 4)
+            setScreenWidth(document.documentElement.clientWidth)
+            setScreenHeight(document.documentElement.clientHeight)
+            setButtonsHeight(document.documentElement.clientHeight - document.getElementById('input').clientHeight - document.getElementById('result').clientHeight - 24 * 4)
 
             // add event listener to update the screen width
             window.addEventListener('resize', () => {
-                setScreenWidth(window.innerWidth)
-                setScreenHeight(window.innerHeight)
-                setButtonsHeight(window.innerHeight - document.getElementById('input').clientHeight - document.getElementById('result').clientHeight - 24 * 4)
+                setScreenWidth(document.documentElement.clientWidth)
+                setScreenHeight(document.documentElement.clientHeight)
+                setButtonsHeight(document.documentElement.clientHeight - document.getElementById('input').clientHeight - document.getElementById('result').clientHeight - 24 * 4)
             })
 
             setHistory([...HistoryEntry.getAll()] || [])
             onChangedTextField(localStorage.getItem("input") || '')
         }
-
-        try {
-            // focus input  at all times
-            const inputElement = document.getElementById('input')
-            const cursorPosition = inputElement.selectionStart
-            inputElement.focus()
-            inputElement.setSelectionRange(cursorPosition, cursorPosition)
-        } catch (error) {
-            // ignore
-        }
-    }, [currentPrompt])
+    }, [])
 
     // Generate a random prompt of the format: a (operator) b (operator) (c (operator) d) (operator) e
     function randomizePrompt() {
@@ -180,14 +178,6 @@ export default function Home() {
         setCurrentPrompt(prompt)
     }
 
-    // When resetCursorPos is called, we set the cursor position to the given value
-    useEffect(() => {
-        if (resetCursorPos === -1) return
-        let inputElement = document.getElementById('input')
-        inputElement.setSelectionRange(resetCursorPos, resetCursorPos)
-        setResetCursorPos(-1)
-    }, [resetCursorPos])
-
     // Animation management for the result button onClick
     useEffect(() => {
         if (copyClicked) {
@@ -198,42 +188,19 @@ export default function Home() {
     }, [copyClicked])
 
     // Manages input in the text field
-    const onChangedTextField = (newValue, cursorPosition) => {
+    const onChangedTextField = (newValue) => {
         if (newValue === input && input === '') return // Prevent spam of clearing to get random prompts
 
         let inputElement = document.getElementById('input')
-        if (cursorPosition === undefined && inputElement.selectionStart === 0) {
-            cursorPosition = newValue.length
-        } else if (cursorPosition === undefined) {
-            cursorPosition = inputElement.selectionStart
-        }
-        if (newValue.length === input.length + 1) {
-            let inputChar = newValue.charAt(cursorPosition - 1)
-            if (inputChar === '(') {
-                // insert a closing bracket after the opening bracket
-                newValue = newValue.substring(0, cursorPosition) + ')' + newValue.substring(cursorPosition)
-            } else if (inputChar === ')') {
-                // Check if the next character is also a closing bracket, if yes, remove it
-                if (newValue.charAt(cursorPosition) === ')') {
-                    newValue = newValue.substring(0, cursorPosition) + newValue.substring(cursorPosition + 1)
-                }
-            }
-        } else if (newValue.length === input.length - 1) {
-            let removedChar = input.charAt(cursorPosition)
-            if (removedChar === '(') {
-                // Check if the next character is a closing bracket, if yes, remove it
-                let nextChar = newValue.charAt(cursorPosition)
-                if (nextChar === ')') {
-                    newValue = newValue.substring(0, cursorPosition) + newValue.substring(cursorPosition + 1)
-                }
-            }
-        }
 
         setInput(newValue)
         localStorage.setItem("input", newValue)
         setTimeout(() => {
-            inputElement.blur()
-            inputElement.focus()
+            setSelectionArea().then(() => {
+                inputElement.blur()
+                inputElement.focus()
+                inputElement.setSelectionRange(selectionAreaData[0], selectionAreaData[1])
+            })
         }, 3) // Delay, since setInput is not immediate
 
         if (newValue === '') {
@@ -279,13 +246,13 @@ export default function Home() {
                     }
 
                     // if the selection is not empty, replace range, otherwise append / insert
-                    // TODO this does not yet work
-                    let inputElement = document.getElementById('input')
-                    let start = inputElement.selectionStart
-                    let end = inputElement.selectionEnd
+                    let start = selectionAreaData[0]
+                    let end = selectionAreaData[1]
                     let newValue = input.substring(0, start) + onClickAdd + input.substring(end)
-                    onChangedTextField(newValue, start + onClickAdd.length)
-                    setResetCursorPos(start + onClickAdd.length)
+                    onChangedTextField(newValue)
+                    setTimeout(() => {
+                        document.getElementById('input').setSelectionRange(start + onClickAdd.length, start + onClickAdd.length)
+                    }, 5)
                 }}>{screenHeight !== 0 ? title : ""}</button>)
     }
 
@@ -294,11 +261,16 @@ export default function Home() {
     addButton(0, "", false, false, "")
     addButton(0, <i className="fa-solid fa-delete-left"></i>, false, true, "", () => {
         if (input.length === 0) return
-        let inputElement = document.getElementById('input')
-        let cursorPosition = inputElement.selectionStart
-        let newValue = input.substring(0, cursorPosition - 1) + input.substring(cursorPosition)
+        let start = selectionAreaData[0]
+        let end = selectionAreaData[1]
+        if (start === end) {
+            start--
+        }
+        let newValue = input.substring(0, start) + input.substring(end)
         onChangedTextField(newValue)
-        setResetCursorPos(cursorPosition - 1)
+        setTimeout(() => {
+            document.getElementById('input').setSelectionRange(start, start)
+        }, 5)
     })
     addButton(0, <i className="fa-solid fa-c"></i>, false, true, "", () => onChangedTextField(""))
     addButton(1, "(", false, false, "(")
@@ -348,6 +320,8 @@ export default function Home() {
      * - input buttons get stuck on mobile sometimes
      * - optimize tooltip a bit
      * - make individual result digits increase / decrease when the result changes
+     * - automatic parentheses (add closing one when opening, delete immediate closing one when closing previous opening)
+     * - landscape mode on mobile
      */
 
     return (

@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Documentation added">
+    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Optimized selection and input buttons further">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/globals.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/layout.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/layout.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/parser_rev2.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/app/parser_rev2.mjs" afterDir="false" />
@@ -47,6 +48,7 @@
     "Node.js.parser_rev2.mjs.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "ShowUsagesActions.previewPropertyKey": "true",
     "git-widget-placeholder": "master",
     "ignore.virus.scanning.warn.message": "true",
     "node.js.detected.package.eslint": "true",
@@ -81,7 +83,9 @@
       <updated>1703695702857</updated>
       <workItem from="1703695706813" duration="5232000" />
       <workItem from="1703713914425" duration="366000" />
-      <workItem from="1703839500432" duration="4430000" />
+      <workItem from="1703839500432" duration="5833000" />
+      <workItem from="1703866654525" duration="4980000" />
+      <workItem from="1703941121709" duration="2720000" />
     </task>
     <task id="LOCAL-00001" summary="Made UI a lot more responsive">
       <option name="closed" value="true" />
@@ -107,7 +111,15 @@
       <option name="project" value="LOCAL" />
       <updated>1703840533147</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Cursor optimisations&#10;&#10;Better out of bounds checker&#10;&#10;New font for input">
+      <option name="closed" value="true" />
+      <created>1703844155434</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1703844155434</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -120,7 +132,8 @@
     <MESSAGE value="Made UI a lot more responsive" />
     <MESSAGE value="Slight optimizations to UI" />
     <MESSAGE value="Documentation added" />
-    <option name="LAST_COMMIT_MESSAGE" value="Documentation added" />
+    <MESSAGE value="Cursor optimisations&#10;&#10;Better out of bounds checker&#10;&#10;New font for input" />
+    <option name="LAST_COMMIT_MESSAGE" value="Cursor optimisations&#10;&#10;Better out of bounds checker&#10;&#10;New font for input" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
 </project>

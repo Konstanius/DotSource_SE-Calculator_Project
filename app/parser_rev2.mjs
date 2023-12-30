@@ -134,6 +134,7 @@ function outOfBoundsChecker(toCheck) {
     }
 }
 
+// TODO 9+-3
 /**
  * First recursively splits the string into parentheses groups, then calls solveParenthesesGroups() on the array entire array
  *
@@ -153,7 +154,6 @@ function outOfBoundsChecker(toCheck) {
  * @throws ParserError
  **/
 export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
-    // Split into parentheses groups, and use parse() on each group
     let currentNumber = new AccNum(0)
     let negateCurrentNumber = false
     let numberWasAssigned = false
