@@ -134,7 +134,6 @@ function outOfBoundsChecker(toCheck) {
     }
 }
 
-// TODO 9+-3
 /**
  * First recursively splits the string into parentheses groups, then calls solveParenthesesGroups() on the array entire array
  *
@@ -156,6 +155,7 @@ function outOfBoundsChecker(toCheck) {
 export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
     let currentNumber = new AccNum(0)
     let negateCurrentNumber = false
+    let negateNextNumber = false
     let numberWasAssigned = false
     let numberWasFinished = false
     let operatorWasAssigned = false
@@ -174,8 +174,9 @@ export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
             if (negateCurrentNumber) {
                 // If the number is negative, negate it
                 currentNumber.numerator *= -1
-                negateCurrentNumber = false
             }
+            negateCurrentNumber = negateNextNumber
+            negateNextNumber = false
             pushOntoGroupList(parenthesesGroups, currentNumber, depth)
             currentNumber = new AccNum(0)
             decimalPointWasAssigned = false
@@ -261,8 +262,9 @@ export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
                     if (negateCurrentNumber) {
                         // Negate if necessary
                         currentNumber.numerator *= -1
-                        negateCurrentNumber = false
                     }
+                    negateCurrentNumber = negateNextNumber
+                    negateNextNumber = false
 
                     if (currentNumber.trailingOperator === MODE_NONE) {
                         // If there is no trailing operator, assume multiplication
@@ -283,8 +285,12 @@ export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
             if (!numberWasAssigned || operatorWasAssigned) {
                 // If a number was not assigned or an operator was assigned for the next number, check for special cases before throwing an error
                 if (char === "-") {
-                    // If the operator is -, invert the current negative state
-                    negateCurrentNumber = !negateCurrentNumber
+                    // If the operator is -, invert the current negative state of the next number or the current number, if thats the first number
+                    if (numberWasAssigned) {
+                        negateNextNumber = !negateNextNumber
+                    } else {
+                        negateCurrentNumber = !negateCurrentNumber
+                    }
                 } else if (char === "+") {
                     // do nothing
                 }
@@ -339,6 +345,8 @@ export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
             // Negate if necessary
             currentNumber.numerator *= -1
         }
+        negateCurrentNumber = negateNextNumber
+        negateNextNumber = false
         pushOntoGroupList(parenthesesGroups, currentNumber, depth)
     }
 
