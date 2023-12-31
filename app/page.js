@@ -127,12 +127,27 @@ export default function Home() {
         }, 500)
     }
 
+    function onKeyPressed(e) {
+        let id = buttonKeyIds[e.key]
+        if (id === undefined) return
+
+        let button = document.getElementById(id)
+        if (button === null) {
+            console.log("Button element not found: " + id)
+            return
+        }
+
+        button.click()
+    }
+
     useEffect(() => {
         if (window.pageSetUp !== undefined) return
 
         // Once, on clientside, set up the page
         window.pageSetUp = true
         randomizePrompt()
+
+        document.addEventListener("keydown", onKeyPressed)
 
         function setDimensions() {
             setScreenWidth(document.documentElement.clientWidth)
@@ -184,8 +199,8 @@ export default function Home() {
                     // The animation is in forwards mode, so it does not need to be removed
                 })
             }
-        }, 10)
-    }, [])
+        }, 50) // History is loaded in later, so wait a bit
+    })
 
     // Generate a random prompt of the format: a (operator) b (operator) (c (operator) d) (operator) e
     function randomizePrompt() {
@@ -308,24 +323,6 @@ export default function Home() {
                     }, 10)
                 }}>{screenHeight !== 0 ? title : ""}</button>)
     }
-
-    function onKeyPressed(e) {
-        let id = buttonKeyIds[e.key]
-        if (id === undefined) return
-
-        let button = document.getElementById(id)
-        if (button === null) {
-            console.log("Button element not found: " + id)
-            return
-        }
-
-        button.click()
-    }
-
-    useEffect(() => {
-        document.removeEventListener("keydown", onKeyPressed)
-        document.addEventListener("keydown", onKeyPressed)
-    }, [])
 
     // The actual buttons
     addButton(0, <i className="fa-solid fa-percent"></i>, false, false, "%", undefined, "%")

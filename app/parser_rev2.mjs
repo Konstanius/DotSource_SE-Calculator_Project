@@ -296,9 +296,9 @@ export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
                 }
                 // If the operator is not - or +, throw an error
                 else if (!numberWasAssigned) {
-                    throw new ParserError("Unerwarteter Operator: " + char, index + indexOffset)
+                    throw new ParserError("Unerwarteter Operator: " + char, index + indexOffset) // start of expression
                 } else {
-                    throw new ParserError("Unerwarteter Operator: " + char, index + indexOffset)
+                    throw new ParserError("Unerwarteter Operator: " + char, index + indexOffset) // two operators in a row
                 }
             } else {
                 if (operatorWasAssigned) {
@@ -321,7 +321,7 @@ export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
                         // If the operator is not ! or %, assign it to the number
                         if (currentNumber.trailingOperator !== MODE_NONE) {
                             // If there is a trailing operator, throw an error
-                            throw new ParserError("Unerwarteter Operator: ", index + indexOffset)
+                            throw new ParserError("Unerwarteter Operator: ", index + indexOffset) // two operators in a row
                         }
 
                         // Assign the operator to the number
@@ -352,7 +352,7 @@ export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
 
     if (currentNumber.trailingOperator !== MODE_NONE) {
         // If there is a trailing operator, throw an error
-        throw new ParserError("Unerwarteter Operator: " + charFromMode(currentNumber.trailingOperator), index + indexOffset)
+        throw new ParserError("Unerwartetes Ende des Ausdrucks", index + indexOffset)
     }
 
     if (parenthesesGroups.length === 0) {

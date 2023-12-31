@@ -9,7 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "commander": "^11.1.0",
     "next": "14.0.4",
+    "prompt-sync": "^4.2.0",
     "react": "^18",
     "react-dom": "^18"
   },

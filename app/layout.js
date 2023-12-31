@@ -2,8 +2,8 @@ import './globals.css'
 import Head from 'next/head';
 
 export const metadata = {
-    title: 'Calculator Project',
-    description: 'Simple Calculator for DotSource SE application process',
+    title: 'Taschenrechner',
+    description: 'Simpler KEMDAS Taschenrechner für den DotSource SE Bewerbungsprozess',
 }
 
 export default function RootLayout({children}) {
