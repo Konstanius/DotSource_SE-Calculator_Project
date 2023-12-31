@@ -332,12 +332,13 @@ export default function Home() {
         if (input.length === 0) return
         let start = selectionAreaData[0]
         let end = selectionAreaData[1]
-        if (start === 0) return
+        if (start === 0 && end === 0) return
         if (start === end) {
             start--
         }
         let newValue = input.substring(0, start) + input.substring(end)
         onChangedTextField(newValue)
+        console.log("new", newValue)
         setTimeout(() => {
             document.getElementById('input').setSelectionRange(start, start)
         }, 5)

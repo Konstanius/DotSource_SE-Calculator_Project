@@ -4,13 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Changed color scheme of scroll bars&#10;&#10;Input queue added">
-      <change afterPath="$PROJECT_DIR$/app/console_calculator.mjs" afterDir="false" />
+    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Changed color scheme of scroll bars&#10;&#10;Input queue added&#10;&#10;Added console application module">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/layout.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/layout.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/console_calculator.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/app/console_calculator.mjs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -105,7 +101,7 @@
       <workItem from="1703866654525" duration="4980000" />
       <workItem from="1703941121709" duration="4353000" />
       <workItem from="1704025356412" duration="5002000" />
-      <workItem from="1704033992748" duration="744000" />
+      <workItem from="1704033992748" duration="2572000" />
     </task>
     <task id="LOCAL-00001" summary="Made UI a lot more responsive">
       <option name="closed" value="true" />
@@ -179,7 +175,15 @@
       <option name="project" value="LOCAL" />
       <updated>1704029235077</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Changed color scheme of scroll bars&#10;&#10;Input queue added&#10;&#10;Added console application module">
+      <option name="closed" value="true" />
+      <created>1704035132566</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1704035132566</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -198,7 +202,8 @@
     <MESSAGE value="Added on click animations for most buttons" />
     <MESSAGE value="Made buttons behave pressed when using the keyboard to enter" />
     <MESSAGE value="Changed color scheme of scroll bars&#10;&#10;Input queue added" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changed color scheme of scroll bars&#10;&#10;Input queue added" />
+    <MESSAGE value="Changed color scheme of scroll bars&#10;&#10;Input queue added&#10;&#10;Added console application module" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed color scheme of scroll bars&#10;&#10;Input queue added&#10;&#10;Added console application module" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
 </project>
