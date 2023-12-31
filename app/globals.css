@@ -149,7 +149,7 @@ body {
 }
 
 .history-entry-delete:hover {
-    background-color: rgba(187, 71, 71, 0.5);
+    background-color: rgba(222, 95, 91, 1);
 }
 
 .history::-webkit-scrollbar {
@@ -162,12 +162,12 @@ body {
 }
 
 .history::-webkit-scrollbar-thumb {
-    background: #bb4747;
+    background: rgb(159, 52, 52);
     border-radius: 10px;
 }
 
 .history::-webkit-scrollbar-thumb:hover {
-    background: #d53131;
+    background: rgba(222, 95, 91, 1);
 }
 
 .smallScroll::-webkit-scrollbar {
@@ -185,12 +185,12 @@ body {
 }
 
 .smallScroll::-webkit-scrollbar-thumb {
-    background: #bb4747;
+    background: rgb(159, 52, 52);
     border-radius: 10px;
 }
 
 .smallScroll::-webkit-scrollbar-thumb:hover {
-    background: #d53131;
+    background: rgba(222, 95, 91, 1);
 }
 
 .calc-button {
@@ -247,15 +247,15 @@ body {
 }
 
 .calc-special {
-    background-color: rgba(222, 95, 91, 1);
+    background-color: rgb(159, 52, 52);
 }
 
 .calc-special:hover {
-    background-color: rgb(159, 52, 52);
+    background-color: rgba(222, 95, 91, 1);
 }
 
 .calc-special:active {
-    background-color: rgb(159, 52, 52);
+    background-color: rgba(222, 95, 91, 1);
 }
 
 input::placeholder {

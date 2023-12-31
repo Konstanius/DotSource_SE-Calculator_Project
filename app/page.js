@@ -5,6 +5,7 @@ import {charFromMode, ParserError, parseWithParentheses} from "@/app/parser_rev2
 import {HistoryDisplay, HistoryEntry} from "@/app/history"
 
 let selectionAreaData = [0, 0]
+let toInput = []
 export default function Home() {
     // States
     const [valid, setValidity] = useState(true)
@@ -282,10 +283,16 @@ export default function Home() {
                 key={"button_" + row + "_" + rows[row].length}
                 className={style}
                 style={{height: 'calc(' + buttonsHeight / 6 + 'px - 1rem)'}}
-                onClick={() => {
+                onClick={async () => {
                     if (onClick !== undefined) {
                         onClick()
                         return
+                    }
+
+                    // Input queue
+                    toInput.push(onClickAdd)
+                    while (toInput[0] !== onClickAdd) {
+                        await new Promise(r => setTimeout(r, 3))
                     }
 
                     // if the selection is not empty, replace range, otherwise append / insert
@@ -295,7 +302,10 @@ export default function Home() {
                     onChangedTextField(newValue)
                     setTimeout(() => {
                         document.getElementById('input').setSelectionRange(start + onClickAdd.length, start + onClickAdd.length)
-                    }, 5)
+                        selectionAreaData[0] += onClickAdd.length
+                        selectionAreaData[1] += onClickAdd.length
+                        toInput.shift()
+                    }, 10)
                 }}>{screenHeight !== 0 ? title : ""}</button>)
     }
 

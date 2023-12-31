@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Added on click animations for most buttons">
+    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Made buttons behave pressed when using the keyboard to enter">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/globals.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -84,7 +85,7 @@
       <workItem from="1703839500432" duration="5833000" />
       <workItem from="1703866654525" duration="4980000" />
       <workItem from="1703941121709" duration="4353000" />
-      <workItem from="1704025356412" duration="3047000" />
+      <workItem from="1704025356412" duration="3744000" />
     </task>
     <task id="LOCAL-00001" summary="Made UI a lot more responsive">
       <option name="closed" value="true" />
@@ -142,7 +143,15 @@
       <option name="project" value="LOCAL" />
       <updated>1704026588135</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Made buttons behave pressed when using the keyboard to enter">
+      <option name="closed" value="true" />
+      <created>1704028560058</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1704028560059</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -159,7 +168,8 @@
     <MESSAGE value="Input via buttons perfected&#10;&#10;Removed automatic parentheses, added as TODO&#10;&#10;Made layout work better with rotation on mobile" />
     <MESSAGE value="Fixes a bug with the parser that had to do with negative number prefixes" />
     <MESSAGE value="Added on click animations for most buttons" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added on click animations for most buttons" />
+    <MESSAGE value="Made buttons behave pressed when using the keyboard to enter" />
+    <option name="LAST_COMMIT_MESSAGE" value="Made buttons behave pressed when using the keyboard to enter" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
 </project>
