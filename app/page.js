@@ -133,20 +133,30 @@ export default function Home() {
         window.pageSetUp = true
         randomizePrompt()
 
-        // set the screen width
-        setScreenWidth(document.documentElement.clientWidth)
-        setScreenHeight(document.documentElement.clientHeight)
-        setButtonsHeight(document.documentElement.clientHeight - document.getElementById('input').clientHeight - document.getElementById('result').clientHeight - 24 * 4)
-
-        // add event listener to update the screen width
-        window.addEventListener('resize', () => {
+        function setDimensions() {
             setScreenWidth(document.documentElement.clientWidth)
             setScreenHeight(document.documentElement.clientHeight)
             setButtonsHeight(document.documentElement.clientHeight - document.getElementById('input').clientHeight - document.getElementById('result').clientHeight - 24 * 4)
+
+            // Setting the dimensions after 10ms again will fix rendering issues after re-rendering with first dimensions, as some fields may change in size
+            setTimeout(() => {
+                setScreenWidth(document.documentElement.clientWidth)
+                setScreenHeight(document.documentElement.clientHeight)
+                setButtonsHeight(document.documentElement.clientHeight - document.getElementById('input').clientHeight - document.getElementById('result').clientHeight - 24 * 4)
+            }, 10)
+        }
+
+        // set the screen width
+        setDimensions()
+
+        // add event listener to update the screen width
+        window.addEventListener('resize', () => {
+            setDimensions()
         })
 
         setHistory([...HistoryEntry.getAll()] || [])
         onChangedTextField(localStorage.getItem("input") || '')
+        document.getElementById('input').focus()
 
         // add on click add "animate-click" class to the button for 100 ms
         setTimeout(() => {
@@ -155,6 +165,9 @@ export default function Home() {
                 let button = buttonsList[i]
                 button.addEventListener("click", () => {
                     if (button.textContent === " ") return // Ignore unused buttons with only a space
+
+                    // unFocus the element
+                    document.getElementById('input').blur()
 
                     // Remove the animation class if it exists
                     if (button.classList.contains('animate-click')) {
@@ -247,15 +260,20 @@ export default function Home() {
     }
 
     let rows = [[], [], [], [], [], []]
+    let buttonKeyIds = {}
 
     // Method to populate button rows
-    function addButton(row, title, isNumber, isSpecial, onClickAdd, onClick) {
+    function addButton(row, title, isNumber, isSpecial, onClickAdd, onClick, triggerButton) {
         let style = "calc-button calc-clickable"
         if (isNumber) {
             style += " calc-number"
         }
         if (isSpecial) {
             style += " calc-special"
+        }
+
+        if (triggerButton !== undefined) {
+            buttonKeyIds[triggerButton] = "button_" + row + "_" + rows[row].length
         }
 
         rows[row].push(
@@ -281,14 +299,33 @@ export default function Home() {
                 }}>{screenHeight !== 0 ? title : ""}</button>)
     }
 
+    function onKeyPressed(e) {
+        let id = buttonKeyIds[e.key]
+        if (id === undefined) return
+
+        let button = document.getElementById(id)
+        if (button === null) {
+            console.log("Button element not found: " + id)
+            return
+        }
+
+        button.click()
+    }
+
+    useEffect(() => {
+        document.removeEventListener("keydown", onKeyPressed)
+        document.addEventListener("keydown", onKeyPressed)
+    }, [])
+
     // The actual buttons
-    addButton(0, <i className="fa-solid fa-percent"></i>, false, false, "%")
+    addButton(0, <i className="fa-solid fa-percent"></i>, false, false, "%", undefined, "%")
     addButton(0, " ", false, false, "", () => {
     })
     addButton(0, <i className="fa-solid fa-delete-left"></i>, false, true, "", () => {
         if (input.length === 0) return
         let start = selectionAreaData[0]
         let end = selectionAreaData[1]
+        if (start === 0) return
         if (start === end) {
             start--
         }
@@ -297,26 +334,26 @@ export default function Home() {
         setTimeout(() => {
             document.getElementById('input').setSelectionRange(start, start)
         }, 5)
-    })
+    }, "Backspace")
     addButton(0, <i className="fa-solid fa-c"></i>, false, true, "", () => onChangedTextField(""))
-    addButton(1, "(", false, false, "(")
-    addButton(1, ")", false, false, ")")
-    addButton(1, "n!", false, false, "!")
-    addButton(1, <i className="fa-solid fa-divide"></i>, false, false, "/")
-    addButton(2, "7", true, false, "7")
-    addButton(2, "8", true, false, "8")
-    addButton(2, "9", true, false, "9")
-    addButton(2, <i className="fa-solid fa-xmark"></i>, false, false, "*")
-    addButton(3, "4", true, false, "4")
-    addButton(3, "5", true, false, "5")
-    addButton(3, "6", true, false, "6")
-    addButton(3, <i className="fa-solid fa-minus"></i>, false, false, "-")
-    addButton(4, "1", true, false, "1")
-    addButton(4, "2", true, false, "2")
-    addButton(4, "3", true, false, "3")
-    addButton(4, <i className="fa-solid fa-plus"></i>, false, false, "+")
-    addButton(5, "0", true, false, "0")
-    addButton(5, ".", true, false, ".")
+    addButton(1, "(", false, false, "(", undefined, "(")
+    addButton(1, ")", false, false, ")", undefined, ")")
+    addButton(1, "n!", false, false, "!", undefined, "!")
+    addButton(1, <i className="fa-solid fa-divide"></i>, false, false, "/", undefined, "/")
+    addButton(2, "7", true, false, "7", undefined, "7")
+    addButton(2, "8", true, false, "8", undefined, "8")
+    addButton(2, "9", true, false, "9", undefined, "9")
+    addButton(2, <i className="fa-solid fa-xmark"></i>, false, false, "*", undefined, "*")
+    addButton(3, "4", true, false, "4", undefined, "4")
+    addButton(3, "5", true, false, "5", undefined, "5")
+    addButton(3, "6", true, false, "6", undefined, "6")
+    addButton(3, <i className="fa-solid fa-minus"></i>, false, false, "-", undefined, "-")
+    addButton(4, "1", true, false, "1", undefined, "1")
+    addButton(4, "2", true, false, "2", undefined, "2")
+    addButton(4, "3", true, false, "3", undefined, "3")
+    addButton(4, <i className="fa-solid fa-plus"></i>, false, false, "+", undefined, "+")
+    addButton(5, "0", true, false, "0", undefined, "0")
+    addButton(5, ".", true, false, ".", undefined, ".")
 
     let content = <div className="flex flex-col items-center">
         <span
@@ -337,12 +374,11 @@ export default function Home() {
     addButton(5, <i className="fa-solid fa-equals"></i>, false, true, "", () => onSubmit({
         preventDefault: () => {
         }
-    }))
+    }), "Enter")
 
     /**
      * TODO: UI Elements
      * - make the result look better
-     * - when entering via keyboard, make buttons also act as if they were pressed
      * - input buttons get stuck on mobile sometimes
      * - optimize tooltip a bit
      * - make individual result digits increase / decrease when the result changes
@@ -372,13 +408,16 @@ export default function Home() {
                         <input
                             id="input-overlay"
                             inputMode='none'
-                            className="
-                            absolute
-                            smooth-transition
-                            content-center
-                            bg-transparent
-                            text-white text-6xl p-4 m-4 text-center
-                            outline-none"
+                            className={`
+                                absolute
+                                smooth-transition
+                                content-center
+                                bg-transparent
+                                text-white text-center
+                                ${(screenWidth >= 1024) ? "text-6xl p-4 m-4" : "text-3xl p-2 m-2"}
+                                outline-none
+                                caret-red-500
+                                `}
                             style={{
                                 left: 0,
                                 top: 0,
@@ -400,7 +439,8 @@ export default function Home() {
                             autoFocus={false}
                             className={`
                                 bg-transparent
-                                text-white text-6xl p-4 m-4 text-center
+                                text-white text-center
+                                ${(screenWidth >= 1024) ? "text-6xl p-4 m-4" : "text-3xl p-2 m-2"}
                                 outline-none
                                 caret-red-500
                                 ${submitAnimation}
