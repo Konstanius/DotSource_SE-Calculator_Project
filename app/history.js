@@ -117,7 +117,7 @@ export function HistoryDisplay({setInput, history, setHistory, useMobileLayout})
 
             if (differentDay) {
                 widgets.push(
-                    <div className="history-entry" key={"date_" + entry.id}>
+                    <div className="history-" key={"date_" + entry.id}>
                         <div
                             className="text-center"
                             style={{
@@ -139,7 +139,7 @@ export function HistoryDisplay({setInput, history, setHistory, useMobileLayout})
 
             widgets.push(
                 <button
-                    className="history-entry-button"
+                    className="history-entry-button calc-clickable"
                     onClick={() => setInput(entry.input)}
                     key={"entry_" + entry.id}>
                     <div className="history-entry-time">{

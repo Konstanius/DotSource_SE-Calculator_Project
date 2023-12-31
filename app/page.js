@@ -127,26 +127,50 @@ export default function Home() {
     }
 
     useEffect(() => {
-        // Once, on clientside, set up the page
-        if (window.pageSetUp === undefined) {
-            window.pageSetUp = true
-            randomizePrompt()
+        if (window.pageSetUp !== undefined) return
 
-            // set the screen width
+        // Once, on clientside, set up the page
+        window.pageSetUp = true
+        randomizePrompt()
+
+        // set the screen width
+        setScreenWidth(document.documentElement.clientWidth)
+        setScreenHeight(document.documentElement.clientHeight)
+        setButtonsHeight(document.documentElement.clientHeight - document.getElementById('input').clientHeight - document.getElementById('result').clientHeight - 24 * 4)
+
+        // add event listener to update the screen width
+        window.addEventListener('resize', () => {
             setScreenWidth(document.documentElement.clientWidth)
             setScreenHeight(document.documentElement.clientHeight)
             setButtonsHeight(document.documentElement.clientHeight - document.getElementById('input').clientHeight - document.getElementById('result').clientHeight - 24 * 4)
+        })
 
-            // add event listener to update the screen width
-            window.addEventListener('resize', () => {
-                setScreenWidth(document.documentElement.clientWidth)
-                setScreenHeight(document.documentElement.clientHeight)
-                setButtonsHeight(document.documentElement.clientHeight - document.getElementById('input').clientHeight - document.getElementById('result').clientHeight - 24 * 4)
-            })
+        setHistory([...HistoryEntry.getAll()] || [])
+        onChangedTextField(localStorage.getItem("input") || '')
 
-            setHistory([...HistoryEntry.getAll()] || [])
-            onChangedTextField(localStorage.getItem("input") || '')
-        }
+        // add on click add "animate-click" class to the button for 100 ms
+        setTimeout(() => {
+            let buttonsList = document.getElementsByClassName("calc-clickable")
+            for (let i = 0; i < buttonsList.length; i++) {
+                let button = buttonsList[i]
+                button.addEventListener("click", () => {
+                    if (button.textContent === " ") return // Ignore unused buttons with only a space
+
+                    // Remove the animation class if it exists
+                    if (button.classList.contains('animate-click')) {
+                        button.classList.remove('animate-click');
+                    }
+
+                    // Force a reflow to restart the animation
+                    void button.offsetWidth;
+
+                    // Add the animation class
+                    button.classList.add("animate-click")
+
+                    // The animation is in forwards mode, so it does not need to be removed
+                })
+            }
+        }, 10)
     }, [])
 
     // Generate a random prompt of the format: a (operator) b (operator) (c (operator) d) (operator) e
@@ -226,7 +250,7 @@ export default function Home() {
 
     // Method to populate button rows
     function addButton(row, title, isNumber, isSpecial, onClickAdd, onClick) {
-        let style = "calc-button"
+        let style = "calc-button calc-clickable"
         if (isNumber) {
             style += " calc-number"
         }
@@ -236,6 +260,7 @@ export default function Home() {
 
         rows[row].push(
             <button
+                id={"button_" + row + "_" + rows[row].length}
                 key={"button_" + row + "_" + rows[row].length}
                 className={style}
                 style={{height: 'calc(' + buttonsHeight / 6 + 'px - 1rem)'}}
@@ -258,7 +283,8 @@ export default function Home() {
 
     // The actual buttons
     addButton(0, <i className="fa-solid fa-percent"></i>, false, false, "%")
-    addButton(0, "", false, false, "")
+    addButton(0, " ", false, false, "", () => {
+    })
     addButton(0, <i className="fa-solid fa-delete-left"></i>, false, true, "", () => {
         if (input.length === 0) return
         let start = selectionAreaData[0]
@@ -321,7 +347,6 @@ export default function Home() {
      * - optimize tooltip a bit
      * - make individual result digits increase / decrease when the result changes
      * - automatic parentheses (add closing one when opening, delete immediate closing one when closing previous opening)
-     * - landscape mode on mobile
      */
 
     return (
@@ -336,7 +361,7 @@ export default function Home() {
             className="flex min-h-screen flex-col items-center p-24"
             onMouseMove={(_) => {
                 if (!_.buttons) return // only if mouse is pressed, since only then the selection is possible
-                setSelectionArea()
+                setSelectionArea().then(/*ignored*/)
             }}>
 
             {/**Input row*/}
