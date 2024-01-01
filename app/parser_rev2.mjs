@@ -109,6 +109,7 @@ export class AccNum {
     }
 
     factorise() {
+        // The error in the comparison can be ignored, it is an issue in JavaScript Intellisense
         if (this.numerator % this.denominator !== BigInt(0)) throw new ParserError("Fakultät von Kommazahlen ist nicht definiert", -1)
         let num = this.toNumber()
         this.denominator = BigInt(1)
@@ -317,7 +318,7 @@ export function parseWithParentheses(input, depth, indexOffset) {
             if (!numberWasAssigned || operatorWasAssigned) {
                 // If a number was not assigned or an operator was assigned for the next number, check for special cases before throwing an error
                 if (char === "-") {
-                    // If the operator is -, invert the current negative state of the next number or the current number, if thats the first number
+                    // If the operator is -, invert the current negative state of the next number or the current number, if that's the first number
                     if (numberWasAssigned) {
                         negateNextNumber = !negateNextNumber
                     } else {
@@ -398,7 +399,7 @@ export function parseWithParentheses(input, depth, indexOffset) {
 /**
  * Recursively solves parentheses groups
  *
- * Iterates through the array, recursing on each array
+ * Iterates through the array, recurring on each array
  * Once the iteration is done, concatenates the array into a string and calls parseSingleGroupString() on it
  * @param parenthesesGroups
  * @returns {AccNum}
@@ -408,7 +409,7 @@ function solveParenthesesGroups(parenthesesGroups) {
     for (let i = 0; i < parenthesesGroups.length; i++) {
         const group = parenthesesGroups[i]
         if (Array.isArray(group)) {
-            parenthesesGroups[i] = solveParenthesesGroups(group, false)
+            parenthesesGroups[i] = solveParenthesesGroups(group)
         }
     }
 

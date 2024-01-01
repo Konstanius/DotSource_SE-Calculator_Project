@@ -1,15 +1,15 @@
 import './globals.css'
-import Head from 'next/head';
-
-export const metadata = {
-    title: 'Taschenrechner',
-    description: 'Simpler KEMDAS Taschenrechner für den DotSource SE Bewerbungsprozess',
-}
 
 export const viewport = {
     width: 'device-width',
     initialScale: 1,
     shrinkToFit: false,
+}
+
+export const metadata = {
+    title: 'Taschenrechner',
+    description: 'Simpler KEMDAS Taschenrechner für den DotSource SE Bewerbungsprozess',
+    viewport: viewport,
 }
 
 export default function RootLayout({children}) {

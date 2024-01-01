@@ -4,10 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Removed size transition for result button&#10;&#10;Fixes absolute positioning issue for error overlay on mobile layout">
+    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Fixes division by 0 (Introduced an error)&#10;&#10;Removes logging of parser">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/console_calculator.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/app/console_calculator.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/layout.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/layout.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/parser_rev2.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/app/parser_rev2.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/parser_tests.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/app/parser_tests.mjs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,6 +38,9 @@
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="ProjectErrors" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -68,11 +74,12 @@
     "npm.Build.executor": "Run",
     "npm.Test.executor": "Run",
     "npm.dev.executor": "Run",
+    "run.code.analysis.last.selected.profile": "pProject Default",
     "settings.editor.selected.configurable": "advanced.settings",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager">
+  <component name="RunManager" selected="npm.Test">
     <configuration name="Console" type="NodeJSConfigurationType" path-to-js-file="$PROJECT_DIR$/app/console_calculator.mjs" working-dir="$PROJECT_DIR$">
       <method v="2" />
     </configuration>
@@ -118,7 +125,7 @@
       <workItem from="1704025356412" duration="5002000" />
       <workItem from="1704033992748" duration="3414000" />
       <workItem from="1704099551190" duration="13727000" />
-      <workItem from="1704115711081" duration="1063000" />
+      <workItem from="1704115711081" duration="2423000" />
     </task>
     <task id="LOCAL-00001" summary="Made UI a lot more responsive">
       <option name="closed" value="true" />
@@ -264,7 +271,15 @@
       <option name="project" value="LOCAL" />
       <updated>1704115945414</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Fixes division by 0 (Introduced an error)&#10;&#10;Removes logging of parser">
+      <option name="closed" value="true" />
+      <created>1704116853351</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1704116853351</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -292,7 +307,8 @@
     <MESSAGE value="Removed TODO's" />
     <MESSAGE value="Added visual indicator for syntax errors in the expression&#10;&#10;Fixed a bug in the parser" />
     <MESSAGE value="Removed size transition for result button&#10;&#10;Fixes absolute positioning issue for error overlay on mobile layout" />
-    <option name="LAST_COMMIT_MESSAGE" value="Removed size transition for result button&#10;&#10;Fixes absolute positioning issue for error overlay on mobile layout" />
+    <MESSAGE value="Fixes division by 0 (Introduced an error)&#10;&#10;Removes logging of parser" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixes division by 0 (Introduced an error)&#10;&#10;Removes logging of parser" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
 </project>

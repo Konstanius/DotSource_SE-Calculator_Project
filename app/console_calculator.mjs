@@ -1,4 +1,4 @@
-import {ParserError, parseWithParentheses, AccNum} from "./parser_rev2.mjs";
+import {ParserError, parseWithParentheses} from "./parser_rev2.mjs";
 import prompt from "prompt-sync";
 
 console.log("Taschenrechner v2.0")

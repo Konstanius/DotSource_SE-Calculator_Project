@@ -112,7 +112,7 @@ export default function Home() {
         let end = document.getElementById('input').selectionEnd
         if (start === selectionAreaData[0] && end === selectionAreaData[1]) return
 
-        // In a timeout so that visual buttons remember the state of the selection, since unfocus triggers reset of selection
+        // In a timeout so that visual buttons remember the state of the selection, since unFocus triggers reset of selection
         selectionAreaData = [start, end]
         if (start === undefined || end === undefined || start === end) {
             setTooltip('')
