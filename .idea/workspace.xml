@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Fixed an issue&#10;&#10;Implemented rounding and accurate results toggle in console_calculator.mjs&#10;&#10;Added CTRL delete functionality">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Selection -&gt; delete button bug fixed&#10;&#10;Added timeout to calculation">
       <change beforePath="$PROJECT_DIR$/app/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/parser_rev2.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/app/parser_rev2.mjs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -116,7 +114,7 @@
       <workItem from="1703941121709" duration="4353000" />
       <workItem from="1704025356412" duration="5002000" />
       <workItem from="1704033992748" duration="3414000" />
-      <workItem from="1704099551190" duration="9132000" />
+      <workItem from="1704099551190" duration="9484000" />
     </task>
     <task id="LOCAL-00001" summary="Made UI a lot more responsive">
       <option name="closed" value="true" />
@@ -230,7 +228,15 @@
       <option name="project" value="LOCAL" />
       <updated>1704105285486</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Selection -&gt; delete button bug fixed&#10;&#10;Added timeout to calculation">
+      <option name="closed" value="true" />
+      <created>1704108799881</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1704108799881</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -254,7 +260,8 @@
     <MESSAGE value="Removed TODO for automatic parentheses&#10;&#10;Result made to look better&#10;&#10;Added exponent operation" />
     <MESSAGE value="Refactored parser to use BigInt, yielding near-infinite precision and range" />
     <MESSAGE value="Fixed an issue&#10;&#10;Implemented rounding and accurate results toggle in console_calculator.mjs&#10;&#10;Added CTRL delete functionality" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed an issue&#10;&#10;Implemented rounding and accurate results toggle in console_calculator.mjs&#10;&#10;Added CTRL delete functionality" />
+    <MESSAGE value="Selection -&gt; delete button bug fixed&#10;&#10;Added timeout to calculation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Selection -&gt; delete button bug fixed&#10;&#10;Added timeout to calculation" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
 </project>

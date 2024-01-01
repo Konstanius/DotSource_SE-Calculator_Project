@@ -448,13 +448,6 @@ export default function Home() {
         }
     }), "Enter")
 
-    /**
-     * TODO: UI Elements
-     * - input buttons get stuck on mobile sometimes
-     * - optimize tooltip a bit
-     * - make individual result digits increase / decrease when the result changes
-     */
-
     return (
         <main
             id="main"
