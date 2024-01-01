@@ -17,7 +17,6 @@ export default function Home() {
     const [tooltip, setTooltip] = useState('')
     const [toolTipX, setToolTipX] = useState(0)
     const [toolTipY, setToolTipY] = useState(0)
-    const [currentPrompt, setCurrentPrompt] = useState('')
     const [screenWidth, setScreenWidth] = useState(0)
     const [screenHeight, setScreenHeight] = useState(0)
     const [copyClicked, setCopyClicked] = useState(false)
@@ -33,7 +32,8 @@ export default function Home() {
     const [submitAnimation, setSubmitAnimation] = useState("")
 
     // Once, on client side, set the roundResults variable immediately, to not cause any state problems
-    if (typeof window !== 'undefined' && currentPrompt === '') {
+    if (typeof window !== 'undefined' && window.roundSetUp === undefined) {
+        window.roundSetUp = true
         roundResults = localStorage.getItem("roundResults") === "true"
     }
 
@@ -209,7 +209,6 @@ export default function Home() {
 
         // Once, on clientside, set up the page
         window.pageSetUp = true
-        randomizePrompt()
 
         document.addEventListener("keydown", onKeyPressed)
 
@@ -272,35 +271,6 @@ export default function Home() {
         }, 50) // History is loaded in later, so wait a bit
     })
 
-    // Generate a random prompt of the format: a (operator) b (operator) (c (operator) d) (operator) e
-    function randomizePrompt() {
-        // numbers are between 1 and 55 and have a chance to include a ! or % after them
-        // operators are +, -, *, /
-        function randomNum() {
-            return Math.floor(Math.random() * 55) + 1
-        }
-
-        function randomOp() {
-            return charFromMode(Math.floor(Math.random() * 4) + 1)
-        }
-
-        function randomOp2() {
-            let random = Math.random()
-            // either ! or % or nothing (~60 % chance for nothing)
-            switch (Math.floor(random * 5)) {
-                case 0:
-                    return '!'
-                case 1:
-                    return '%'
-                default:
-                    return ''
-            }
-        }
-
-        let prompt = randomNum() + randomOp2() + randomOp() + randomNum() + randomOp2() + randomOp() + "(" + randomNum() + randomOp2() + randomOp() + randomNum() + randomOp2() + ")" + randomOp2() + randomOp() + randomNum() + randomOp2()
-        setCurrentPrompt(prompt)
-    }
-
     // Animation management for the result button onClick
     useEffect(() => {
         if (copyClicked) {
@@ -326,10 +296,6 @@ export default function Home() {
                 inputElement.setSelectionRange(selectionAreaData[0], selectionAreaData[1])
             })
         }, 3) // Delay, since setInput is not immediate
-
-        if (newValue === '') {
-            randomizePrompt()
-        }
 
         try {
             let data = parseWithParentheses(newValue, 0, 0)
@@ -553,7 +519,7 @@ export default function Home() {
                             }}
                             value={input}
                             readOnly={submitAnimation !== ""}
-                            placeholder={currentPrompt}
+                            placeholder="0"
                             onChange={(e) => onChangedTextField(e.target.value)}
                             onAbort={(_) => {
                                 setToolTipX(0)

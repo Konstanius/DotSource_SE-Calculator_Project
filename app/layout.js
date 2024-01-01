@@ -9,7 +9,6 @@ export const viewport = {
 export const metadata = {
     title: 'Taschenrechner',
     description: 'Simpler KEMDAS Taschenrechner für den DotSource SE Bewerbungsprozess',
-    viewport: viewport,
 }
 
 export default function RootLayout({children}) {

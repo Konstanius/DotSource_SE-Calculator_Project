@@ -130,12 +130,20 @@ export class AccNum {
     }
 
     exponent(otherNumber) {
+        let otherNumerator = otherNumber.numerator
+        let otherDenominator = otherNumber.denominator
+        if (otherNumerator % otherDenominator !== BigInt(0)) throw new ParserError("Exponente von Kommazahlen sind nicht eingebaut", -1)
+        let absoluteOtherNumerator = otherNumerator
+        if (otherNumerator < 0) {
+            absoluteOtherNumerator *= BigInt(-1)
+        }
+
         // Do not use Math.pow or **, since those can freeze the calculator
         let startTime = new Date().getTime()
 
         let newNumerator = BigInt(1)
         let newDenominator = BigInt(1)
-        for (let i = 0; i < otherNumber.numerator; i++) {
+        for (let i = 0; i < absoluteOtherNumerator; i++) {
             // crash if 500ms elapsed
             if (new Date().getTime() - startTime > 500) {
                 throw new ParserError("Zeitüberschreitung bei der Berechnung", -1)
@@ -147,6 +155,13 @@ export class AccNum {
 
         this.numerator = newNumerator
         this.denominator = newDenominator
+        if (otherNumerator < 0) {
+            // 1 / (a^b)
+            let accNum = new AccNum(BigInt(1))
+            accNum.divide(this)
+            this.numerator = accNum.numerator
+            this.denominator = accNum.denominator
+        }
     }
 }
 

@@ -1,6 +1,7 @@
 import {parseWithParentheses} from './parser_rev2.mjs'
 
 // Basic principles taken from https://mozilla.github.io/calculator/test/
+// Note that this is not nearly a complete test suite
 const testMap = {
     "3500": "3500",
     "3": "3",
