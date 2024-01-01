@@ -128,7 +128,7 @@ export default function Home() {
 
         try {
             let text = document.getElementById('input').value.substring(start, end)
-            let result = parseWithParentheses(text, false, 0, 0)
+            let result = parseWithParentheses(text, 0, 0)
 
             // show the tooltip
             setTooltip(getResultWithProperDisplay(result[0]))
@@ -148,7 +148,7 @@ export default function Home() {
 
         let scopedValid = true
         try {
-            parseWithParentheses(input, true, 0, 0)
+            parseWithParentheses(input, 0, 0)
         } catch (error) {
             setValidity(false)
             scopedValid = false
@@ -215,7 +215,6 @@ export default function Home() {
 
         document.addEventListener("keyup", (e) => {
             if (e.key === "Control") {
-                console.log("control released")
                 controlPressed = false
             }
         })
@@ -333,7 +332,7 @@ export default function Home() {
         }
 
         try {
-            let data = parseWithParentheses(newValue, true, 0, 0)
+            let data = parseWithParentheses(newValue, 0, 0)
             setValidity(true)
             setOutput(getResultWithProperDisplay(data[0]))
         } catch (error) {

@@ -102,6 +102,7 @@ export class AccNum {
     }
 
     divide(otherNumber) {
+        if (otherNumber.numerator === BigInt(0)) throw new ParserError("Division durch 0", -1)
         let reciprocate = new AccNum(otherNumber.denominator)
         reciprocate.denominator = otherNumber.numerator
         this.multiply(reciprocate)
@@ -174,13 +175,12 @@ function gcd(a, b) {
  * - does take into account mathematical order of operations (PEMDAS)
  *
  * @param input
- * @param shouldLog
  * @param depth
  * @param indexOffset
  * @returns {[AccNum, number]}
  * @throws ParserError
  **/
-export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
+export function parseWithParentheses(input, depth, indexOffset) {
     let currentNumber = new AccNum(BigInt(0))
     let negateCurrentNumber = false
     let negateNextNumber = false
@@ -233,7 +233,7 @@ export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
 
             // Recursively parse the group by calling the function again on the substring
             // This returns the group and the index of the closing parenthesis
-            let [group, finishedIndex] = parseWithParentheses(input.substring(index + 1), shouldLog, depth + 1, index + 1)
+            let [group, finishedIndex] = parseWithParentheses(input.substring(index + 1), depth + 1, index + 1)
             // Continue after the closing parenthesis
             index += finishedIndex + 1
             // Set the current number to the value returned by the recursive call (the group)
@@ -392,7 +392,7 @@ export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
         return [currentNumber, index]
     }
 
-    return [solveParenthesesGroups(parenthesesGroups, shouldLog), index]
+    return [solveParenthesesGroups(parenthesesGroups), index]
 }
 
 /**
@@ -401,17 +401,14 @@ export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
  * Iterates through the array, recursing on each array
  * Once the iteration is done, concatenates the array into a string and calls parseSingleGroupString() on it
  * @param parenthesesGroups
- * @param shouldLog
  * @returns {AccNum}
  */
-function solveParenthesesGroups(parenthesesGroups, shouldLog) {
-    if (shouldLog) console.log(parenthesesGroups)
-
+function solveParenthesesGroups(parenthesesGroups) {
     // iterate and solve parentheses groups, if array
     for (let i = 0; i < parenthesesGroups.length; i++) {
         const group = parenthesesGroups[i]
         if (Array.isArray(group)) {
-            parenthesesGroups[i] = solveParenthesesGroups(group, shouldLog)
+            parenthesesGroups[i] = solveParenthesesGroups(group, false)
         }
     }
 

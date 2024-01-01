@@ -22,7 +22,7 @@ while (true) {
     }
 
     try {
-        let output = parseWithParentheses(input, false, 0, 0)
+        let output = parseWithParentheses(input, 0, 0)
         console.log("Ergebnis:", getResultWithProperDisplay(output[0], roundResults), "\n")
     } catch (e) {
         if (e.constructor === ParserError && e.index !== -1) {

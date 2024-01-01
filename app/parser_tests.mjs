@@ -29,13 +29,13 @@ const testMap = {
 let fails = 0
 for (const [input, expected] of Object.entries(testMap)) {
     try {
-        let result = parseWithParentheses(input, false, 0, 0)[0].toNumber().toLocaleString('de-DE', {
+        let result = parseWithParentheses(input, 0, 0)[0].toNumber().toLocaleString('de-DE', {
             maximumFractionDigits: 6,
             minimumFractionDigits: 0,
             useGrouping: false
         })
         if (result !== expected) {
-            let result2 = parseWithParentheses(input, true, 0, 0)[0].toNumber()
+            let result2 = parseWithParentheses(input, 0, 0)[0].toNumber()
             console.log(`Test failed: ${input} should be ${expected} but was ${result}`)
             fails++
         } else {
