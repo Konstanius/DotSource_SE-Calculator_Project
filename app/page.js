@@ -351,6 +351,7 @@ export default function Home() {
             <button
                 id={"button_" + row + "_" + rows[row].length}
                 key={"button_" + row + "_" + rows[row].length}
+                aria-label={title}
                 className={style}
                 style={{height: 'calc(' + buttonsHeight / 6 + 'px - 1rem)'}}
                 onClick={async (_) => {
@@ -475,6 +476,7 @@ export default function Home() {
                     <div hidden={!valid}>
                         <input
                             id="input-overlay"
+                            aria-label="input-overlay"
                             inputMode='none'
                             className={`
                                 absolute
@@ -503,6 +505,7 @@ export default function Home() {
                     <form onSubmit={onSubmit}>
                         <input
                             id="input"
+                            aria-label="input"
                             inputMode='none'
                             autoFocus={false}
                             className={`
@@ -575,6 +578,7 @@ export default function Home() {
 
                     <span
                         id="error-overlay"
+                        aria-label="error-overlay"
                         hidden={valid}
                         autoFocus={false}
                         className={`

@@ -120,6 +120,7 @@ export function HistoryDisplay({setInput, history, setHistory, useMobileLayout})
                     <div className="history-" key={"date_" + entry.id}>
                         <div
                             className="text-center"
+                            aria-label="Datum"
                             style={{
                                 fontSize: "1.5rem",
                                 fontWeight: "bold",
@@ -140,6 +141,7 @@ export function HistoryDisplay({setInput, history, setHistory, useMobileLayout})
             widgets.push(
                 <button
                     className="history-entry-button calc-clickable"
+                    aria-label={entry.input + " = " + entry.output}
                     onClick={() => setInput(entry.input)}
                     key={"entry_" + entry.id}>
                     <div className="history-entry-time">{
@@ -158,6 +160,7 @@ export function HistoryDisplay({setInput, history, setHistory, useMobileLayout})
                         e.stopPropagation()
                     }}>{entry.output}</div>
                     <div className="history-entry-delete"
+                         aria-label="Verlaufseintrag löschen"
                          style={{
                              width: "2rem",
                              height: "2rem",
@@ -180,6 +183,7 @@ export function HistoryDisplay({setInput, history, setHistory, useMobileLayout})
                 <div className="history-entry" key={"date_empty"}>
                     <div
                         className="history-entry-time text-center"
+                        aria-label="Kein Verlauf vorhanden"
                         style={{
                             fontSize: "1.5rem",
                             fontWeight: "bold",
@@ -198,6 +202,7 @@ export function HistoryDisplay({setInput, history, setHistory, useMobileLayout})
 
     return (
         <div className="history"
+             aria-label="Verlauf"
              style={{
                  display: "flex",
                  flexDirection: "column",
