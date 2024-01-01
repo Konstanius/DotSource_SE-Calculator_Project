@@ -5,7 +5,8 @@ const MODE_MULTIPLICATION = 3
 const MODE_DIVISION = 4
 const MODE_EXPONENT = 5
 
-// Javascript web limitation, will be imprecise after ~16 digits
+// Javascript limitation, exponents are used after 2^53, imprecision thus occurs
+// Only applies to when "round results" is enabled, otherwise BigInt is used with fractions
 const MAX_NUM = Math.pow(2, 53)
 
 function modeFromChar(char) {
@@ -60,7 +61,7 @@ export class AccNum {
 
     constructor(number) {
         this.numerator = number
-        this.denominator = 1
+        this.denominator = BigInt(1)
         this.trailingOperator = MODE_NONE
     }
 
@@ -75,53 +76,53 @@ export class AccNum {
      * @returns {number}
      */
     toNumber() {
-        return this.numerator / this.denominator
+        let num1 = Number(this.numerator)
+        let num2 = Number(this.denominator)
+        if (num1 > MAX_NUM || num2 > MAX_NUM) {
+            throw new ParserError("Zahl überschreitet Präzisionslimit (± 2⁵³)", -1)
+        }
+        return Number(this.numerator) / Number(this.denominator)
     }
 
     add(otherNumber) {
         let commonLower = this.denominator * otherNumber.denominator
         this.numerator = this.numerator * otherNumber.denominator + this.denominator * otherNumber.numerator
         this.denominator = commonLower
-        outOfBoundsChecker(this)
     }
 
     subtract(otherNumber) {
         let commonLower = this.denominator * otherNumber.denominator
         this.numerator = this.numerator * otherNumber.denominator - this.denominator * otherNumber.numerator
         this.denominator = commonLower
-        outOfBoundsChecker(this)
     }
 
     multiply(otherNumber) {
         this.denominator *= otherNumber.denominator
         this.numerator *= otherNumber.numerator
-        outOfBoundsChecker(this)
     }
 
     divide(otherNumber) {
         let reciprocate = new AccNum(otherNumber.denominator)
         reciprocate.denominator = otherNumber.numerator
         this.multiply(reciprocate)
-        outOfBoundsChecker(this)
     }
 
     factorise() {
-        if (this.numerator % this.denominator !== 0) throw new ParserError("Fakultät von Kommazahlen ist nicht definiert", -1)
+        if (this.numerator % this.denominator !== BigInt(0)) throw new ParserError("Fakultät von Kommazahlen ist nicht definiert", -1)
         let num = this.toNumber()
         this.denominator = 1
 
-        let value = 1
+        let value = BigInt(1)
         for (let i = 2; i <= num; i++) {
-            value = value * i
+            let multiplier = BigInt(i)
+            value = value * multiplier
         }
         this.numerator = value
-        outOfBoundsChecker(this)
     }
 
     exponent(otherNumber) {
         this.numerator = Math.pow(this.numerator, otherNumber.numerator)
         this.denominator = Math.pow(this.denominator, otherNumber.numerator)
-        outOfBoundsChecker(this)
     }
 }
 
@@ -132,16 +133,10 @@ function gcd(a, b) {
         b = temp
     }
     while (true) {
-        if (b === 0) return a
+        if (b === BigInt(0)) return a
         a %= b
-        if (a === 0) return b
+        if (a === BigInt(0)) return b
         b %= a
-    }
-}
-
-function outOfBoundsChecker(toCheck) {
-    if (toCheck.denominator > MAX_NUM || toCheck.numerator > MAX_NUM) {
-        throw new ParserError("Zahl überschreitet Präzisionslimit (± 2⁵³)", -1)
     }
 }
 
@@ -164,7 +159,7 @@ function outOfBoundsChecker(toCheck) {
  * @throws ParserError
  **/
 export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
-    let currentNumber = new AccNum(0)
+    let currentNumber = new AccNum(BigInt(0))
     let negateCurrentNumber = false
     let negateNextNumber = false
     let numberWasAssigned = false
@@ -184,12 +179,12 @@ export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
         function pushNumber() {
             if (negateCurrentNumber) {
                 // If the number is negative, negate it
-                currentNumber.numerator *= -1
+                currentNumber.numerator *= BigInt(-1)
             }
             negateCurrentNumber = negateNextNumber
             negateNextNumber = false
             pushOntoGroupList(parenthesesGroups, currentNumber, depth)
-            currentNumber = new AccNum(0)
+            currentNumber = new AccNum(BigInt(0))
             decimalPointWasAssigned = false
             numberWasAssigned = false
             operatorWasAssigned = false
@@ -259,20 +254,18 @@ export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
                     }
                 } else {
                     // The number is added by multiplying the numerator by 10 and adding the new digit
-                    currentNumber.numerator = currentNumber.numerator * 10 + parseInt(char)
+                    currentNumber.numerator = currentNumber.numerator * BigInt(10) + BigInt(char)
                     if (decimalPointWasAssigned) {
                         // If the decimal point was assigned, multiply the denominator by 10 as well
-                        currentNumber.denominator *= 10
+                        currentNumber.denominator *= BigInt(10)
                     }
-
-                    outOfBoundsChecker(currentNumber)
                 }
             } else {
                 if (numberWasFinished) {
                     // Number was finished, push it onto the list
                     if (negateCurrentNumber) {
                         // Negate if necessary
-                        currentNumber.numerator *= -1
+                        currentNumber.numerator *= BigInt(-1)
                     }
                     negateCurrentNumber = negateNextNumber
                     negateNextNumber = false
@@ -286,7 +279,7 @@ export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
                 }
 
                 // Reset the state and start a new number
-                currentNumber = new AccNum(parseInt(char))
+                currentNumber = new AccNum(BigInt(char))
                 decimalPointWasAssigned = false
                 numberWasAssigned = true
                 operatorWasAssigned = false
@@ -326,7 +319,7 @@ export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
                         numberWasFinished = true
                     } else if (char === "%") {
                         // If the operator is %, multiply the number by 100
-                        currentNumber.denominator *= 100
+                        currentNumber.denominator *= BigInt(100)
                         numberWasFinished = true
                     } else {
                         // If the operator is not ! or %, assign it to the number
@@ -354,7 +347,7 @@ export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
         // If a number was assigned, push it onto the list
         if (negateCurrentNumber) {
             // Negate if necessary
-            currentNumber.numerator *= -1
+            currentNumber.numerator *= BigInt(-1)
         }
         negateCurrentNumber = negateNextNumber
         negateNextNumber = false

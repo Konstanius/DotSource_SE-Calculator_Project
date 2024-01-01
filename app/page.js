@@ -147,10 +147,7 @@ export default function Home() {
         if (id === undefined) return
 
         let button = document.getElementById(id)
-        if (button === null) {
-            console.log("Button element not found: " + id)
-            return
-        }
+        if (button === null) return
 
         button.click()
     }
@@ -281,7 +278,9 @@ export default function Home() {
             setValidity(true)
             setOutput(getResultWithProperDisplay(data[0]))
         } catch (error) {
-            setOutput('0')
+            if (valid) {
+                setOutput('0')
+            }
             setTimeout(() => {
                 // Only show the error after 500ms as to not annoy the user while they are entering their expression
                 if (currentInput !== newValue) return
@@ -359,7 +358,6 @@ export default function Home() {
         }
         let newValue = input.substring(0, start) + input.substring(end)
         onChangedTextField(newValue)
-        console.log("new", newValue)
         setTimeout(() => {
             document.getElementById('input').setSelectionRange(start, start)
         }, 5)
