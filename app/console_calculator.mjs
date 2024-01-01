@@ -12,7 +12,6 @@ while (true) {
         break
     }
 
-
     try {
         let output = parseWithParentheses(input, false, 0, 0)
         console.log("Ergebnis:", output[0].toNumber().toLocaleString("de-DE"), "\n")

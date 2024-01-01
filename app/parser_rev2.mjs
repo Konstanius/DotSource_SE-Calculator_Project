@@ -3,6 +3,7 @@ const MODE_ADDITION = 1
 const MODE_SUBTRACTION = 2
 const MODE_MULTIPLICATION = 3
 const MODE_DIVISION = 4
+const MODE_EXPONENT = 5
 
 // Javascript web limitation, will be imprecise after ~16 digits
 const MAX_NUM = Math.pow(2, 53)
@@ -16,6 +17,8 @@ function modeFromChar(char) {
         return MODE_MULTIPLICATION
     } else if (char === "/") {
         return MODE_DIVISION
+    } else if (char === "^") {
+        return MODE_EXPONENT
     } else {
         return MODE_NONE
     }
@@ -30,13 +33,15 @@ export function charFromMode(mode) {
         return "*"
     } else if (mode === MODE_DIVISION) {
         return "/"
+    } else if (mode === MODE_EXPONENT) {
+        return "^"
     } else {
         return ""
     }
 }
 
 export const allowedInNumber = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", ".", ","]
-export const allowedOperations = ["+", "-", "*", "/", "!", "%"]
+export const allowedOperations = ["+", "-", "*", "/", "!", "%", "^"]
 
 export class ParserError {
     message
@@ -112,6 +117,12 @@ export class AccNum {
         this.numerator = value
         outOfBoundsChecker(this)
     }
+
+    exponent(otherNumber) {
+        this.numerator = Math.pow(this.numerator, otherNumber.numerator)
+        this.denominator = Math.pow(this.denominator, otherNumber.numerator)
+        outOfBoundsChecker(this)
+    }
 }
 
 function gcd(a, b) {
@@ -141,7 +152,7 @@ function outOfBoundsChecker(toCheck) {
  * - allow positive / negative number in beginning and as result
  * - allow decimal numbers
  * - allow ! and %
- * - allow default operations +, -, *, /, (, )
+ * - allow default operations +, -, *, /, ^, (, )
  * - allow spaces
  * - does take into account mathematical order of operations (PEMDAS)
  *
@@ -385,6 +396,17 @@ function solveParenthesesGroups(parenthesesGroups, shouldLog) {
 
     // This will calculate the result of the parentheses group
     // At this point, only multiplication and division, then addition and subtraction are left to do
+
+    // calculate exponent
+    for (let i = 0; i < parenthesesGroups.length - 1; i++) {
+        const group = parenthesesGroups[i]
+        if (group.trailingOperator === MODE_EXPONENT) {
+            group.exponent(parenthesesGroups[i + 1])
+            group.trailingOperator = parenthesesGroups[i + 1].trailingOperator
+            parenthesesGroups.splice(i + 1, 1)
+            i--
+        }
+    }
 
     // calculate multiplication and division
     for (let i = 0; i < parenthesesGroups.length - 1; i++) {

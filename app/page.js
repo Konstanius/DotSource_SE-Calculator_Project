@@ -6,6 +6,7 @@ import {HistoryDisplay, HistoryEntry} from "@/app/history"
 
 let selectionAreaData = [0, 0]
 let toInput = []
+let currentInput = ''
 export default function Home() {
     // States
     const [valid, setValidity] = useState(true)
@@ -99,8 +100,22 @@ export default function Home() {
             return
         }
 
+        let scopedValid = true
+        try {
+            parseWithParentheses(input, true, 0, 0)
+        } catch (error) {
+            setValidity(false)
+            scopedValid = false
+            if (error.constructor !== ParserError) {
+                setOutput(error.message)
+                console.log(error)
+            } else {
+                setOutput(error.message + " " + error.index)
+            }
+        }
+
         // If invalid, do shake animation
-        if (!valid) {
+        if (!scopedValid) {
             setSubmitAnimation("shake-horizontal")
             setTimeout(() => {
                 setSubmitAnimation("")
@@ -159,7 +174,7 @@ export default function Home() {
                 setScreenWidth(document.documentElement.clientWidth)
                 setScreenHeight(document.documentElement.clientHeight)
                 setButtonsHeight(document.documentElement.clientHeight - document.getElementById('input').clientHeight - document.getElementById('result').clientHeight - 24 * 4)
-            }, 10)
+            }, 50)
         }
 
         // set the screen width
@@ -247,6 +262,7 @@ export default function Home() {
         let inputElement = document.getElementById('input')
 
         setInput(newValue)
+        currentInput = newValue
         localStorage.setItem("input", newValue)
         setTimeout(() => {
             setSelectionArea().then(() => {
@@ -265,13 +281,19 @@ export default function Home() {
             setValidity(true)
             setOutput(getResultWithProperDisplay(data[0]))
         } catch (error) {
-            setValidity(false)
-            if (error.constructor !== ParserError) {
-                setOutput(error.message)
-                console.log(error)
-            } else {
-                setOutput(error.message + " " + error.index)
-            }
+            setOutput('0')
+            setTimeout(() => {
+                // Only show the error after 500ms as to not annoy the user while they are entering their expression
+                if (currentInput !== newValue) return
+
+                setValidity(false)
+                if (error.constructor !== ParserError) {
+                    setOutput(error.message)
+                    console.log(error)
+                } else {
+                    setOutput(error.message + " " + error.index)
+                }
+            }, 500)
         }
     }
 
@@ -326,8 +348,7 @@ export default function Home() {
 
     // The actual buttons
     addButton(0, <i className="fa-solid fa-percent"></i>, false, false, "%", undefined, "%")
-    addButton(0, " ", false, false, "", () => {
-    })
+    addButton(0, <i className="fa-solid fa-chevron-up"></i>, false, false, "^", undefined, "^")
     addButton(0, <i className="fa-solid fa-delete-left"></i>, false, true, "", () => {
         if (input.length === 0) return
         let start = selectionAreaData[0]
@@ -346,21 +367,22 @@ export default function Home() {
     addButton(0, <i className="fa-solid fa-c"></i>, false, true, "", () => onChangedTextField(""))
     addButton(1, "(", false, false, "(", undefined, "(")
     addButton(1, ")", false, false, ")", undefined, ")")
-    addButton(1, "n!", false, false, "!", undefined, "!")
+    addButton(1, <div><span>n </span><i className="fa-solid fa-exclamation"></i>
+    </div>, false, false, "!", undefined, "!")
     addButton(1, <i className="fa-solid fa-divide"></i>, false, false, "/", undefined, "/")
-    addButton(2, "7", true, false, "7", undefined, "7")
-    addButton(2, "8", true, false, "8", undefined, "8")
-    addButton(2, "9", true, false, "9", undefined, "9")
+    addButton(2, <i className="fa-solid fa-7"></i>, true, false, "7", undefined, "7")
+    addButton(2, <i className="fa-solid fa-8"></i>, true, false, "8", undefined, "8")
+    addButton(2, <i className="fa-solid fa-9"></i>, true, false, "9", undefined, "9")
     addButton(2, <i className="fa-solid fa-xmark"></i>, false, false, "*", undefined, "*")
-    addButton(3, "4", true, false, "4", undefined, "4")
-    addButton(3, "5", true, false, "5", undefined, "5")
-    addButton(3, "6", true, false, "6", undefined, "6")
+    addButton(3, <i className="fa-solid fa-4"></i>, true, false, "4", undefined, "4")
+    addButton(3, <i className="fa-solid fa-5"></i>, true, false, "5", undefined, "5")
+    addButton(3, <i className="fa-solid fa-6"></i>, true, false, "6", undefined, "6")
     addButton(3, <i className="fa-solid fa-minus"></i>, false, false, "-", undefined, "-")
-    addButton(4, "1", true, false, "1", undefined, "1")
-    addButton(4, "2", true, false, "2", undefined, "2")
-    addButton(4, "3", true, false, "3", undefined, "3")
+    addButton(4, <i className="fa-solid fa-1"></i>, true, false, "1", undefined, "1")
+    addButton(4, <i className="fa-solid fa-2"></i>, true, false, "2", undefined, "2")
+    addButton(4, <i className="fa-solid fa-3"></i>, true, false, "3", undefined, "3")
     addButton(4, <i className="fa-solid fa-plus"></i>, false, false, "+", undefined, "+")
-    addButton(5, "0", true, false, "0", undefined, "0")
+    addButton(5, <i className="fa-solid fa-0"></i>, true, false, "0", undefined, "0")
     addButton(5, ".", true, false, ".", undefined, ".")
 
     let content = <div className="flex flex-col items-center">
@@ -386,11 +408,9 @@ export default function Home() {
 
     /**
      * TODO: UI Elements
-     * - make the result look better
      * - input buttons get stuck on mobile sometimes
      * - optimize tooltip a bit
      * - make individual result digits increase / decrease when the result changes
-     * - automatic parentheses (add closing one when opening, delete immediate closing one when closing previous opening)
      */
 
     return (
@@ -521,11 +541,17 @@ export default function Home() {
             <div className={(screenWidth < 1024) ? "flex flex-col" : "flex flex-row"}>
                 <div style={{
                     width: (screenWidth < 1024) ? screenWidth * 0.95 : screenWidth * 0.55,
-                    opacity: screenHeight !== 0 ? 1 : 0
-                }}>
+                    opacity: screenHeight !== 0 ? 1 : 0,
+                }} className="flex flex-col">
                     <button
                         id="result"
-                        style={{whiteSpace: "nowrap"}}
+                        style={{
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            width: "100%",
+                            fontSize: "2rem",
+                        }}
                         disabled={!valid || copyClicked}
                         className={(!copyClicked ?
                                 (valid ? "bg-gray-900" : "bg-red-900") : "bg-green-900") +

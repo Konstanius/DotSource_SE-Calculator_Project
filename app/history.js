@@ -99,7 +99,7 @@ export function HistoryDisplay({setInput, history, setHistory, useMobileLayout})
 
     useEffect(() => {
         let topElementHeight = document.getElementById("top-element")?.clientHeight || 0
-        setHeight(document.documentElement.clientHeight - topElementHeight - 24 * 4) // Yes, this is precise, stems from the padding of the body and root
+        setHeight(document.documentElement.clientHeight - topElementHeight - 24 * 4)
 
         let widgets = []
 
