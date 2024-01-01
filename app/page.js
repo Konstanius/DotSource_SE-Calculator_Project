@@ -23,6 +23,7 @@ export default function Home() {
     const [history, setHistory] = useState([])
     const [buttonsHeight, setButtonsHeight] = useState(0)
     let [roundResults, setRoundResults] = useState(false) // Not const, since an immediate change of roundResults is needed sometimes
+    const [decimalSymbol, setDecimalSymbol] = useState(".")
 
     // Animation "controller", controlling the animation of:
     // - the submit button
@@ -30,12 +31,6 @@ export default function Home() {
     // - the history field
     // - the input overlay (to fade the new value into the input field)
     const [submitAnimation, setSubmitAnimation] = useState("")
-
-    // Once, on client side, set the roundResults variable immediately, to not cause any state problems
-    if (typeof window !== 'undefined' && window.roundSetUp === undefined) {
-        window.roundSetUp = true
-        roundResults = localStorage.getItem("roundResults") === "true"
-    }
 
     function setErrorReportHelper(newValue, index) {
         let error = "";
@@ -217,6 +212,12 @@ export default function Home() {
                 controlPressed = false
             }
         })
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        roundResults = localStorage.getItem("roundResults") === "true"
+        setRoundResults(roundResults)
+
+        setDecimalSymbol(navigator.language === "de-DE" ? "," : ".")
 
         function setDimensions() {
             setScreenWidth(document.documentElement.clientWidth)
@@ -430,9 +431,6 @@ export default function Home() {
     addButton(4, <i className="fa-solid fa-3"></i>, true, false, "3", undefined, "3")
     addButton(4, <i className="fa-solid fa-plus"></i>, false, false, "+", undefined, "+")
     addButton(5, <i className="fa-solid fa-0"></i>, true, false, "0", undefined, "0")
-
-    let decimalSymbol = "."
-    if (typeof window !== 'undefined' && navigator.language === "de-DE") decimalSymbol = ","
     addButton(5, decimalSymbol, true, false, decimalSymbol, undefined, decimalSymbol)
 
     let content = <div className="flex flex-col items-center">

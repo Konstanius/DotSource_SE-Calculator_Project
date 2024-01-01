@@ -322,6 +322,10 @@ export function parseWithParentheses(input, depth, indexOffset) {
                     pushOntoGroupList(parenthesesGroups, currentNumber, depth)
                 }
 
+                if (char === "," || char === ".") {
+                    throw new ParserError("Zahl kann nicht mit Dezimaltrennzeichen beginnen", index + indexOffset)
+                }
+
                 // Reset the state and start a new number
                 currentNumber = new AccNum(BigInt(char))
                 decimalPointWasAssigned = false
