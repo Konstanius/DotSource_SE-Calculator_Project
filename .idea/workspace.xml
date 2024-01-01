@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Removed TODO for automatic parentheses&#10;&#10;Result made to look better&#10;&#10;Added exponent operation">
+    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Refactored parser to use BigInt, yielding near-infinite precision and range">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/console_calculator.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/app/console_calculator.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/globals.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/parser_rev2.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/app/parser_rev2.mjs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -116,7 +117,7 @@
       <workItem from="1703941121709" duration="4353000" />
       <workItem from="1704025356412" duration="5002000" />
       <workItem from="1704033992748" duration="3414000" />
-      <workItem from="1704099551190" duration="3597000" />
+      <workItem from="1704099551190" duration="5452000" />
     </task>
     <task id="LOCAL-00001" summary="Made UI a lot more responsive">
       <option name="closed" value="true" />
@@ -214,7 +215,15 @@
       <option name="project" value="LOCAL" />
       <updated>1704102135310</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Refactored parser to use BigInt, yielding near-infinite precision and range">
+      <option name="closed" value="true" />
+      <created>1704103430645</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1704103430645</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -236,7 +245,8 @@
     <MESSAGE value="Changed color scheme of scroll bars&#10;&#10;Input queue added&#10;&#10;Added console application module" />
     <MESSAGE value="Fixes small backspace issue" />
     <MESSAGE value="Removed TODO for automatic parentheses&#10;&#10;Result made to look better&#10;&#10;Added exponent operation" />
-    <option name="LAST_COMMIT_MESSAGE" value="Removed TODO for automatic parentheses&#10;&#10;Result made to look better&#10;&#10;Added exponent operation" />
+    <MESSAGE value="Refactored parser to use BigInt, yielding near-infinite precision and range" />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactored parser to use BigInt, yielding near-infinite precision and range" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
 </project>

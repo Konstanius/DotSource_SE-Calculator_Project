@@ -1,12 +1,13 @@
 'use client'
 
 import {useEffect, useState} from "react"
-import {charFromMode, ParserError, parseWithParentheses} from "@/app/parser_rev2.mjs"
+import {allowedInNumber, charFromMode, ParserError, parseWithParentheses} from "@/app/parser_rev2.mjs"
 import {HistoryDisplay, HistoryEntry} from "@/app/history"
 
 let selectionAreaData = [0, 0]
 let toInput = []
 let currentInput = ''
+let controlPressed = false
 export default function Home() {
     // States
     const [valid, setValidity] = useState(true)
@@ -37,21 +38,36 @@ export default function Home() {
 
     // Turn an AccNum into a properly formatted string, taking into account the roundResults variable
     function getResultWithProperDisplay(input) {
-        let result = input.toNumber().toLocaleString(navigator.language, {
-            useGrouping: false,
-            maximumFractionDigits: 15
-        })
+        let result;
+        try {
+            result = input.toNumber().toLocaleString(navigator.language, {
+                useGrouping: false,
+                maximumFractionDigits: 15
+            });
 
-        let decimalCount = result.split(".")[1]?.length || 0
+            let decimalCount = result.split(".")[1]?.length || 0
 
-        if (!roundResults && decimalCount > 3) {
-            input.shorten()
-            if (input.denominator === 1) {
-                result = input.numerator.toString()
-            } else if (input.denominator === -1) {
-                result = -input.numerator.toString()
+            if (!roundResults && decimalCount > 3) {
+                input.shorten()
+                if (input.denominator === 1) {
+                    result = input.numerator.toString()
+                } else if (input.denominator === -1) {
+                    result = -input.numerator.toString()
+                } else {
+                    result = input.numerator + "/" + input.denominator
+                }
+            }
+        } catch (error) {
+            if (!roundResults) {
+                if (input.denominator === 1) {
+                    result = input.numerator.toString()
+                } else if (input.denominator === -1) {
+                    result = -input.numerator.toString()
+                } else {
+                    result = input.numerator + "/" + input.denominator
+                }
             } else {
-                result = input.numerator + "/" + input.denominator
+                throw error
             }
         }
         return result
@@ -143,6 +159,11 @@ export default function Home() {
     }
 
     function onKeyPressed(e) {
+        // control
+        if (e.key === "Control") {
+            controlPressed = true
+        }
+
         let id = buttonKeyIds[e.key]
         if (id === undefined) return
 
@@ -160,6 +181,13 @@ export default function Home() {
         randomizePrompt()
 
         document.addEventListener("keydown", onKeyPressed)
+
+        document.addEventListener("keyup", (e) => {
+            if (e.key === "Control") {
+                console.log("control released")
+                controlPressed = false
+            }
+        })
 
         function setDimensions() {
             setScreenWidth(document.documentElement.clientWidth)
@@ -319,7 +347,7 @@ export default function Home() {
                 key={"button_" + row + "_" + rows[row].length}
                 className={style}
                 style={{height: 'calc(' + buttonsHeight / 6 + 'px - 1rem)'}}
-                onClick={async () => {
+                onClick={async (_) => {
                     if (onClick !== undefined) {
                         onClick()
                         return
@@ -348,13 +376,29 @@ export default function Home() {
     // The actual buttons
     addButton(0, <i className="fa-solid fa-percent"></i>, false, false, "%", undefined, "%")
     addButton(0, <i className="fa-solid fa-chevron-up"></i>, false, false, "^", undefined, "^")
-    addButton(0, <i className="fa-solid fa-delete-left"></i>, false, true, "", () => {
+    addButton(0, <i className="fa-solid fa-delete-left"></i>, false, true, "", async () => {
         if (input.length === 0) return
         let start = selectionAreaData[0]
         let end = selectionAreaData[1]
         if (start === 0 && end === 0) return
+
+        let substring = input.substring(0, start)
+        let removeAmount = 0
+        if (controlPressed) {
+            for (let i = substring.length - 1; i >= 0; i--) {
+                let char = substring.charAt(i)
+                if (allowedInNumber.includes(char)) {
+                    removeAmount++
+                } else {
+                    break
+                }
+            }
+        }
+
+        if (removeAmount === 0) removeAmount = 1
+
         if (start === end) {
-            start--
+            start -= removeAmount
         }
         let newValue = input.substring(0, start) + input.substring(end)
         onChangedTextField(newValue)
@@ -551,7 +595,7 @@ export default function Home() {
                             fontSize: "2rem",
                         }}
                         disabled={!valid || copyClicked}
-                        className={(!copyClicked ?
+                        className={"result " + (!copyClicked ?
                                 (valid ? "bg-gray-900" : "bg-red-900") : "bg-green-900") +
                             " text-white p-2 rounded-md smooth-transition nowrap"}
                         onClick={() => {
