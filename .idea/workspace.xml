@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Makes decimal symbol in numbers language specific">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.js" afterDir="false" />
-    </list>
+    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Fixes deployment issue" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -123,7 +120,7 @@
       <workItem from="1704099551190" duration="13727000" />
       <workItem from="1704115711081" duration="2439000" />
       <workItem from="1704129182085" duration="5321000" />
-      <workItem from="1704141590273" duration="664000" />
+      <workItem from="1704141590273" duration="1309000" />
     </task>
     <task id="LOCAL-00001" summary="Made UI a lot more responsive">
       <option name="closed" value="true" />
@@ -301,7 +298,15 @@
       <option name="project" value="LOCAL" />
       <updated>1704134466001</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="Fixes deployment issue">
+      <option name="closed" value="true" />
+      <created>1704143725217</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1704143725217</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -333,7 +338,8 @@
     <MESSAGE value="Added more tests&#10;&#10;Final cleanup" />
     <MESSAGE value="Removes random prompt placeholder&#10;&#10;Exponents function changed, now checks for fraction and also allows negative exponents" />
     <MESSAGE value="Makes decimal symbol in numbers language specific" />
-    <option name="LAST_COMMIT_MESSAGE" value="Makes decimal symbol in numbers language specific" />
+    <MESSAGE value="Fixes deployment issue" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixes deployment issue" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
 </project>
