@@ -1,7 +1,7 @@
 'use client'
 
 import {useEffect, useState} from "react"
-import {allowedInNumber, charFromMode, ParserError, parseWithParentheses} from "@/app/parser_rev2.mjs"
+import {allowedInNumber, ParserError, parseWithParentheses} from "@/app/parser_rev2.mjs"
 import {HistoryDisplay, HistoryEntry} from "@/app/history"
 
 let selectionAreaData = [0, 0]
@@ -430,7 +430,9 @@ export default function Home() {
     addButton(4, <i className="fa-solid fa-3"></i>, true, false, "3", undefined, "3")
     addButton(4, <i className="fa-solid fa-plus"></i>, false, false, "+", undefined, "+")
     addButton(5, <i className="fa-solid fa-0"></i>, true, false, "0", undefined, "0")
-    addButton(5, ".", true, false, ".", undefined, ".")
+
+    let decimalSymbol = navigator.language === "de-DE" ? "," : "."
+    addButton(5, decimalSymbol, true, false, decimalSymbol, undefined, decimalSymbol)
 
     let content = <div className="flex flex-col items-center">
         <span
