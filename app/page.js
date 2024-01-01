@@ -623,7 +623,7 @@ export default function Home() {
                             width: screenWidth * 0.8,
                             fontFamily: "Space Mono",
                             zIndex: -5,
-                            top: "1.3rem",
+                            top: (screenWidth >= 1024) ? "1.3rem" : "0.3rem",
                             whiteSpace: "pre",
                             overflowX: "auto",
                             overflowY: "hidden",
