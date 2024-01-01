@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Removes random prompt placeholder&#10;&#10;Exponents function changed, now checks for fraction and also allows negative exponents">
+    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Makes decimal symbol in numbers language specific">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.js" afterDir="false" />
     </list>
@@ -122,7 +122,8 @@
       <workItem from="1704033992748" duration="3414000" />
       <workItem from="1704099551190" duration="13727000" />
       <workItem from="1704115711081" duration="2439000" />
-      <workItem from="1704129182085" duration="5232000" />
+      <workItem from="1704129182085" duration="5321000" />
+      <workItem from="1704141590273" duration="664000" />
     </task>
     <task id="LOCAL-00001" summary="Made UI a lot more responsive">
       <option name="closed" value="true" />
@@ -292,7 +293,15 @@
       <option name="project" value="LOCAL" />
       <updated>1704133457719</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="Makes decimal symbol in numbers language specific">
+      <option name="closed" value="true" />
+      <created>1704134466001</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1704134466001</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -323,7 +332,8 @@
     <MESSAGE value="Fixes division by 0 (Introduced an error)&#10;&#10;Removes logging of parser" />
     <MESSAGE value="Added more tests&#10;&#10;Final cleanup" />
     <MESSAGE value="Removes random prompt placeholder&#10;&#10;Exponents function changed, now checks for fraction and also allows negative exponents" />
-    <option name="LAST_COMMIT_MESSAGE" value="Removes random prompt placeholder&#10;&#10;Exponents function changed, now checks for fraction and also allows negative exponents" />
+    <MESSAGE value="Makes decimal symbol in numbers language specific" />
+    <option name="LAST_COMMIT_MESSAGE" value="Makes decimal symbol in numbers language specific" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
 </project>

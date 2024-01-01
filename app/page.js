@@ -431,7 +431,8 @@ export default function Home() {
     addButton(4, <i className="fa-solid fa-plus"></i>, false, false, "+", undefined, "+")
     addButton(5, <i className="fa-solid fa-0"></i>, true, false, "0", undefined, "0")
 
-    let decimalSymbol = navigator.language === "de-DE" ? "," : "."
+    let decimalSymbol = "."
+    if (navigator !== undefined && navigator.language === "de-DE") decimalSymbol = ","
     addButton(5, decimalSymbol, true, false, decimalSymbol, undefined, decimalSymbol)
 
     let content = <div className="flex flex-col items-center">
