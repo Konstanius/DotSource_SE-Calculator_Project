@@ -75,7 +75,7 @@ export default function Home() {
 
     // Set the tooltip to the selected text
     async function setSelectionArea() {
-        // For some reason, this is absolutely necessary, otherwise the selection is not updated
+        // Delay necessary, since on button press focus is lost, therefore deletion could not delete the selection
         await new Promise(r => setTimeout(r, 5))
 
         let start = document.getElementById('input').selectionStart
@@ -466,7 +466,6 @@ export default function Home() {
             }}
             className="flex min-h-screen flex-col items-center p-24"
             onMouseMove={(_) => {
-                if (!_.buttons) return // only if mouse is pressed, since only then the selection is possible
                 setSelectionArea().then(/*ignored*/)
             }}>
 
@@ -587,11 +586,12 @@ export default function Home() {
                 }} className="flex flex-col">
                     <button
                         id="result"
+                        hidden={screenWidth === 0}
                         style={{
                             whiteSpace: "nowrap",
                             overflow: "hidden",
                             textOverflow: "ellipsis",
-                            width: "100%",
+                            width: 'calc(' + ((screenWidth < 1024) ? screenWidth * 0.95 : screenWidth * 0.55) + 'px - 0.5rem)',
                             fontSize: "2rem",
                         }}
                         disabled={!valid || copyClicked}

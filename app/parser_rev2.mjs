@@ -7,7 +7,7 @@ const MODE_EXPONENT = 5
 
 // Javascript limitation, exponents are used after 2^53, imprecision thus occurs
 // Only applies to when "round results" is enabled, otherwise BigInt is used with fractions
-const MAX_NUM = Math.pow(2, 53)
+const MAX_NUM_ROUND = Math.pow(2, 53)
 
 function modeFromChar(char) {
     if (char === "+") {
@@ -78,7 +78,7 @@ export class AccNum {
     toNumber() {
         let num1 = Number(this.numerator)
         let num2 = Number(this.denominator)
-        if (num1 > MAX_NUM || num2 > MAX_NUM) {
+        if (num1 >= MAX_NUM_ROUND || num2 >= MAX_NUM_ROUND || num1 < -MAX_NUM_ROUND || num2 < -MAX_NUM_ROUND) {
             throw new ParserError("Zahl überschreitet Präzisionslimit (± 2⁵³)", -1)
         }
         return Number(this.numerator) / Number(this.denominator)
@@ -112,8 +112,15 @@ export class AccNum {
         let num = this.toNumber()
         this.denominator = 1
 
+        let startTime = new Date().getTime()
+
         let value = BigInt(1)
         for (let i = 2; i <= num; i++) {
+            // crash if 500ms elapsed
+            if (new Date().getTime() - startTime > 500) {
+                throw new ParserError("Zeitüberschreitung bei der Berechnung", -1)
+            }
+
             let multiplier = BigInt(i)
             value = value * multiplier
         }
@@ -121,8 +128,23 @@ export class AccNum {
     }
 
     exponent(otherNumber) {
-        this.numerator = Math.pow(this.numerator, otherNumber.numerator)
-        this.denominator = Math.pow(this.denominator, otherNumber.numerator)
+        // Do not use Math.pow or **, since those can freeze the calculator
+        let startTime = new Date().getTime()
+
+        let newNumerator = BigInt(1)
+        let newDenominator = BigInt(1)
+        for (let i = 0; i < otherNumber.numerator; i++) {
+            // crash if 500ms elapsed
+            if (new Date().getTime() - startTime > 500) {
+                throw new ParserError("Zeitüberschreitung bei der Berechnung", -1)
+            }
+
+            newNumerator *= this.numerator
+            newDenominator *= this.denominator
+        }
+
+        this.numerator = newNumerator
+        this.denominator = newDenominator
     }
 }
 
@@ -171,9 +193,15 @@ export function parseWithParentheses(input, shouldLog, depth, indexOffset) {
     // List will be: [AnyNum(1)..+, [AnyNum(2)..*, [AnyNum(-3)..+, AnyNum(4)]]..*, AnyNum(-5)]
     let parenthesesGroups = []
 
+    let startTime = new Date().getTime()
     let index = 0
     for (; index < input.length; index++) {
         const char = input[index]
+
+        // crash if 500ms elapsed
+        if (new Date().getTime() - startTime > 500) {
+            throw new ParserError("Zeitüberschreitung bei der Berechnung", -1)
+        }
 
         // Function to re-use code for pushing the current number onto the list and resetting the state
         function pushNumber() {
