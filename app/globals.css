@@ -149,7 +149,7 @@ body {
 }
 
 .history-entry-delete:hover {
-    background-color: rgba(222, 95, 91, 1);
+    background-color: rgb(222, 95, 91);
 }
 
 .history::-webkit-scrollbar {
@@ -167,7 +167,7 @@ body {
 }
 
 .history::-webkit-scrollbar-thumb:hover {
-    background: rgba(222, 95, 91, 1);
+    background: rgb(222, 95, 91);
 }
 
 .smallScroll::-webkit-scrollbar {
@@ -201,6 +201,10 @@ body {
     overflow: hidden;
     margin-right: 0.5rem;
     text-overflow: ellipsis;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
 }
 
 .calc-button {
@@ -261,11 +265,11 @@ body {
 }
 
 .calc-special:hover {
-    background-color: rgba(222, 95, 91, 1);
+    background-color: rgb(222, 95, 91);
 }
 
 .calc-special:active {
-    background-color: rgba(222, 95, 91, 1);
+    background-color: rgb(222, 95, 91);
 }
 
 input::placeholder {

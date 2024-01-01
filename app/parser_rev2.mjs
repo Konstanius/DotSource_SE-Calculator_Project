@@ -110,7 +110,7 @@ export class AccNum {
     factorise() {
         if (this.numerator % this.denominator !== BigInt(0)) throw new ParserError("Fakultät von Kommazahlen ist nicht definiert", -1)
         let num = this.toNumber()
-        this.denominator = 1
+        this.denominator = BigInt(1)
 
         let startTime = new Date().getTime()
 

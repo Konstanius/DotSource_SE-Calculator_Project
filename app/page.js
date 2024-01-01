@@ -11,6 +11,7 @@ let controlPressed = false
 export default function Home() {
     // States
     const [valid, setValidity] = useState(true)
+    const [errorReport, setErrorReport] = useState('')
     const [input, setInput] = useState('')
     const [output, setOutput] = useState('0')
     const [tooltip, setTooltip] = useState('')
@@ -34,6 +35,35 @@ export default function Home() {
     // Once, on client side, set the roundResults variable immediately, to not cause any state problems
     if (typeof window !== 'undefined' && currentPrompt === '') {
         roundResults = localStorage.getItem("roundResults") === "true"
+    }
+
+    function setErrorReportHelper(newValue, index) {
+        let error = "";
+        if (index === -1) {
+            setErrorReport("");
+            return;
+        }
+
+        if (index === newValue.length) {
+            index = newValue.length - 1;
+        }
+
+        for (let i = 0; i < newValue.length; i++) {
+            if (i === index) {
+                error += "_";
+            } else {
+                error += " ";
+            }
+        }
+
+        setErrorReport(error);
+
+        setTimeout(() => {
+            // scroll it the same amount as the input
+            let inputElement = document.getElementById('input')
+            let errorOverlay = document.getElementById('error-overlay')
+            errorOverlay.scrollLeft = inputElement.scrollLeft
+        }, 20)
     }
 
     // Turn an AccNum into a properly formatted string, taking into account the roundResults variable
@@ -126,7 +156,8 @@ export default function Home() {
                 setOutput(error.message)
                 console.log(error)
             } else {
-                setOutput(error.message + " " + error.index)
+                setOutput(error.message)
+                setErrorReportHelper(input, error.index)
             }
         }
 
@@ -308,19 +339,28 @@ export default function Home() {
         } catch (error) {
             if (valid) {
                 setOutput('0')
-            }
-            setTimeout(() => {
-                // Only show the error after 500ms as to not annoy the user while they are entering their expression
-                if (currentInput !== newValue) return
+                setTimeout(() => {
+                    // Only show the error after 500ms as to not annoy the user while they are entering their expression
+                    if (currentInput !== newValue) return
 
-                setValidity(false)
+                    setValidity(false)
+                    if (error.constructor !== ParserError) {
+                        setOutput(error.message)
+                        console.log(error)
+                    } else {
+                        setOutput(error.message)
+                        setErrorReportHelper(newValue, error.index)
+                    }
+                }, 500)
+            } else {
                 if (error.constructor !== ParserError) {
                     setOutput(error.message)
                     console.log(error)
                 } else {
-                    setOutput(error.message + " " + error.index)
+                    setOutput(error.message)
+                    setErrorReportHelper(newValue, error.index)
                 }
-            }, 500)
+            }
         }
     }
 
@@ -556,10 +596,48 @@ export default function Home() {
                                     setToolTipY(0)
                                 }
                             }}
+                            onScroll={(_) => {
+                                // scroll error overlay with input
+                                let inputElement = document.getElementById('input')
+                                let errorOverlay = document.getElementById('error-overlay')
+                                errorOverlay.scrollLeft = inputElement.scrollLeft
+                            }}
                             onSelect={(_) => setSelectionArea()}
                         >
                         </input>
                     </form>
+
+                    <span
+                        id="error-overlay"
+                        hidden={valid}
+                        autoFocus={false}
+                        className={`
+                                absolute
+                                text-center text-red
+                                ${(screenWidth >= 1024) ? "text-6xl p-4 m-4" : "text-3xl p-2 m-2"}
+                                outline-none
+                                hide-scrollbar
+                                `}
+                        unselectable={"on"}
+                        style={{
+                            width: screenWidth * 0.8,
+                            fontFamily: "Space Mono",
+                            zIndex: -5,
+                            top: "1.3rem",
+                            whiteSpace: "pre",
+                            overflowX: "auto",
+                            overflowY: "hidden",
+                            color: "rgb(159, 52, 52)"
+                        }}
+                        onScroll={(_) => {
+                            // scroll error overlay with input
+                            let inputElement = document.getElementById('input')
+                            let errorOverlay = document.getElementById('error-overlay')
+                            inputElement.scrollLeft = errorOverlay.scrollLeft
+                        }}
+                    >
+                        {errorReport}
+                    </span>
                 </div>
             </div>
 
