@@ -79,7 +79,12 @@ export class AccNum {
      */
     toNumber(isActual) {
         if (globalImpreciseAnswer && isActual) {
+            let depth = 0
             while (this.numerator >= BigInt(MAX_NUM_ROUND) || this.denominator >= BigInt(MAX_NUM_ROUND) || this.numerator < BigInt(-MAX_NUM_ROUND) || this.denominator < BigInt(-MAX_NUM_ROUND)) {
+                depth++
+                if (depth > 100) {
+                    throw new ParserError("Zeitüberschreitung bei der Berechnung", -1)
+                }
                 this.numerator /= BigInt(10)
                 if (this.denominator < BigInt(10)) {
                     throw new ParserError("Zahl überschreitet Präzisionslimit (± 2⁵³)", -1)
@@ -158,13 +163,16 @@ export class AccNum {
                 otherFloat = Number(otherNumber.numerator) / Number(otherNumber.denominator)
             }
             let result = Math.pow(thisFloat, otherFloat)
+            if (isNaN(result)) throw new ParserError("Wurzel negativer Zahlen ist nicht definiert", -1)
 
             // Turn it into an AccNum
             let newDenominator = BigInt(1)
+            let depth = 0
             while (result % 1 !== 0) {
                 result *= 10
                 newDenominator *= BigInt(10)
-                if (result >= 10 ** 14 || result < -(10 ** 14)) {
+                depth++
+                if (depth > 100) {
                     if (isActual) globalImpreciseAnswer = true
                     break
                 }

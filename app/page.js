@@ -150,6 +150,7 @@ export default function Home() {
             if (error.constructor !== ParserError) {
                 setOutput(error.message)
                 console.log(error)
+                setErrorReportHelper(input, -1)
             } else {
                 setOutput(error.message)
                 setErrorReportHelper(input, error.index)
@@ -313,6 +314,7 @@ export default function Home() {
                     if (error.constructor !== ParserError) {
                         setOutput(error.message)
                         console.log(error)
+                        setErrorReportHelper(newValue, -1)
                     } else {
                         setOutput(error.message)
                         setErrorReportHelper(newValue, error.index)
@@ -322,6 +324,7 @@ export default function Home() {
                 if (error.constructor !== ParserError) {
                     setOutput(error.message)
                     console.log(error)
+                    setErrorReportHelper(newValue, -1)
                 } else {
                     setOutput(error.message)
                     setErrorReportHelper(newValue, error.index)
