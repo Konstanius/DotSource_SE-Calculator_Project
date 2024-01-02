@@ -9,6 +9,8 @@ const MODE_EXPONENT = 5
 // Only applies to when "round results" is enabled, otherwise BigInt is used with fractions
 const MAX_NUM_ROUND = Math.pow(2, 53)
 
+export let globalImpreciseAnswer = false
+
 function modeFromChar(char) {
     if (char === "+") {
         return MODE_ADDITION
@@ -129,25 +131,38 @@ export class AccNum {
         this.numerator = value
     }
 
-    exponent(otherNumber) {
+    exponent(otherNumber, isActual) {
         let otherNumerator = otherNumber.numerator
         let otherDenominator = otherNumber.denominator
         if (otherNumerator % otherDenominator !== BigInt(0)) {
             // Use floats from here, if the number cannot be accurately represented as a fraction, throw an error from toNumber()
-            let thisFloat = this.toNumber()
-            let otherFloat = otherNumber.toNumber()
+            let thisFloat;
+            try {
+                thisFloat = this.toNumber();
+            } catch (error) {
+                if (isActual) globalImpreciseAnswer = true
+                thisFloat = Number(this.numerator) / Number(this.denominator)
+            }
+            let otherFloat;
+            try {
+                otherFloat = otherNumber.toNumber();
+            } catch (error) {
+                if (isActual) globalImpreciseAnswer = true
+                otherFloat = Number(otherNumber.numerator) / Number(otherNumber.denominator)
+            }
             let result = Math.pow(thisFloat, otherFloat)
 
             // Turn it into an AccNum
             let newDenominator = BigInt(1)
             while (result % 1 !== 0) {
                 result *= 10
-                if (result >= MAX_NUM_ROUND || result < -MAX_NUM_ROUND) {
-                    throw new ParserError("Zahl überschreitet Präzisionslimit (± 2⁵³)", -1)
+                if (result >= MAX_NUM_ROUND / 10 || result < -MAX_NUM_ROUND / 10) { // Div by 10 to avoid imprecision error, rather give imprecision hint
+                    if (isActual) globalImpreciseAnswer = true
+                    break
                 }
                 newDenominator *= BigInt(10)
             }
-            this.numerator = BigInt(result)
+            this.numerator = BigInt(Math.round(result))
             this.denominator = newDenominator
             return
         }
@@ -211,10 +226,14 @@ function gcd(a, b) {
  * @param input
  * @param depth
  * @param indexOffset
+ * @param isActual Whether this is the actual input or a sub-expression
  * @returns {[AccNum, number]}
  * @throws ParserError
  **/
-export function parseWithParentheses(input, depth, indexOffset) {
+export function parseWithParentheses(input, depth, indexOffset, isActual) {
+    if (depth === 0 && isActual === true) {
+        globalImpreciseAnswer = false
+    }
     let currentNumber = new AccNum(BigInt(0))
     let negateCurrentNumber = false
     let negateNextNumber = false
@@ -267,7 +286,7 @@ export function parseWithParentheses(input, depth, indexOffset) {
 
             // Recursively parse the group by calling the function again on the substring
             // This returns the group and the index of the closing parenthesis
-            let [group, finishedIndex] = parseWithParentheses(input.substring(index + 1), depth + 1, index + 1)
+            let [group, finishedIndex] = parseWithParentheses(input.substring(index + 1), depth + 1, index + 1, isActual)
             // Continue after the closing parenthesis
             index += finishedIndex + 1
             // Set the current number to the value returned by the recursive call (the group)
@@ -430,7 +449,7 @@ export function parseWithParentheses(input, depth, indexOffset) {
         return [currentNumber, index]
     }
 
-    return [solveParenthesesGroups(parenthesesGroups), index]
+    return [solveParenthesesGroups(parenthesesGroups, isActual), index]
 }
 
 /**
@@ -439,14 +458,15 @@ export function parseWithParentheses(input, depth, indexOffset) {
  * Iterates through the array, recurring on each array
  * Once the iteration is done, concatenates the array into a string and calls parseSingleGroupString() on it
  * @param parenthesesGroups
+ * @param isActual whether this is the actual input or a sub-expression
  * @returns {AccNum}
  */
-function solveParenthesesGroups(parenthesesGroups) {
+function solveParenthesesGroups(parenthesesGroups, isActual) {
     // iterate and solve parentheses groups, if array
     for (let i = 0; i < parenthesesGroups.length; i++) {
         const group = parenthesesGroups[i]
         if (Array.isArray(group)) {
-            parenthesesGroups[i] = solveParenthesesGroups(group)
+            parenthesesGroups[i] = solveParenthesesGroups(group, isActual)
         }
     }
 
@@ -457,7 +477,7 @@ function solveParenthesesGroups(parenthesesGroups) {
     for (let i = 0; i < parenthesesGroups.length - 1; i++) {
         const group = parenthesesGroups[i]
         if (group.trailingOperator === MODE_EXPONENT) {
-            group.exponent(parenthesesGroups[i + 1])
+            group.exponent(parenthesesGroups[i + 1], isActual)
             group.trailingOperator = parenthesesGroups[i + 1].trailingOperator
             parenthesesGroups.splice(i + 1, 1)
             i--

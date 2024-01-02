@@ -101,7 +101,7 @@ const testMap = {
 let fails = 0
 for (const [input, expected] of Object.entries(testMap)) {
     try {
-        let result = parseWithParentheses(input, 0, 0)[0].toNumber().toLocaleString('en-UK', {
+        let result = parseWithParentheses(input, 0, 0, false)[0].toNumber().toLocaleString('en-UK', {
             maximumFractionDigits: 15,
             minimumFractionDigits: 0,
             useGrouping: false

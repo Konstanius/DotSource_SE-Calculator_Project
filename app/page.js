@@ -1,7 +1,7 @@
 'use client'
 
 import {useEffect, useState} from "react"
-import {allowedInNumber, ParserError, parseWithParentheses} from "@/app/parser_rev2.mjs"
+import {allowedInNumber, ParserError, parseWithParentheses, globalImpreciseAnswer} from "@/app/parser_rev2.mjs"
 import {HistoryDisplay, HistoryEntry} from "@/app/history"
 
 let selectionAreaData = [0, 0]
@@ -123,7 +123,7 @@ export default function Home() {
 
         try {
             let text = document.getElementById('input').value.substring(start, end)
-            let result = parseWithParentheses(text, 0, 0)
+            let result = parseWithParentheses(text, 0, 0, false)
 
             // show the tooltip
             setTooltip(getResultWithProperDisplay(result[0]))
@@ -143,7 +143,7 @@ export default function Home() {
 
         let scopedValid = true
         try {
-            parseWithParentheses(input, 0, 0)
+            parseWithParentheses(input, 0, 0, false)
         } catch (error) {
             setValidity(false)
             scopedValid = false
@@ -299,7 +299,7 @@ export default function Home() {
         }, 3) // Delay, since setInput is not immediate
 
         try {
-            let data = parseWithParentheses(newValue, 0, 0)
+            let data = parseWithParentheses(newValue, 0, 0, true)
             setValidity(true)
             setOutput(getResultWithProperDisplay(data[0]))
         } catch (error) {
@@ -637,7 +637,7 @@ export default function Home() {
                         }}
                         disabled={!valid || copyClicked}
                         className={"result " + (!copyClicked ?
-                                (valid ? "bg-gray-900" : "bg-red-900") : "bg-green-900") +
+                                (valid ? (globalImpreciseAnswer ? "bg-amber-700" : "bg-gray-900") : "bg-red-900") : "bg-green-900") +
                             " text-white p-2 rounded-md smooth-transition nowrap"}
                         onClick={() => {
                             if (valid) {
@@ -645,7 +645,7 @@ export default function Home() {
                                 setCopyClicked(true)
                             }
                         }}>
-                        {copyClicked ? "Ergebnis kopiert!" : output}
+                        {copyClicked ? "Ergebnis kopiert!" : (globalImpreciseAnswer ? "~ " + output : output)}
                     </button>
 
                     {/*    Buttons*/}
