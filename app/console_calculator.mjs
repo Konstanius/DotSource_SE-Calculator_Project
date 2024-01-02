@@ -1,4 +1,4 @@
-import {globalImpreciseAnswer, ParserError, parseWithParentheses} from "./parser_rev2.mjs";
+import {getResultWithProperDisplay, globalImpreciseAnswer, ParserError, parseWithParentheses} from "./parser_rev2.mjs";
 import prompt from "prompt-sync";
 
 console.log("Taschenrechner v2.0")
@@ -32,40 +32,4 @@ while (true) {
             console.log("Fehler:", e.message, "\n")
         }
     }
-}
-
-function getResultWithProperDisplay(input, roundResults) {
-    let result;
-    try {
-        result = input.toNumber(true).toLocaleString(navigator.language, {
-            useGrouping: false,
-            maximumFractionDigits: 15
-        });
-
-        let decimalCount = result.split(".")[1]?.length || 0
-
-        if (!roundResults && decimalCount > 3) {
-            input.shorten()
-            if (input.denominator === BigInt(1)) {
-                result = input.numerator.toString()
-            } else if (input.denominator === BigInt(-1)) {
-                result = -input.numerator.toString()
-            } else {
-                result = input.numerator + "/" + input.denominator
-            }
-        }
-    } catch (error) {
-        if (!roundResults) {
-            if (input.denominator === BigInt(1)) {
-                result = input.numerator.toString()
-            } else if (input.denominator === BigInt(-1)) {
-                result = -input.numerator.toString()
-            } else {
-                result = input.numerator + "/" + input.denominator
-            }
-        } else {
-            throw error
-        }
-    }
-    return result
 }

@@ -1,7 +1,13 @@
 'use client'
 
 import {useEffect, useState} from "react"
-import {allowedInNumber, ParserError, parseWithParentheses, globalImpreciseAnswer} from "@/app/parser_rev2.mjs"
+import {
+    allowedInNumber,
+    ParserError,
+    parseWithParentheses,
+    globalImpreciseAnswer,
+    getResultWithProperDisplay
+} from "@/app/parser_rev2.mjs"
 import {HistoryDisplay, HistoryEntry} from "@/app/history"
 
 let selectionAreaData = [0, 0]
@@ -61,43 +67,6 @@ export default function Home() {
         }, 20)
     }
 
-    // Turn an AccNum into a properly formatted string, taking into account the roundResults variable
-    function getResultWithProperDisplay(input, isActual) {
-        let result;
-        try {
-            result = input.toNumber(isActual).toLocaleString(navigator.language, {
-                useGrouping: false,
-                maximumFractionDigits: 15
-            });
-
-            let decimalCount = result.split(".")[1]?.length || 0
-
-            if (!roundResults && decimalCount > 3) {
-                input.shorten()
-                if (input.denominator === BigInt(1)) {
-                    result = input.numerator.toString()
-                } else if (input.denominator === BigInt(-1)) {
-                    result = -input.numerator.toString()
-                } else {
-                    result = input.numerator + "/" + input.denominator
-                }
-            }
-        } catch (error) {
-            if (!roundResults) {
-                if (input.denominator === BigInt(1)) {
-                    result = input.numerator.toString()
-                } else if (input.denominator === BigInt(-1)) {
-                    result = -input.numerator.toString()
-                } else {
-                    result = input.numerator + "/" + input.denominator
-                }
-            } else {
-                throw error
-            }
-        }
-        return result
-    }
-
     // Set the tooltip to the selected text
     async function setSelectionArea() {
         // Delay necessary, since on button press focus is lost, therefore deletion could not delete the selection
@@ -126,7 +95,7 @@ export default function Home() {
             let result = parseWithParentheses(text, 0, 0, false)
 
             // show the tooltip
-            setTooltip(getResultWithProperDisplay(result[0], false))
+            setTooltip(getResultWithProperDisplay(result[0], roundResults))
         } catch (error) {
             setTooltip("Ungültiger Ausdruck")
         }
@@ -302,7 +271,7 @@ export default function Home() {
         try {
             let data = parseWithParentheses(newValue, 0, 0, true)
             setValidity(true)
-            setOutput(getResultWithProperDisplay(data[0], true))
+            setOutput(getResultWithProperDisplay(data[0], roundResults))
         } catch (error) {
             if (valid) {
                 setOutput('0')

@@ -4,10 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Font change to Roboto Mono">
+    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Fixes root taking of negative numbers">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/console_calculator.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/app/console_calculator.mjs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/parser_rev2.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/app/parser_rev2.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/parser_tests.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/app/parser_tests.mjs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,7 +79,7 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="npm.Test">
+  <component name="RunManager" selected="Node.js.Console">
     <configuration name="Console" type="NodeJSConfigurationType" path-to-js-file="$PROJECT_DIR$/app/console_calculator.mjs" working-dir="$PROJECT_DIR$">
       <method v="2" />
     </configuration>
@@ -127,7 +129,7 @@
       <workItem from="1704129182085" duration="5321000" />
       <workItem from="1704141590273" duration="3782000" />
       <workItem from="1704181889532" duration="4774000" />
-      <workItem from="1704204830992" duration="2870000" />
+      <workItem from="1704204830992" duration="6004000" />
     </task>
     <task id="LOCAL-00001" summary="Made UI a lot more responsive">
       <option name="closed" value="true" />
@@ -393,7 +395,15 @@
       <option name="project" value="LOCAL" />
       <updated>1704206218962</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="Fixes root taking of negative numbers">
+      <option name="closed" value="true" />
+      <created>1704208364704</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1704208364704</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -403,7 +413,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Changed color scheme of scroll bars&#10;&#10;Input queue added" />
     <MESSAGE value="Changed color scheme of scroll bars&#10;&#10;Input queue added&#10;&#10;Added console application module" />
     <MESSAGE value="Fixes small backspace issue" />
     <MESSAGE value="Removed TODO for automatic parentheses&#10;&#10;Result made to look better&#10;&#10;Added exponent operation" />
@@ -428,7 +437,8 @@
     <MESSAGE value="Adds rounding support to console_calculator.mjs" />
     <MESSAGE value="Adds escape shortcut to clear button&#10;&#10;Significantly improves toNumber method&#10;&#10;Fixes getResultWithProperDisplay method" />
     <MESSAGE value="Font change to Roboto Mono" />
-    <option name="LAST_COMMIT_MESSAGE" value="Font change to Roboto Mono" />
+    <MESSAGE value="Fixes root taking of negative numbers" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixes root taking of negative numbers" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
 </project>

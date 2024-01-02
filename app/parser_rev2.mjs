@@ -5,11 +5,43 @@ const MODE_MULTIPLICATION = 3
 const MODE_DIVISION = 4
 const MODE_EXPONENT = 5
 
-// Javascript limitation, exponents are used after 2^53, imprecision thus occurs
-// Only applies to when "round results" is enabled, otherwise BigInt is used with fractions
-const MAX_NUM_ROUND = Math.pow(2, 53)
-
 export let globalImpreciseAnswer = false
+
+export function getResultWithProperDisplay(input, shouldRound) {
+    let result;
+    try {
+        result = input.toNumber().toLocaleString(navigator.language, {
+            useGrouping: false,
+            maximumFractionDigits: 15
+        });
+
+        let decimalCount = result.split(".")[1]?.length || 0
+
+        if (!shouldRound && (decimalCount > 3 || result === Infinity || result === -Infinity || isNaN(result))) {
+            input.shorten()
+            if (input.denominator === BigInt(1)) {
+                result = input.numerator.toString()
+            } else if (input.denominator === BigInt(-1)) {
+                result = -input.numerator.toString()
+            } else {
+                result = input.numerator + "/" + input.denominator
+            }
+        }
+    } catch (error) {
+        if (!shouldRound) {
+            if (input.denominator === BigInt(1)) {
+                result = input.numerator.toString()
+            } else if (input.denominator === BigInt(-1)) {
+                result = -input.numerator.toString()
+            } else {
+                result = input.numerator + "/" + input.denominator
+            }
+        } else {
+            throw error
+        }
+    }
+    return result
+}
 
 function modeFromChar(char) {
     if (char === "+") {
@@ -77,24 +109,7 @@ export class AccNum {
      * Gets the float value of this AccNum
      * @returns {number}
      */
-    toNumber(isActual) {
-        if (globalImpreciseAnswer && isActual) {
-            let depth = 0
-            while (this.numerator >= BigInt(MAX_NUM_ROUND) || this.denominator >= BigInt(MAX_NUM_ROUND) || this.numerator < BigInt(-MAX_NUM_ROUND) || this.denominator < BigInt(-MAX_NUM_ROUND)) {
-                depth++
-                if (depth > 100) {
-                    throw new ParserError("Zeitüberschreitung bei der Berechnung", -1)
-                }
-                this.numerator /= BigInt(10)
-                if (this.denominator < BigInt(10)) {
-                    throw new ParserError("Zahl überschreitet Präzisionslimit (± 2⁵³)", -1)
-                }
-                this.denominator /= BigInt(10)
-            }
-        }
-        if (this.numerator >= BigInt(MAX_NUM_ROUND) || this.denominator >= BigInt(MAX_NUM_ROUND) || this.numerator < BigInt(-MAX_NUM_ROUND) || this.denominator < BigInt(-MAX_NUM_ROUND)) {
-            throw new ParserError("Zahl überschreitet Präzisionslimit (± 2⁵³)", -1)
-        }
+    toNumber() {
         return Number(this.numerator) / Number(this.denominator)
     }
 
@@ -122,10 +137,11 @@ export class AccNum {
         this.multiply(reciprocate)
     }
 
-    factorise(isActual) {
-        // The error in the comparison can be ignored, it is an issue in JavaScript Intellisense
+    factorise() {
+        // The lint in the comparison can be ignored, it is an issue in JavaScript linter
+        // noinspection JSIncompatibleTypesComparison
         if (this.numerator % this.denominator !== BigInt(0)) throw new ParserError("Fakultät von Kommazahlen ist nicht definiert", -1)
-        let num = this.toNumber(isActual)
+        let num = this.toNumber()
         this.denominator = BigInt(1)
 
         let startTime = new Date().getTime()
@@ -146,18 +162,21 @@ export class AccNum {
     exponent(otherNumber, isActual) {
         let otherNumerator = otherNumber.numerator
         let otherDenominator = otherNumber.denominator
+
+        // The lint in the comparison can be ignored, it is an issue in JavaScript linter
+        // noinspection JSIncompatibleTypesComparison
         if (otherNumerator % otherDenominator !== BigInt(0)) {
             // Use floats from here, if the number cannot be accurately represented as a fraction, throw an error from toNumber()
             let thisFloat;
             try {
-                thisFloat = this.toNumber(isActual);
+                thisFloat = this.toNumber();
             } catch (error) {
                 if (isActual) globalImpreciseAnswer = true
                 thisFloat = Number(this.numerator) / Number(this.denominator)
             }
             let otherFloat;
             try {
-                otherFloat = otherNumber.toNumber(isActual);
+                otherFloat = otherNumber.toNumber();
             } catch (error) {
                 if (isActual) globalImpreciseAnswer = true
                 otherFloat = Number(otherNumber.numerator) / Number(otherNumber.denominator)
@@ -172,7 +191,7 @@ export class AccNum {
                 result *= 10
                 newDenominator *= BigInt(10)
                 depth++
-                if (depth > 100) {
+                if (depth > 13) {
                     if (isActual) globalImpreciseAnswer = true
                     break
                 }
@@ -415,7 +434,7 @@ export function parseWithParentheses(input, depth, indexOffset, isActual) {
                 } else {
                     if (char === "!") {
                         // If the operator is !, factorise the number
-                        currentNumber.factorise(isActual)
+                        currentNumber.factorise()
                         numberWasFinished = true
                     } else if (char === "%") {
                         // If the operator is %, multiply the number by 100
