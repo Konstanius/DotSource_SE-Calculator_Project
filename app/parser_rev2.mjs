@@ -132,7 +132,25 @@ export class AccNum {
     exponent(otherNumber) {
         let otherNumerator = otherNumber.numerator
         let otherDenominator = otherNumber.denominator
-        if (otherNumerator % otherDenominator !== BigInt(0)) throw new ParserError("Exponente von Kommazahlen sind nicht eingebaut", -1)
+        if (otherNumerator % otherDenominator !== BigInt(0)) {
+            // Use floats from here, if the number cannot be accurately represented as a fraction, throw an error from toNumber()
+            let thisFloat = this.toNumber()
+            let otherFloat = otherNumber.toNumber()
+            let result = Math.pow(thisFloat, otherFloat)
+
+            // Turn it into an AccNum
+            let newDenominator = BigInt(1)
+            while (result % 1 !== 0) {
+                result *= 10
+                if (result >= MAX_NUM_ROUND || result < -MAX_NUM_ROUND) {
+                    throw new ParserError("Zahl überschreitet Präzisionslimit (± 2⁵³)", -1)
+                }
+                newDenominator *= BigInt(10)
+            }
+            this.numerator = BigInt(result)
+            this.denominator = newDenominator
+            return
+        }
         let absoluteOtherNumerator = otherNumerator
         if (otherNumerator < 0) {
             absoluteOtherNumerator *= BigInt(-1)
