@@ -99,29 +99,32 @@ body {
 }
 
 .history-entry-input {
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: 500;
     color: rgba(var(--foreground-rgb), 0.8);
     width: 55%;
     overflow-x: auto;
     overflow-y: hidden;
+    font-family: 'Roboto Mono';
 }
 
 .history-entry-output {
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: 500;
     color: rgba(var(--foreground-rgb), 0.8);
     width: 30%;
     overflow-x: auto;
     overflow-y: hidden;
+    font-family: 'Roboto Mono';
 }
 
 .history-entry-equals {
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: 500;
     color: rgba(var(--foreground-rgb), 0.8);
     width: 5%;
     overflow: hidden;
+    font-family: 'Roboto Mono';
 }
 
 .history-entry-button {

@@ -494,7 +494,7 @@ export default function Home() {
                                 zIndex: -5,
                                 opacity: submitAnimation === "fade-out-right" ? 1 : 0,
                                 width: screenWidth * 0.8,
-                                fontFamily: "Space Mono",
+                                fontFamily: "Roboto Mono",
                             }}
                             type="text"
                             value={output}
@@ -519,7 +519,7 @@ export default function Home() {
                             type="text"
                             style={{
                                 width: screenWidth * 0.8,
-                                fontFamily: "Space Mono",
+                                fontFamily: "Roboto Mono",
                             }}
                             value={input}
                             readOnly={submitAnimation !== ""}
@@ -592,7 +592,7 @@ export default function Home() {
                         unselectable={"on"}
                         style={{
                             width: screenWidth * 0.8,
-                            fontFamily: "Space Mono",
+                            fontFamily: "Roboto Mono",
                             zIndex: -5,
                             top: (screenWidth >= 1024) ? "1.3rem" : "0.3rem",
                             whiteSpace: "pre",
@@ -635,6 +635,7 @@ export default function Home() {
                             textOverflow: "ellipsis",
                             width: 'calc(' + ((screenWidth < 1024) ? screenWidth * 0.95 : screenWidth * 0.55) + 'px - 0.5rem)',
                             fontSize: "2rem",
+                            fontFamily: "Roboto Mono",
                         }}
                         disabled={!valid || copyClicked}
                         className={"result " + (!copyClicked ?
