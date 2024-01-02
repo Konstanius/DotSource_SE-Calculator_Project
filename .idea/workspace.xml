@@ -76,7 +76,7 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="npm.Test">
+  <component name="RunManager">
     <configuration name="Console" type="NodeJSConfigurationType" path-to-js-file="$PROJECT_DIR$/app/console_calculator.mjs" working-dir="$PROJECT_DIR$">
       <method v="2" />
     </configuration>

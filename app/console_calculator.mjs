@@ -1,4 +1,4 @@
-import {ParserError, parseWithParentheses} from "./parser_rev2.mjs";
+import {globalImpreciseAnswer, ParserError, parseWithParentheses} from "./parser_rev2.mjs";
 import prompt from "prompt-sync";
 
 console.log("Taschenrechner v2.0")
@@ -22,8 +22,8 @@ while (true) {
     }
 
     try {
-        let output = parseWithParentheses(input, 0, 0, false)
-        console.log("Ergebnis:", getResultWithProperDisplay(output[0], roundResults), "\n")
+        let output = parseWithParentheses(input, 0, 0, true)
+        console.log("Ergebnis:", (globalImpreciseAnswer ? "~ " : "") + getResultWithProperDisplay(output[0], roundResults), "\n")
     } catch (e) {
         if (e.constructor === ParserError && e.index !== -1) {
             let prefix = " ".repeat(e.index + 2)
