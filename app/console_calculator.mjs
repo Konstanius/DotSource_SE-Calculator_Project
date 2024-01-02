@@ -37,7 +37,7 @@ while (true) {
 function getResultWithProperDisplay(input, roundResults) {
     let result;
     try {
-        result = input.toNumber().toLocaleString(navigator.language, {
+        result = input.toNumber(true).toLocaleString(navigator.language, {
             useGrouping: false,
             maximumFractionDigits: 15
         });
@@ -46,9 +46,9 @@ function getResultWithProperDisplay(input, roundResults) {
 
         if (!roundResults && decimalCount > 3) {
             input.shorten()
-            if (input.denominator === 1) {
+            if (input.denominator === BigInt(1)) {
                 result = input.numerator.toString()
-            } else if (input.denominator === -1) {
+            } else if (input.denominator === BigInt(-1)) {
                 result = -input.numerator.toString()
             } else {
                 result = input.numerator + "/" + input.denominator
@@ -56,9 +56,9 @@ function getResultWithProperDisplay(input, roundResults) {
         }
     } catch (error) {
         if (!roundResults) {
-            if (input.denominator === 1) {
+            if (input.denominator === BigInt(1)) {
                 result = input.numerator.toString()
-            } else if (input.denominator === -1) {
+            } else if (input.denominator === BigInt(-1)) {
                 result = -input.numerator.toString()
             } else {
                 result = input.numerator + "/" + input.denominator

@@ -62,10 +62,10 @@ export default function Home() {
     }
 
     // Turn an AccNum into a properly formatted string, taking into account the roundResults variable
-    function getResultWithProperDisplay(input) {
+    function getResultWithProperDisplay(input, isActual) {
         let result;
         try {
-            result = input.toNumber().toLocaleString(navigator.language, {
+            result = input.toNumber(isActual).toLocaleString(navigator.language, {
                 useGrouping: false,
                 maximumFractionDigits: 15
             });
@@ -74,9 +74,9 @@ export default function Home() {
 
             if (!roundResults && decimalCount > 3) {
                 input.shorten()
-                if (input.denominator === 1) {
+                if (input.denominator === BigInt(1)) {
                     result = input.numerator.toString()
-                } else if (input.denominator === -1) {
+                } else if (input.denominator === BigInt(-1)) {
                     result = -input.numerator.toString()
                 } else {
                     result = input.numerator + "/" + input.denominator
@@ -84,9 +84,9 @@ export default function Home() {
             }
         } catch (error) {
             if (!roundResults) {
-                if (input.denominator === 1) {
+                if (input.denominator === BigInt(1)) {
                     result = input.numerator.toString()
-                } else if (input.denominator === -1) {
+                } else if (input.denominator === BigInt(-1)) {
                     result = -input.numerator.toString()
                 } else {
                     result = input.numerator + "/" + input.denominator
@@ -126,7 +126,7 @@ export default function Home() {
             let result = parseWithParentheses(text, 0, 0, false)
 
             // show the tooltip
-            setTooltip(getResultWithProperDisplay(result[0]))
+            setTooltip(getResultWithProperDisplay(result[0], false))
         } catch (error) {
             setTooltip("Ungültiger Ausdruck")
         }
@@ -301,7 +301,7 @@ export default function Home() {
         try {
             let data = parseWithParentheses(newValue, 0, 0, true)
             setValidity(true)
-            setOutput(getResultWithProperDisplay(data[0]))
+            setOutput(getResultWithProperDisplay(data[0], true))
         } catch (error) {
             if (valid) {
                 setOutput('0')
@@ -413,7 +413,7 @@ export default function Home() {
             document.getElementById('input').setSelectionRange(start, start)
         }, 5)
     }, "Backspace")
-    addButton(0, <i className="fa-solid fa-c"></i>, false, true, "", () => onChangedTextField(""))
+    addButton(0, <i className="fa-solid fa-c"></i>, false, true, "", () => onChangedTextField(""), "Escape")
     addButton(1, "(", false, false, "(", undefined, "(")
     addButton(1, ")", false, false, ")", undefined, ")")
     addButton(1, <div><span>n </span><i className="fa-solid fa-exclamation"></i>
@@ -555,6 +555,8 @@ export default function Home() {
                             onClick={async (_) => {
                                 // pause for 10 ms
                                 await new Promise(r => setTimeout(r, 10))
+
+                                setSelectionArea().then(/*ignored*/)
 
                                 // get the selected text
                                 let start = document.getElementById('input').selectionStart

@@ -4,10 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Added error handling to fraction exponents and hint at inaccuracy, if present">
+    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Adds rounding support to console_calculator.mjs">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/console_calculator.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/app/console_calculator.mjs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/parser_rev2.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/app/parser_rev2.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/parser_tests.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/app/parser_tests.mjs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,6 +57,7 @@
   &quot;keyToString&quot;: {
     &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
     &quot;Node.js.Console.executor&quot;: &quot;Run&quot;,
+    &quot;Node.js.console_calculator.mjs.executor&quot;: &quot;Run&quot;,
     &quot;Node.js.parser_rev2.mjs.executor&quot;: &quot;Run&quot;,
     &quot;Node.js.parser_tests.mjs.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
@@ -76,7 +79,7 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager">
+  <component name="RunManager" selected="npm.Test">
     <configuration name="Console" type="NodeJSConfigurationType" path-to-js-file="$PROJECT_DIR$/app/console_calculator.mjs" working-dir="$PROJECT_DIR$">
       <method v="2" />
     </configuration>
@@ -125,7 +128,8 @@
       <workItem from="1704115711081" duration="2439000" />
       <workItem from="1704129182085" duration="5321000" />
       <workItem from="1704141590273" duration="3782000" />
-      <workItem from="1704181889532" duration="4489000" />
+      <workItem from="1704181889532" duration="4774000" />
+      <workItem from="1704204830992" duration="495000" />
     </task>
     <task id="LOCAL-00001" summary="Made UI a lot more responsive">
       <option name="closed" value="true" />
@@ -359,7 +363,23 @@
       <option name="project" value="LOCAL" />
       <updated>1704185989172</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="Fixes rounding detection not triggering accurately">
+      <option name="closed" value="true" />
+      <created>1704186562958</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1704186562958</updated>
+    </task>
+    <task id="LOCAL-00031" summary="Adds rounding support to console_calculator.mjs">
+      <option name="closed" value="true" />
+      <created>1704186662840</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1704186662840</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -369,8 +389,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Input via buttons perfected&#10;&#10;Removed automatic parentheses, added as TODO&#10;&#10;Made layout work better with rotation on mobile" />
-    <MESSAGE value="Fixes a bug with the parser that had to do with negative number prefixes" />
     <MESSAGE value="Added on click animations for most buttons" />
     <MESSAGE value="Made buttons behave pressed when using the keyboard to enter" />
     <MESSAGE value="Changed color scheme of scroll bars&#10;&#10;Input queue added" />
@@ -394,7 +412,9 @@
     <MESSAGE value="Added more tests, current calculator seems to pass all of them" />
     <MESSAGE value="Added fraction exponents with implicit rounding" />
     <MESSAGE value="Added error handling to fraction exponents and hint at inaccuracy, if present" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added error handling to fraction exponents and hint at inaccuracy, if present" />
+    <MESSAGE value="Fixes rounding detection not triggering accurately" />
+    <MESSAGE value="Adds rounding support to console_calculator.mjs" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adds rounding support to console_calculator.mjs" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
 </project>

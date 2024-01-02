@@ -77,10 +77,17 @@ export class AccNum {
      * Gets the float value of this AccNum
      * @returns {number}
      */
-    toNumber() {
-        let num1 = Number(this.numerator)
-        let num2 = Number(this.denominator)
-        if (num1 >= MAX_NUM_ROUND || num2 >= MAX_NUM_ROUND || num1 < -MAX_NUM_ROUND || num2 < -MAX_NUM_ROUND) {
+    toNumber(isActual) {
+        if (globalImpreciseAnswer && isActual) {
+            while (this.numerator >= BigInt(MAX_NUM_ROUND) || this.denominator >= BigInt(MAX_NUM_ROUND) || this.numerator < BigInt(-MAX_NUM_ROUND) || this.denominator < BigInt(-MAX_NUM_ROUND)) {
+                this.numerator /= BigInt(10)
+                if (this.denominator < BigInt(10)) {
+                    throw new ParserError("Zahl überschreitet Präzisionslimit (± 2⁵³)", -1)
+                }
+                this.denominator /= BigInt(10)
+            }
+        }
+        if (this.numerator >= BigInt(MAX_NUM_ROUND) || this.denominator >= BigInt(MAX_NUM_ROUND) || this.numerator < BigInt(-MAX_NUM_ROUND) || this.denominator < BigInt(-MAX_NUM_ROUND)) {
             throw new ParserError("Zahl überschreitet Präzisionslimit (± 2⁵³)", -1)
         }
         return Number(this.numerator) / Number(this.denominator)
@@ -110,10 +117,10 @@ export class AccNum {
         this.multiply(reciprocate)
     }
 
-    factorise() {
+    factorise(isActual) {
         // The error in the comparison can be ignored, it is an issue in JavaScript Intellisense
         if (this.numerator % this.denominator !== BigInt(0)) throw new ParserError("Fakultät von Kommazahlen ist nicht definiert", -1)
-        let num = this.toNumber()
+        let num = this.toNumber(isActual)
         this.denominator = BigInt(1)
 
         let startTime = new Date().getTime()
@@ -138,14 +145,14 @@ export class AccNum {
             // Use floats from here, if the number cannot be accurately represented as a fraction, throw an error from toNumber()
             let thisFloat;
             try {
-                thisFloat = this.toNumber();
+                thisFloat = this.toNumber(isActual);
             } catch (error) {
                 if (isActual) globalImpreciseAnswer = true
                 thisFloat = Number(this.numerator) / Number(this.denominator)
             }
             let otherFloat;
             try {
-                otherFloat = otherNumber.toNumber();
+                otherFloat = otherNumber.toNumber(isActual);
             } catch (error) {
                 if (isActual) globalImpreciseAnswer = true
                 otherFloat = Number(otherNumber.numerator) / Number(otherNumber.denominator)
@@ -400,7 +407,7 @@ export function parseWithParentheses(input, depth, indexOffset, isActual) {
                 } else {
                     if (char === "!") {
                         // If the operator is !, factorise the number
-                        currentNumber.factorise()
+                        currentNumber.factorise(isActual)
                         numberWasFinished = true
                     } else if (char === "%") {
                         // If the operator is %, multiply the number by 100
