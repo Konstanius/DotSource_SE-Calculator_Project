@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Refactored toNumber method&#10;&#10;Extracted getResultWithProperDisplay method">
+    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Added safety for infinity">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/parser_rev2.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/app/parser_rev2.mjs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,6 +59,11 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "ShowUsagesActions.previewPropertyKey": "true",
+    "WebServerToolWindowPanel.toolwindow.highlight.mappings": "true",
+    "WebServerToolWindowPanel.toolwindow.highlight.symlinks": "true",
+    "WebServerToolWindowPanel.toolwindow.show.date": "false",
+    "WebServerToolWindowPanel.toolwindow.show.permissions": "false",
+    "WebServerToolWindowPanel.toolwindow.show.size": "false",
     "git-widget-placeholder": "master",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "C:/Users/early/WebstormProjects/dotsource_se_calculator/app/console_calculator.js",
@@ -72,11 +76,11 @@
     "npm.Test.executor": "Run",
     "npm.dev.executor": "Run",
     "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "preferences.keymap",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="Node.js.Console">
+  <component name="RunManager" selected="npm.Test">
     <configuration name="Console" type="NodeJSConfigurationType" path-to-js-file="$PROJECT_DIR$/app/console_calculator.mjs" working-dir="$PROJECT_DIR$">
       <method v="2" />
     </configuration>
@@ -126,7 +130,9 @@
       <workItem from="1704129182085" duration="5321000" />
       <workItem from="1704141590273" duration="3782000" />
       <workItem from="1704181889532" duration="4774000" />
-      <workItem from="1704204830992" duration="6339000" />
+      <workItem from="1704204830992" duration="7056000" />
+      <workItem from="1704212485410" duration="2579000" />
+      <workItem from="1704226068324" duration="240000" />
     </task>
     <task id="LOCAL-00001" summary="Made UI a lot more responsive">
       <option name="closed" value="true" />
@@ -408,17 +414,35 @@
       <option name="project" value="LOCAL" />
       <updated>1704211530270</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="Added safety for infinity">
+      <option name="closed" value="true" />
+      <created>1704211898324</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1704211898324</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Fixes small backspace issue" />
     <MESSAGE value="Removed TODO for automatic parentheses&#10;&#10;Result made to look better&#10;&#10;Added exponent operation" />
     <MESSAGE value="Refactored parser to use BigInt, yielding near-infinite precision and range" />
     <MESSAGE value="Fixed an issue&#10;&#10;Implemented rounding and accurate results toggle in console_calculator.mjs&#10;&#10;Added CTRL delete functionality" />
@@ -443,7 +467,8 @@
     <MESSAGE value="Font change to Roboto Mono" />
     <MESSAGE value="Fixes root taking of negative numbers" />
     <MESSAGE value="Refactored toNumber method&#10;&#10;Extracted getResultWithProperDisplay method" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactored toNumber method&#10;&#10;Extracted getResultWithProperDisplay method" />
+    <MESSAGE value="Added safety for infinity" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added safety for infinity" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
 </project>

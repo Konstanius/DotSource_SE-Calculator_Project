@@ -344,11 +344,11 @@ export default function Home() {
                     let newValue = input.substring(0, start) + onClickAdd + input.substring(end)
                     onChangedTextField(newValue)
                     setTimeout(() => {
+                        toInput.shift()
                         document.getElementById('input').setSelectionRange(start + onClickAdd.length, start + onClickAdd.length)
                         selectionAreaData[0] += onClickAdd.length
                         selectionAreaData[1] += onClickAdd.length
-                        toInput.shift()
-                    }, 10)
+                    }, 3)
                 }}>{screenHeight !== 0 ? title : ""}</button>)
     }
 
@@ -602,9 +602,8 @@ export default function Home() {
                         id="result"
                         hidden={screenWidth === 0}
                         style={{
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
+                            overflowY: "hidden",
+                            overflowX: "auto",
                             width: 'calc(' + ((screenWidth < 1024) ? screenWidth * 0.95 : screenWidth * 0.55) + 'px - 0.5rem)',
                             fontSize: "2rem",
                             fontFamily: "Roboto Mono",
@@ -612,7 +611,7 @@ export default function Home() {
                         disabled={!valid || copyClicked}
                         className={"result " + (!copyClicked ?
                                 (valid ? (globalImpreciseAnswer ? "bg-amber-700" : "bg-gray-900") : "bg-red-900") : "bg-green-900") +
-                            " text-white p-2 rounded-md smooth-transition nowrap"}
+                            " text-white p-2 rounded-md smooth-transition smallScroll"}
                         onClick={() => {
                             if (valid) {
                                 navigator.clipboard.writeText(output).then(/*ignored*/)

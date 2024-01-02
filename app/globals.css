@@ -201,9 +201,7 @@ body {
     font-weight: 500;
     color: rgba(var(--foreground-rgb), 0.8);
     width: 100%;
-    overflow: hidden;
     margin-right: 0.5rem;
-    text-overflow: ellipsis;
 }
 
 .hide-scrollbar::-webkit-scrollbar {
