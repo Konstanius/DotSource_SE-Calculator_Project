@@ -110,7 +110,11 @@ export class AccNum {
      * @returns {number}
      */
     toNumber() {
-        return Number(this.numerator) / Number(this.denominator)
+        let result = Number(this.numerator) / Number(this.denominator)
+        if (result > Number.MAX_SAFE_INTEGER || result < Number.MIN_SAFE_INTEGER) {
+            return Infinity
+        }
+        return result
     }
 
     add(otherNumber) {
