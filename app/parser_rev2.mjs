@@ -156,11 +156,11 @@ export class AccNum {
             let newDenominator = BigInt(1)
             while (result % 1 !== 0) {
                 result *= 10
-                if (result >= MAX_NUM_ROUND / 10 || result < -MAX_NUM_ROUND / 10) { // Div by 10 to avoid imprecision error, rather give imprecision hint
+                newDenominator *= BigInt(10)
+                if (result >= 10 ** 14 || result < -(10 ** 14)) {
                     if (isActual) globalImpreciseAnswer = true
                     break
                 }
-                newDenominator *= BigInt(10)
             }
             this.numerator = BigInt(Math.round(result))
             this.denominator = newDenominator

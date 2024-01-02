@@ -572,8 +572,7 @@ export default function Home() {
                                 errorOverlay.scrollLeft = inputElement.scrollLeft
                             }}
                             onSelect={(_) => setSelectionArea()}
-                        >
-                        </input>
+                        />
                     </form>
 
                     <span
