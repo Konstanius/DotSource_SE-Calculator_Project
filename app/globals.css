@@ -98,7 +98,8 @@ body {
     color: rgba(var(--foreground-rgb), 0.8);
     width: 45%;
     overflow-x: hidden;
-    overflow-y: visible;
+    overflow-y: auto;
+    max-height: 20rem;
     overflow-wrap: break-word;
     font-family: 'Roboto Mono';
 }
@@ -109,7 +110,8 @@ body {
     color: rgba(var(--foreground-rgb), 0.8);
     width: 40%;
     overflow-x: hidden;
-    overflow-y: visible;
+    overflow-y: auto;
+    max-height: 20rem;
     overflow-wrap: break-word;
     font-family: 'Roboto Mono';
 }
@@ -171,6 +173,7 @@ body {
 
 .smallScroll::-webkit-scrollbar {
     height: 4px;
+    width: 4px;
 }
 
 .smallScroll::-webkit-scrollbar-track {
