@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Gives information when copy to clipboard is clicked on http only connection">
+    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Fixes issue with fast inputs&#10;&#10;Fixes issue with invalid history storage&#10;&#10;Fixes issue with calculation being rounded to full digit in non round mode">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/history.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/history.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/parser_rev2.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/app/parser_rev2.mjs" afterDir="false" />
     </list>
@@ -151,7 +150,7 @@
       <workItem from="1704226957990" duration="638000" />
       <workItem from="1704272318640" duration="3559000" />
       <workItem from="1704284949068" duration="1577000" />
-      <workItem from="1704286617864" duration="4631000" />
+      <workItem from="1704286617864" duration="5420000" />
     </task>
     <task id="LOCAL-00001" summary="Made UI a lot more responsive">
       <option name="closed" value="true" />
@@ -505,7 +504,15 @@
       <option name="project" value="LOCAL" />
       <updated>1704286385711</updated>
     </task>
-    <option name="localTasksCounter" value="45" />
+    <task id="LOCAL-00045" summary="Fixes issue with fast inputs&#10;&#10;Fixes issue with invalid history storage&#10;&#10;Fixes issue with calculation being rounded to full digit in non round mode">
+      <option name="closed" value="true" />
+      <created>1704291689349</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1704291689349</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -526,7 +533,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Added more tests&#10;&#10;Final cleanup" />
     <MESSAGE value="Removes random prompt placeholder&#10;&#10;Exponents function changed, now checks for fraction and also allows negative exponents" />
     <MESSAGE value="Makes decimal symbol in numbers language specific" />
     <MESSAGE value="Fixes deployment issue" />
@@ -551,7 +557,8 @@
     <MESSAGE value="Made input buttons unusable while fade out animation is playing" />
     <MESSAGE value="Code cleanup" />
     <MESSAGE value="Gives information when copy to clipboard is clicked on http only connection" />
-    <option name="LAST_COMMIT_MESSAGE" value="Gives information when copy to clipboard is clicked on http only connection" />
+    <MESSAGE value="Fixes issue with fast inputs&#10;&#10;Fixes issue with invalid history storage&#10;&#10;Fixes issue with calculation being rounded to full digit in non round mode" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixes issue with fast inputs&#10;&#10;Fixes issue with invalid history storage&#10;&#10;Fixes issue with calculation being rounded to full digit in non round mode" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
 </project>

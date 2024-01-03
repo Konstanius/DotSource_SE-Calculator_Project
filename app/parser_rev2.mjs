@@ -200,6 +200,9 @@ export class AccNum {
                     break
                 }
             }
+            if (result > Number.MAX_SAFE_INTEGER || result < Number.MIN_SAFE_INTEGER) {
+                throw new ParserError("Maximalwert überschritten (± 2^53)", -1)
+            }
             this.numerator = BigInt(Math.round(result))
             this.denominator = newDenominator
             return

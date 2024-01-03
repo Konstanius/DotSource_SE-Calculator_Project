@@ -331,21 +331,17 @@ export default function Home() {
                 className={style}
                 style={{height: 'calc(' + buttonsHeight / 6 + 'px - 1rem)'}}
                 onClick={async (_) => {
-                    if (submitAnimation !== "") return
+                    if (submitAnimation !== "" || toInput.length !== 0) return
 
                     if (onClick !== undefined) {
                         onClick()
                         return
                     }
 
+                    let randomId = Math.floor(Math.random() * 1000000000)
+
                     // Input queue
-                    toInput.push(onClickAdd)
-                    // This time logic is required to prevent input from being mixed into each other and the cursor jumping around
-                    while (toInput[0] !== onClickAdd) {
-                        await new Promise(r => setTimeout(r, 3))
-                        if (toInput.length === 0) return // Clear was pressed
-                    }
-                    await new Promise(r => setTimeout(r, 5))
+                    toInput.push(randomId)
 
                     // if the selection is not empty, replace range, otherwise append / insert
                     let start = selectionAreaData[0]
@@ -356,10 +352,8 @@ export default function Home() {
                         document.getElementById('input').setSelectionRange(start + onClickAdd.length, start + onClickAdd.length)
                         selectionAreaData[0] += onClickAdd.length
                         selectionAreaData[1] += onClickAdd.length
-                        setTimeout(() => {
-                            setSelectionArea().then(/*ignored*/)
-                            toInput.shift()
-                        }, 3)
+                        setSelectionArea().then(/*ignored*/)
+                        toInput.shift()
                     }, 3)
                 }}>{screenHeight !== 0 ? title : ""}</button>)
     }
@@ -643,7 +637,7 @@ export default function Home() {
                                 setCopyClicked(true)
                             }
                         }}>
-                        {copyClicked ? "Ergebnis kopiert!" : (globalImpreciseAnswer ? "~ " + output : output)}
+                        {copyClicked ? "Ergebnis kopiert!" : ((globalImpreciseAnswer && valid) ? "~ " + output : output)}
                     </button>
 
                     {/*    Buttons*/}
