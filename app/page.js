@@ -436,6 +436,10 @@ export default function Home() {
                 overflowX: "hidden",
                 overflowY: (screenWidth < 1024) ? "auto" : "hidden"
             }}
+            onScroll={(_) => {
+                let main = document.getElementById('main')
+                main.scrollLeft = 0 // This prevents jumping when the animation is playing
+            }}
             className="flex min-h-screen flex-col items-center p-24"
             onMouseMove={(_) => {
                 setSelectionArea().then(/*ignored*/)

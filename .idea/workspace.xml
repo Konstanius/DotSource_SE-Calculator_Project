@@ -4,8 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Added safety for infinity">
+    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Adds scrolling to result&#10;&#10;Fixes button spam click">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/globals.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,37 +51,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "Node.js.Console.executor": "Run",
-    "Node.js.console_calculator.mjs.executor": "Run",
-    "Node.js.parser_rev2.mjs.executor": "Run",
-    "Node.js.parser_tests.mjs.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "ShowUsagesActions.previewPropertyKey": "true",
-    "WebServerToolWindowPanel.toolwindow.highlight.mappings": "true",
-    "WebServerToolWindowPanel.toolwindow.highlight.symlinks": "true",
-    "WebServerToolWindowPanel.toolwindow.show.date": "false",
-    "WebServerToolWindowPanel.toolwindow.show.permissions": "false",
-    "WebServerToolWindowPanel.toolwindow.show.size": "false",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/early/WebstormProjects/dotsource_se_calculator/app/console_calculator.js",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "npm.Build.executor": "Run",
-    "npm.Test.executor": "Run",
-    "npm.dev.executor": "Run",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;Node.js.Console.executor&quot;: &quot;Run&quot;,
+    &quot;Node.js.console_calculator.mjs.executor&quot;: &quot;Run&quot;,
+    &quot;Node.js.parser_rev2.mjs.executor&quot;: &quot;Run&quot;,
+    &quot;Node.js.parser_tests.mjs.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;ShowUsagesActions.previewPropertyKey&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.highlight.mappings&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.highlight.symlinks&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.show.date&quot;: &quot;false&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.show.permissions&quot;: &quot;false&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.show.size&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/early/WebstormProjects/dotsource_se_calculator/app/console_calculator.js&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;npm.Build.executor&quot;: &quot;Run&quot;,
+    &quot;npm.Test.executor&quot;: &quot;Run&quot;,
+    &quot;npm.dev.executor&quot;: &quot;Run&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.ide.settings.notifications&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="npm.Test">
     <configuration name="Console" type="NodeJSConfigurationType" path-to-js-file="$PROJECT_DIR$/app/console_calculator.mjs" working-dir="$PROJECT_DIR$">
       <method v="2" />
@@ -132,7 +134,9 @@
       <workItem from="1704181889532" duration="4774000" />
       <workItem from="1704204830992" duration="7056000" />
       <workItem from="1704212485410" duration="2579000" />
-      <workItem from="1704226068324" duration="240000" />
+      <workItem from="1704226068324" duration="873000" />
+      <workItem from="1704226957990" duration="638000" />
+      <workItem from="1704272318640" duration="1279000" />
     </task>
     <task id="LOCAL-00001" summary="Made UI a lot more responsive">
       <option name="closed" value="true" />
@@ -422,7 +426,15 @@
       <option name="project" value="LOCAL" />
       <updated>1704211898324</updated>
     </task>
-    <option name="localTasksCounter" value="37" />
+    <task id="LOCAL-00037" summary="Adds scrolling to result&#10;&#10;Fixes button spam click">
+      <option name="closed" value="true" />
+      <created>1704226570423</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1704226570423</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -443,7 +455,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Removed TODO for automatic parentheses&#10;&#10;Result made to look better&#10;&#10;Added exponent operation" />
     <MESSAGE value="Refactored parser to use BigInt, yielding near-infinite precision and range" />
     <MESSAGE value="Fixed an issue&#10;&#10;Implemented rounding and accurate results toggle in console_calculator.mjs&#10;&#10;Added CTRL delete functionality" />
     <MESSAGE value="Selection -&gt; delete button bug fixed&#10;&#10;Added timeout to calculation" />
@@ -468,7 +479,8 @@
     <MESSAGE value="Fixes root taking of negative numbers" />
     <MESSAGE value="Refactored toNumber method&#10;&#10;Extracted getResultWithProperDisplay method" />
     <MESSAGE value="Added safety for infinity" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added safety for infinity" />
+    <MESSAGE value="Adds scrolling to result&#10;&#10;Fixes button spam click" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adds scrolling to result&#10;&#10;Fixes button spam click" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
 </project>

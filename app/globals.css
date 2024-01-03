@@ -9,6 +9,7 @@
     --header-height: 3rem;
     --footer-height: 3rem;
     --input-height: 3rem;
+    color-scheme: only dark;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,17 +20,10 @@
     }
 }
 
-@media (prefers-color-scheme: light) {
-    :root {
-        --foreground-rgb: 255, 255, 255;
-        --background-start-rgb: 0, 0, 0;
-        --background-end-rgb: 0, 0, 0;
-    }
-}
-
 body {
     color: white;
     background: black;
+    position: absolute;
 }
 
 .smooth-transition {
