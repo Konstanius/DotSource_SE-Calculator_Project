@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Adds scrolling to result&#10;&#10;Fixes button spam click">
+    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Fixes overflow of x content&#10;&#10;Color scheme optimization">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/globals.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -136,7 +135,7 @@
       <workItem from="1704212485410" duration="2579000" />
       <workItem from="1704226068324" duration="873000" />
       <workItem from="1704226957990" duration="638000" />
-      <workItem from="1704272318640" duration="1279000" />
+      <workItem from="1704272318640" duration="1999000" />
     </task>
     <task id="LOCAL-00001" summary="Made UI a lot more responsive">
       <option name="closed" value="true" />
@@ -434,7 +433,15 @@
       <option name="project" value="LOCAL" />
       <updated>1704226570423</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="Fixes overflow of x content&#10;&#10;Color scheme optimization">
+      <option name="closed" value="true" />
+      <created>1704273746517</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1704273746517</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -455,7 +462,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Refactored parser to use BigInt, yielding near-infinite precision and range" />
     <MESSAGE value="Fixed an issue&#10;&#10;Implemented rounding and accurate results toggle in console_calculator.mjs&#10;&#10;Added CTRL delete functionality" />
     <MESSAGE value="Selection -&gt; delete button bug fixed&#10;&#10;Added timeout to calculation" />
     <MESSAGE value="Removed TODO's" />
@@ -480,7 +486,8 @@
     <MESSAGE value="Refactored toNumber method&#10;&#10;Extracted getResultWithProperDisplay method" />
     <MESSAGE value="Added safety for infinity" />
     <MESSAGE value="Adds scrolling to result&#10;&#10;Fixes button spam click" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adds scrolling to result&#10;&#10;Fixes button spam click" />
+    <MESSAGE value="Fixes overflow of x content&#10;&#10;Color scheme optimization" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixes overflow of x content&#10;&#10;Color scheme optimization" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
 </project>

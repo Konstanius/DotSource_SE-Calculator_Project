@@ -87,18 +87,19 @@ body {
 .history-entry-time {
     font-size: 0.8rem;
     color: rgba(var(--foreground-rgb), 0.5);
-    width: 5rem;
+    width: 3rem;
     overflow: visible;
-    padding-right: 0.5rem;
+    margin-right: 0.5rem;
 }
 
 .history-entry-input {
     font-size: 1rem;
     font-weight: 500;
     color: rgba(var(--foreground-rgb), 0.8);
-    width: 55%;
-    overflow-x: auto;
-    overflow-y: hidden;
+    width: 45%;
+    overflow-x: hidden;
+    overflow-y: visible;
+    overflow-wrap: break-word;
     font-family: 'Roboto Mono';
 }
 
@@ -106,9 +107,10 @@ body {
     font-size: 1rem;
     font-weight: 500;
     color: rgba(var(--foreground-rgb), 0.8);
-    width: 30%;
-    overflow-x: auto;
-    overflow-y: hidden;
+    width: 40%;
+    overflow-x: hidden;
+    overflow-y: visible;
+    overflow-wrap: break-word;
     font-family: 'Roboto Mono';
 }
 
@@ -127,7 +129,7 @@ body {
     justify-content: space-between;
     align-items: center;
     width: 98%;
-    padding: 0.5rem 1.5rem;
+    padding: 0.5rem 0.5rem;
     border-radius: 0.5rem;
     background-color: rgba(var(--foreground-rgb), 0.1);
     margin-bottom: 0.5rem;
@@ -196,6 +198,7 @@ body {
     color: rgba(var(--foreground-rgb), 0.8);
     width: 100%;
     margin-right: 0.5rem;
+    white-space: nowrap;
 }
 
 .hide-scrollbar::-webkit-scrollbar {
