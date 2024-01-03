@@ -4,8 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Slight optimization to CTRL release mechanism">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="133bcdae-b422-4d9c-9965-83ebd3ae38e3" name="Changes" comment="Code cleanup">
+      <change beforePath="$PROJECT_DIR$/app/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,7 +138,7 @@
       <workItem from="1704226068324" duration="873000" />
       <workItem from="1704226957990" duration="638000" />
       <workItem from="1704272318640" duration="3559000" />
-      <workItem from="1704284949068" duration="983000" />
+      <workItem from="1704284949068" duration="1356000" />
     </task>
     <task id="LOCAL-00001" summary="Made UI a lot more responsive">
       <option name="closed" value="true" />
@@ -468,7 +468,23 @@
       <option name="project" value="LOCAL" />
       <updated>1704285213744</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="Made input buttons unusable while fade out animation is playing">
+      <option name="closed" value="true" />
+      <created>1704286074250</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1704286074251</updated>
+    </task>
+    <task id="LOCAL-00043" summary="Code cleanup">
+      <option name="closed" value="true" />
+      <created>1704286269988</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1704286269988</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -489,8 +505,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Added visual indicator for syntax errors in the expression&#10;&#10;Fixed a bug in the parser" />
-    <MESSAGE value="Removed size transition for result button&#10;&#10;Fixes absolute positioning issue for error overlay on mobile layout" />
     <MESSAGE value="Fixes division by 0 (Introduced an error)&#10;&#10;Removes logging of parser" />
     <MESSAGE value="Added more tests&#10;&#10;Final cleanup" />
     <MESSAGE value="Removes random prompt placeholder&#10;&#10;Exponents function changed, now checks for fraction and also allows negative exponents" />
@@ -514,7 +528,9 @@
     <MESSAGE value="Makes result in history look a lot better" />
     <MESSAGE value="Makes result in history now scrollable if too large" />
     <MESSAGE value="Slight optimization to CTRL release mechanism" />
-    <option name="LAST_COMMIT_MESSAGE" value="Slight optimization to CTRL release mechanism" />
+    <MESSAGE value="Made input buttons unusable while fade out animation is playing" />
+    <MESSAGE value="Code cleanup" />
+    <option name="LAST_COMMIT_MESSAGE" value="Code cleanup" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
 </project>

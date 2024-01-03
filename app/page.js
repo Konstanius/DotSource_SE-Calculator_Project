@@ -625,6 +625,11 @@ export default function Home() {
                             " text-white p-2 rounded-md smooth-transition smallScroll"}
                         onClick={() => {
                             if (valid) {
+                                if (window.location.protocol === "http:") {
+                                    alert("Die Ergebnisse können nur in die Zwischenablage kopiert werden, wenn die Seite über HTTPS aufgerufen wird.")
+                                    return
+                                }
+
                                 navigator.clipboard.writeText(output).then(/*ignored*/)
                                 setCopyClicked(true)
                             }
