@@ -158,6 +158,7 @@ export default function Home() {
         // control
         if (e.key === "Control") {
             controlPressed = true
+            return
         }
 
         let id = buttonKeyIds[e.key]
@@ -180,6 +181,9 @@ export default function Home() {
         document.addEventListener("keyup", (e) => {
             if (e.key === "Control") {
                 controlPressed = false
+                setTimeout(() => {
+                    controlPressed = false
+                }, 10)
             }
         })
 
