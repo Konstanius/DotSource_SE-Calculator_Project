@@ -17,7 +17,7 @@ export function getResultWithProperDisplay(input, shouldRound) {
 
         let decimalCount = result.split(".")[1]?.length || 0
 
-        if (!shouldRound && (decimalCount > 3 || result === Infinity || result === -Infinity || isNaN(result))) {
+        if (!shouldRound && (decimalCount > 3 || result === Infinity || result === -Infinity || isNaN(result) || (decimalCount === 0 && input.numerator % input.denominator !== BigInt(0)))) {
             input.shorten()
             if (input.denominator === BigInt(1)) {
                 result = input.numerator.toString()

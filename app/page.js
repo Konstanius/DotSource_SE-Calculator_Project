@@ -340,9 +340,12 @@ export default function Home() {
 
                     // Input queue
                     toInput.push(onClickAdd)
+                    // This time logic is required to prevent input from being mixed into each other and the cursor jumping around
                     while (toInput[0] !== onClickAdd) {
                         await new Promise(r => setTimeout(r, 3))
+                        if (toInput.length === 0) return // Clear was pressed
                     }
+                    await new Promise(r => setTimeout(r, 5))
 
                     // if the selection is not empty, replace range, otherwise append / insert
                     let start = selectionAreaData[0]
@@ -350,10 +353,13 @@ export default function Home() {
                     let newValue = input.substring(0, start) + onClickAdd + input.substring(end)
                     onChangedTextField(newValue)
                     setTimeout(() => {
-                        toInput.shift()
                         document.getElementById('input').setSelectionRange(start + onClickAdd.length, start + onClickAdd.length)
                         selectionAreaData[0] += onClickAdd.length
                         selectionAreaData[1] += onClickAdd.length
+                        setTimeout(() => {
+                            setSelectionArea().then(/*ignored*/)
+                            toInput.shift()
+                        }, 3)
                     }, 3)
                 }}>{screenHeight !== 0 ? title : ""}</button>)
     }
@@ -391,7 +397,10 @@ export default function Home() {
             document.getElementById('input').setSelectionRange(start, start)
         }, 5)
     }, "Backspace")
-    addButton(0, <i className="fa-solid fa-c"></i>, false, true, "", () => onChangedTextField(""), "Escape")
+    addButton(0, <i className="fa-solid fa-c"></i>, false, true, "", () => {
+        onChangedTextField("")
+        toInput = [] // Clear the input queue
+    }, "Escape")
     addButton(1, "(", false, false, "(", undefined, "(")
     addButton(1, ")", false, false, ")", undefined, ")")
     addButton(1, <div><span>n </span><i className="fa-solid fa-exclamation"></i>

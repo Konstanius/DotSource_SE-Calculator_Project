@@ -18,7 +18,12 @@ export class HistoryEntry {
 
         let item = localStorage.getItem("history_" + id)
         if (item) {
-            return JSON.parse(item)
+            try {
+                return JSON.parse(item)
+            } catch (_) {
+                localStorage.removeItem("history_" + id)
+                return null
+            }
         } else {
             return null
         }
@@ -52,7 +57,11 @@ export class HistoryEntry {
         let history = []
         for (let key of keys) {
             if (key.startsWith("history_")) {
-                history.push(JSON.parse(localStorage.getItem(key)))
+                try {
+                    history.push(JSON.parse(localStorage.getItem(key)))
+                } catch (_) {
+                    localStorage.removeItem(key)
+                }
             }
         }
 
