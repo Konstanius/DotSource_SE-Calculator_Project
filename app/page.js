@@ -39,25 +39,25 @@ export default function Home() {
     const [submitAnimation, setSubmitAnimation] = useState("")
 
     function setErrorReportHelper(newValue, index) {
-        let error = "";
+        let error = ""
         if (index === -1) {
-            setErrorReport("");
-            return;
+            setErrorReport("")
+            return
         }
 
         if (index === newValue.length) {
-            index = newValue.length - 1;
+            index = newValue.length - 1
         }
 
         for (let i = 0; i < newValue.length; i++) {
             if (i === index) {
-                error += "_";
+                error += "_"
             } else {
-                error += " ";
+                error += " "
             }
         }
 
-        setErrorReport(error);
+        setErrorReport(error)
 
         setTimeout(() => {
             // scroll it the same amount as the input
@@ -231,11 +231,11 @@ export default function Home() {
 
                     // Remove the animation class if it exists
                     if (button.classList.contains('animate-click')) {
-                        button.classList.remove('animate-click');
+                        button.classList.remove('animate-click')
                     }
 
                     // Force a reflow to restart the animation
-                    void button.offsetWidth;
+                    void button.offsetWidth
 
                     // Add the animation class
                     button.classList.add("animate-click")
@@ -615,6 +615,7 @@ export default function Home() {
                             overflowY: "hidden",
                             overflowX: "auto",
                             width: 'calc(' + ((screenWidth < 1024) ? screenWidth * 0.95 : screenWidth * 0.55) + 'px - 0.5rem)',
+                            height: '4rem',
                             fontSize: "2rem",
                             fontFamily: "Roboto Mono",
                         }}

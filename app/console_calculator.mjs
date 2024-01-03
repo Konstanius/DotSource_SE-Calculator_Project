@@ -1,5 +1,5 @@
-import {getResultWithProperDisplay, globalImpreciseAnswer, ParserError, parseWithParentheses} from "./parser_rev2.mjs";
-import prompt from "prompt-sync";
+import {getResultWithProperDisplay, globalImpreciseAnswer, ParserError, parseWithParentheses} from "./parser_rev2.mjs"
+import prompt from "prompt-sync"
 
 console.log("Taschenrechner v2.0")
 console.log("Simpler KEMDAS Taschenrechner für den DotSource SE Bewerbungsprozess\n")

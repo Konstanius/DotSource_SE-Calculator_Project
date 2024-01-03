@@ -171,16 +171,16 @@ export class AccNum {
         // noinspection JSIncompatibleTypesComparison
         if (otherNumerator % otherDenominator !== BigInt(0)) {
             // Use floats from here, if the number cannot be accurately represented as a fraction, throw an error from toNumber()
-            let thisFloat;
+            let thisFloat
             try {
-                thisFloat = this.toNumber();
+                thisFloat = this.toNumber()
             } catch (error) {
                 if (isActual) globalImpreciseAnswer = true
                 thisFloat = Number(this.numerator) / Number(this.denominator)
             }
-            let otherFloat;
+            let otherFloat
             try {
-                otherFloat = otherNumber.toNumber();
+                otherFloat = otherNumber.toNumber()
             } catch (error) {
                 if (isActual) globalImpreciseAnswer = true
                 otherFloat = Number(otherNumber.numerator) / Number(otherNumber.denominator)
