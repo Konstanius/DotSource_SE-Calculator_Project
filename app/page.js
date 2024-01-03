@@ -331,6 +331,8 @@ export default function Home() {
                 className={style}
                 style={{height: 'calc(' + buttonsHeight / 6 + 'px - 1rem)'}}
                 onClick={async (_) => {
+                    if (submitAnimation !== "") return
+
                     if (onClick !== undefined) {
                         onClick()
                         return
